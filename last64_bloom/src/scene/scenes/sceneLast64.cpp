@@ -11,6 +11,7 @@
 #include <t3d/tpx.h>
 #include <t3d/t3dmath.h>
 #include <libdragon.h>
+#include <vector>
 
 namespace {
   // Screen boundaries
@@ -183,14 +184,12 @@ void SceneLast64::updateScene(float deltaTime)
                 // Randomly select a target player from active players
                 Actor::Player* targetPlayer = nullptr;
                 if (activePlayerCount > 0) {
-                    // Create a list of active players
-                    Actor::Player* activePlayers[4];
-                    int tempActivePlayerCount = 0;
-                    if (player1) activePlayers[tempActivePlayerCount++] = player1;
-                    if (player2) activePlayers[tempActivePlayerCount++] = player2;
-                    if (player3) activePlayers[tempActivePlayerCount++] = player3;
-                    if (player4) activePlayers[tempActivePlayerCount++] = player4;
-                    targetPlayer = activePlayers[rand() % tempActivePlayerCount];
+                    std::vector<Actor::Player*> activePlayersList;
+                    if (player1) activePlayersList.push_back(player1);
+                    if (player2) activePlayersList.push_back(player2);
+                    if (player3) activePlayersList.push_back(player3);
+                    if (player4) activePlayersList.push_back(player4);
+                    targetPlayer = activePlayersList[rand() % activePlayersList.size()];
                 }
                 
                 // Spawn a new enemy at a random edge of the screen
