@@ -2,6 +2,7 @@
 #include <libdragon.h>
 #include <cmath>
 #include <rdpq.h>
+#include "../render/debugDraw.h"
 
 namespace {
     int currentXP = 0;
@@ -46,10 +47,18 @@ void Experience::addXP(int amount) {
         if (player2 && player2->getWeapon()) {
             player2->getWeapon()->upgrade();
         }
+        if (player3 && player3->getWeapon()) {
+            player3->getWeapon()->upgrade();
+        }
+        if (player4 && player4->getWeapon()) {
+            player4->getWeapon()->upgrade();
+        }
     }
 }
 
 void Experience::draw() {
+    Debug::printStart();
+
     // Screen dimensions
     const int screenWidth = 320;
     const int screenHeight = 240;
