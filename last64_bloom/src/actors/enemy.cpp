@@ -33,8 +33,8 @@ namespace Actor {
         poolIndex = MAX_ENEMIES; // Invalid index until spawned
         position = {0, 0, 0};
         speed = 0.0f;
-        health = 4;
-        maxHealth = 4;
+        health = 8;
+        maxHealth = 8;
         targetPlayer = nullptr; // Initialize individual target player
         flags |= FLAG_DISABLED; // Start as disabled
     }
@@ -230,6 +230,17 @@ namespace Actor {
         if (flags & FLAG_DISABLED) return;
         
         if (poolIndex < MAX_ENEMIES) {
+            // Calculate color healtbased on health
+            float t = (float)(maxHealth - health) / maxHealth;
+            uint8_t green_blue = (uint8_t)(255.0f * t);
+            uint32_t new_color = 0xFF0000FF | (green_blue << 8) | (green_blue << 16);
+
+            // Update vertex colors for this specific enemy
+            sharedVertices[poolIndex * 2].rgbaA = new_color;
+            sharedVertices[poolIndex * 2].rgbaB = new_color;
+            sharedVertices[poolIndex * 2 + 1].rgbaA = new_color;
+            sharedVertices[poolIndex * 2 + 1].rgbaB = new_color;
+
             t3d_matrix_push(sharedMatrices[poolIndex]);
             t3d_vert_load(&sharedVertices[poolIndex * 2], 0, 4); // Load 4 vertices (2 structures)
             t3d_tri_draw(0, 1, 2);
