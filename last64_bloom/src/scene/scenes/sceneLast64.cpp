@@ -34,6 +34,7 @@ SceneLast64::SceneLast64()
     for (int i = 0; i < 4; ++i) {
         playerJoined[i] = false;
     }
+    activePlayerCount = 0;
     roundTimer = 0.0f;
     exposure = 30.0f; // Set exposure for HDR effect (matching the HDR example)
 
@@ -98,6 +99,7 @@ void SceneLast64::updateScene(float deltaTime)
                             case 2: startPos = {{120.0f, 100.0f, 0.0f}}; player3 = new Actor::Player(startPos, JOYPAD_PORT_3); break;
                             case 3: startPos = {{180.0f, 100.0f, 0.0f}}; player4 = new Actor::Player(startPos, JOYPAD_PORT_4); break;
                         }
+                        activePlayerCount++;
 
                         // If this is the first player to join, start the round
                         bool anyPlayerJoined = false;
@@ -133,6 +135,7 @@ void SceneLast64::updateScene(float deltaTime)
                             case 2: startPos = {{120.0f, 100.0f, 0.0f}}; player3 = new Actor::Player(startPos, JOYPAD_PORT_3); break;
                             case 3: startPos = {{180.0f, 100.0f, 0.0f}}; player4 = new Actor::Player(startPos, JOYPAD_PORT_4); break;
                         }
+                        activePlayerCount++;
                     }
                 }
             }
@@ -161,7 +164,7 @@ void SceneLast64::updateScene(float deltaTime)
                     if (!proj || !proj->isActive()) continue;
 
                     if (enemy->collidesWith(proj)) {
-                        enemy->takeDamage(1);
+                        enemy->takeDamage(4/activePlayerCount); // Player scaled damage
                         proj->deactivate(); // Projectile disappears on hit
                     }
                 }
@@ -177,18 +180,17 @@ void SceneLast64::updateScene(float deltaTime)
             if (enemySpawnTimer > 0.3f) { // Spawn an enemy every x seconds
                 enemySpawnTimer = 0.0f;
                 
-                // Create a list of active players
-                Actor::Player* activePlayers[4];
-                int activePlayerCount = 0;
-                if (player1) activePlayers[activePlayerCount++] = player1;
-                if (player2) activePlayers[activePlayerCount++] = player2;
-                if (player3) activePlayers[activePlayerCount++] = player3;
-                if (player4) activePlayers[activePlayerCount++] = player4;
-
                 // Randomly select a target player from active players
                 Actor::Player* targetPlayer = nullptr;
                 if (activePlayerCount > 0) {
-                    targetPlayer = activePlayers[rand() % activePlayerCount];
+                    // Create a list of active players
+                    Actor::Player* activePlayers[4];
+                    int tempActivePlayerCount = 0;
+                    if (player1) activePlayers[tempActivePlayerCount++] = player1;
+                    if (player2) activePlayers[tempActivePlayerCount++] = player2;
+                    if (player3) activePlayers[tempActivePlayerCount++] = player3;
+                    if (player4) activePlayers[tempActivePlayerCount++] = player4;
+                    targetPlayer = activePlayers[rand() % tempActivePlayerCount];
                 }
                 
                 // Spawn a new enemy at a random edge of the screen

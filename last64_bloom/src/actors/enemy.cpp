@@ -33,8 +33,8 @@ namespace Actor {
         poolIndex = MAX_ENEMIES; // Invalid index until spawned
         position = {0, 0, 0};
         speed = 0.0f;
-        health = 1;
-        maxHealth = 1;
+        health = 4;
+        maxHealth = 4;
         targetPlayer = nullptr; // Initialize individual target player
         flags |= FLAG_DISABLED; // Start as disabled
     }

@@ -30,7 +30,8 @@ class SceneLast64 : public Scene
     Actor::Player* player1;                                                                                                                                                                                                                             
     Actor::Player* player2;
     Actor::Player* player3;
-    Actor::Player* player4;                                                                                                                                                                                                                             
+    Actor::Player* player4;
+    int activePlayerCount;                                                                                                                                                                                                                             
                                                                                                                                                                                                                                                         
     StaticCam staticCam{camera};                                                                                                                                                                                                                        
                                                                                                                                                                                                                                                         
