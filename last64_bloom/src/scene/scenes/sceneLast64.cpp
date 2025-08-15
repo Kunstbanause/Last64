@@ -35,6 +35,7 @@ SceneLast64::SceneLast64()
         playerJoined[i] = false;
     }
     roundTimer = 0.0f;
+    exposure = 30.0f; // Set exposure for HDR effect (matching the HDR example)
 
     // Set up camera - match SceneMain more closely
     camera.fov = T3D_DEG_TO_RAD(80.0f);
@@ -238,11 +239,17 @@ void SceneLast64::draw3D(float deltaTime)
 
     t3d_light_set_ambient(colorAmbient);
     t3d_light_set_count(0); // No directional lights, just ambient
+    
+    // Set exposure for HDR effect
+    t3d_light_set_exposure(exposure);
 
     t3d_matrix_push(sceneMatFP);
 
     // Set up rendering state
     //t3d_state_set_drawflags((enum T3DDrawFlags)(T3D_FLAG_SHADED | T3D_FLAG_DEPTH));
+    
+    // Set combiner mode to use vertex colors (SHADE) instead of textures
+    rdpq_mode_combiner(RDPQ_COMBINER_SHADE);
 
     // Draw players using the Player class (this will also draw their weapons)
     if (player1) player1->draw3D(deltaTime);

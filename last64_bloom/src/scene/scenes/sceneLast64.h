@@ -24,6 +24,7 @@ class SceneLast64 : public Scene
     GameState currentGameState;
     bool playerJoined[4];
     float roundTimer;
+    float exposure; // HDR exposure value
 
     // Player instances                                                                                                                                                                                                                                
     Actor::Player* player1;                                                                                                                                                                                                                             
