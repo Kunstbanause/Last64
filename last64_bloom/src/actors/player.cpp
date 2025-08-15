@@ -160,13 +160,12 @@ namespace Actor {
             weapon->update(deltaTime);
         }
         
-        // Check if A button is pressed for firing
+        // Check if A button is pressed for manual firing
         joypad_buttons_t pressed = joypad_get_buttons_pressed(playerPort);
         if (pressed.a) {
-            // Fire in the direction the player is facing (based on rotation)
-            float fireX = sinf(rotation);
-            float fireY = cosf(rotation);
-            weapon->fire(position, {{fireX, fireY, 0.0f}});
+            if (weapon) {
+                weapon->fireManual();
+            }
         }
         
         // Update rotation based on movement direction

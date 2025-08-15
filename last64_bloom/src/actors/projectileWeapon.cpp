@@ -4,6 +4,11 @@
 */
 #include "projectileWeapon.h"
 #include <libdragon.h>
+#include <cmath>
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 namespace Actor {
     ProjectileWeapon::ProjectileWeapon() : Weapon() {
@@ -12,7 +17,7 @@ namespace Actor {
         
         // Set weapon-specific properties
         fireRate = 0.3f;              // Reduced to ~3 shots per second
-        projectileSpeed = 2.0f;
+        projectileSpeed = 200.0f;
         projectileSlowdown = 0.0f;    // No slowdown
         maxUpgradeLevel = 5;
         spawnOffset = {0, 0, 0};
@@ -27,21 +32,15 @@ namespace Actor {
         // Update fire cooldown
         if (fireCooldown > 0) {
             fireCooldown -= deltaTime;
-            if (fireCooldown < 0) {
-                fireCooldown = 0;
-            }
         }
         
         // Auto-fire logic
         if (fireCooldown <= 0 && player) {
-            // Reset cooldown
             fireCooldown = fireRate;
             
-            // Get player position and rotation
             T3DVec3 playerPos = player->getPosition();
             float playerRotation = player->getRotation();
             
-            // Fire weapon in the direction the player is facing
             T3DVec3 direction = {{
                 sinf(playerRotation),
                 cosf(playerRotation),
@@ -70,5 +69,19 @@ namespace Actor {
         
         // Spawn projectile
         Projectile::spawn(spawnPos, direction, projectileSpeed, projectileSlowdown);
+    }
+
+    void ProjectileWeapon::fireManual() {
+        if(!player)return;
+
+        // Fire in a random direction
+        float randomAngle = (float)(rand() % 360) * (M_PI / 180.0f);
+        T3DVec3 direction = {{
+            sinf(randomAngle),
+            cosf(randomAngle),
+            0.0f
+        }};
+
+        fire(player->getPosition(), direction);
     }
 }

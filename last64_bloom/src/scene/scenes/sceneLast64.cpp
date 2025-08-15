@@ -57,6 +57,7 @@ SceneLast64::SceneLast64()
     
     // Initialize enemy pool
     Actor::Enemy::initialize();
+    Actor::Projectile::initialize();
 }
 
 SceneLast64::~SceneLast64()
@@ -64,6 +65,7 @@ SceneLast64::~SceneLast64()
     delete player1; // Clean up player1 instance
     delete player2; // Clean up player2 instance
     Actor::Enemy::cleanup(); // Clean up enemy pool
+    Actor::Projectile::cleanup();
     
     // Clean up scene matrix
     if (sceneMatFP) {
@@ -85,7 +87,7 @@ void SceneLast64::updateScene(float deltaTime)
     // Update all enemies
     Actor::Enemy::updateAll(deltaTime);
     
-    // Update all projectiles (this is now handled by the player's weapon)
+    // Update all projectiles
     Actor::Projectile::updateAll(deltaTime);
     
     // Get player positions for enemy positioning
@@ -163,8 +165,8 @@ void SceneLast64::draw3D(float deltaTime)
     
     // Draw all enemies
     Actor::Enemy::drawAll(deltaTime);
-    
-    // Draw all projectiles (this is now handled by the player's weapon)
+
+    // Draw all projectiles
     Actor::Projectile::drawAll(deltaTime);
 
     // Pop scene matrix

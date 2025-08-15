@@ -34,6 +34,7 @@ namespace Actor {
         virtual void drawPTX(float deltaTime) override = 0;
         
         virtual void fire(const T3DVec3& position, const T3DVec3& direction);
+        virtual void fireManual();
         virtual void upgrade() { if (upgradeLevel < maxUpgradeLevel) upgradeLevel++; }
         
         // Getters and setters

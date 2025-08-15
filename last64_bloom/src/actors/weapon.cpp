@@ -25,4 +25,9 @@ namespace Actor {
         // Default implementation does nothing
         // This should be overridden by subclasses
     }
+
+    void Weapon::fireManual() {
+        // Default implementation does nothing
+        // This should be overridden by subclasses
+    }
 }

@@ -17,6 +17,7 @@ namespace Actor {
         void draw3D(float deltaTime) override;
         void drawPTX(float deltaTime) override;
         
-        virtual void fire(const T3DVec3& position, const T3DVec3& direction) override;
+        void fire(const T3DVec3& position, const T3DVec3& direction) override;
+        void fireManual() override;
     };
 }
