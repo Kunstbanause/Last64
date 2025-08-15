@@ -9,22 +9,28 @@ namespace {
     int currentLevel = 1;
     Actor::Player* player1 = nullptr;
     Actor::Player* player2 = nullptr;
+    Actor::Player* player3 = nullptr;
+    Actor::Player* player4 = nullptr;
 
     // Exponential growth factor for XP required for next level
     const float xpGrowthFactor = 1.5f;
 }
 
-void Experience::initialize(Actor::Player* p1, Actor::Player* p2) {
+void Experience::initialize(Actor::Player* p1, Actor::Player* p2, Actor::Player* p3, Actor::Player* p4) {
     currentXP = 0;
     xpToNextLevel = 10;
     currentLevel = 1;
     player1 = p1;
     player2 = p2;
+    player3 = p3;
+    player4 = p4;
 }
 
 void Experience::shutdown() {
     player1 = nullptr;
     player2 = nullptr;
+    player3 = nullptr;
+    player4 = nullptr;
 }
 
 void Experience::addXP(int amount) {

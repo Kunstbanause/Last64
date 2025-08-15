@@ -45,19 +45,25 @@ SceneLast64::SceneLast64()
     // All actors exist in 3D space now, with Z=0 for the playing field
     T3DVec3 startPos1 = {{140.0f, 100.0f, 0.0f}};  // Center of screen
     T3DVec3 startPos2 = {{160.0f, 100.0f, 0.0f}};  // Slightly to the right
+    T3DVec3 startPos3 = {{120.0f, 100.0f, 0.0f}};  // Slightly to the left
+    T3DVec3 startPos4 = {{180.0f, 100.0f, 0.0f}};  // Further to the right
     player1 = new Actor::Player(startPos1, JOYPAD_PORT_1);
     player2 = new Actor::Player(startPos2, JOYPAD_PORT_2);
+    player3 = new Actor::Player(startPos3, JOYPAD_PORT_3);
+    player4 = new Actor::Player(startPos4, JOYPAD_PORT_4);
     
     // Initialize systems
     Actor::Enemy::initialize();
     Actor::Projectile::initialize();
-    Experience::initialize(player1, player2);
+    Experience::initialize(player1, player2, player3, player4);
 }
 
 SceneLast64::~SceneLast64()
 {
     delete player1; // Clean up player1 instance
     delete player2; // Clean up player2 instance
+    delete player3;
+    delete player4;
     Actor::Enemy::cleanup(); // Clean up enemy pool
     Actor::Projectile::cleanup();
     Experience::shutdown();
@@ -78,6 +84,8 @@ void SceneLast64::updateScene(float deltaTime)
     // Update players (this will also update their weapons)
     player1->update(deltaTime);
     player2->update(deltaTime);
+    player3->update(deltaTime);
+    player4->update(deltaTime);
     
     // Update all enemies
     Actor::Enemy::updateAll(deltaTime);
@@ -102,8 +110,8 @@ void SceneLast64::updateScene(float deltaTime)
     }
     
     // Get player positions for enemy positioning
-    T3DVec3 player1Pos = player1->getPosition();
-    T3DVec3 player2Pos = player2->getPosition();
+    // T3DVec3 player1Pos = player1->getPosition();
+    // T3DVec3 player2Pos = player2->getPosition();
     
     // Spawn new enemies occasionally
     static float enemySpawnTimer = 0.0f;
@@ -143,7 +151,7 @@ void SceneLast64::updateScene(float deltaTime)
         // Spawn enemy with zero initial velocity (will be calculated by enemy itself)
         // All actors exist in the same 3D space with Z=0 for the playing field
         // Randomly select a target player for this enemy
-        Actor::Enemy::spawn(pos, 45.0f, player1, player2);
+        Actor::Enemy::spawn(pos, 45.0f, player1, player2, player3, player4);
     }
 }
 
@@ -173,6 +181,8 @@ void SceneLast64::draw3D(float deltaTime)
     // Draw players using the Player class (this will also draw their weapons)
     player1->draw3D(deltaTime);
     player2->draw3D(deltaTime);
+    player3->draw3D(deltaTime);
+    player4->draw3D(deltaTime);
     
     // Draw all enemies
     Actor::Enemy::drawAll(deltaTime);
@@ -188,10 +198,11 @@ void SceneLast64::draw2D(float deltaTime)
 {   
     // Draw player positions
     if (player1) {
-        T3DVec3 playerPos = player1->getPosition();
-        T3DVec3 playerPos2;
-        if (player2) {  playerPos2 = player2->getPosition();    }
-        Debug::printf(10, 10, "P1:%.0f/%.0f P2:%.0f/%.0f", playerPos.x, playerPos.y, playerPos2.x, playerPos2.y);
+        T3DVec3 playerPos1 = player1->getPosition();
+        T3DVec3 playerPos2 = player2->getPosition();
+        T3DVec3 playerPos3 = player3->getPosition();
+        T3DVec3 playerPos4 = player4->getPosition();
+        Debug::printf(10, 10, "P1:%.0f/%.0f P2:%.0f/%.0f P3:%.0f/%.0f P4:%.0f/%.0f", playerPos1.x, playerPos1.y, playerPos2.x, playerPos2.y, playerPos3.x, playerPos3.y, playerPos4.x, playerPos4.y);
     }
     
     // Draw enemy and projectile counts

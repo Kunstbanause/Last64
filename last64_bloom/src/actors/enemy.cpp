@@ -122,7 +122,7 @@ namespace Actor {
         initialized = true;
     }
 
-    Enemy* Enemy::spawn(const T3DVec3& position, float speed, Player* player1, Player* player2) {
+    Enemy* Enemy::spawn(const T3DVec3& position, float speed, Player* player1, Player* player2, Player* player3, Player* player4) {
         if (!initialized) {
             initializePool();
         }
@@ -143,10 +143,12 @@ namespace Actor {
                 enemy->health = enemy->maxHealth;
                 
                 // Randomly select a target player for this enemy
-                if (rand() % 2 == 0) {
-                    enemy->targetPlayer = player1;
-                } else {
-                    enemy->targetPlayer = player2;
+                int playerIdx = rand() % 4;
+                switch (playerIdx) {
+                    case 0: enemy->targetPlayer = player1; break;
+                    case 1: enemy->targetPlayer = player2; break;
+                    case 2: enemy->targetPlayer = player3; break;
+                    case 3: enemy->targetPlayer = player4; break;
                 }
                 
                 enemy->flags &= ~FLAG_DISABLED; // Enable the enemy
