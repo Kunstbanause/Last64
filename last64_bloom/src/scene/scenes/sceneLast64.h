@@ -16,6 +16,15 @@
 class SceneLast64 : public Scene                                                                                                                                                                                                                        
 {                                                                                                                                                                                                                                                       
   private:                                                                                                                                                                                                                                              
+    enum GameState {
+        WAITING_FOR_PLAYERS,
+        ROUND_ACTIVE
+    };
+
+    GameState currentGameState;
+    bool playerJoined[4];
+    float roundTimer;
+
     // Player instances                                                                                                                                                                                                                                
     Actor::Player* player1;                                                                                                                                                                                                                             
     Actor::Player* player2;

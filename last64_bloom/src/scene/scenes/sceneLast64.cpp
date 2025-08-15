@@ -30,6 +30,12 @@ namespace {
 
 SceneLast64::SceneLast64()
 {
+    currentGameState = WAITING_FOR_PLAYERS;
+    for (int i = 0; i < 4; ++i) {
+        playerJoined[i] = false;
+    }
+    roundTimer = 0.0f;
+
     // Set up camera - match SceneMain more closely
     camera.fov = T3D_DEG_TO_RAD(80.0f);
     camera.near = 5.0f;
@@ -41,21 +47,15 @@ SceneLast64::SceneLast64()
     sceneMatFP = (T3DMat4FP*)malloc_uncached(sizeof(T3DMat4FP));
     t3d_mat4fp_identity(sceneMatFP);
 
-    // Create player instances at different positions
-    // All actors exist in 3D space now, with Z=0 for the playing field
-    T3DVec3 startPos1 = {{140.0f, 100.0f, 0.0f}};  // Center of screen
-    T3DVec3 startPos2 = {{160.0f, 100.0f, 0.0f}};  // Slightly to the right
-    T3DVec3 startPos3 = {{120.0f, 100.0f, 0.0f}};  // Slightly to the left
-    T3DVec3 startPos4 = {{180.0f, 100.0f, 0.0f}};  // Further to the right
-    player1 = new Actor::Player(startPos1, JOYPAD_PORT_1);
-    player2 = new Actor::Player(startPos2, JOYPAD_PORT_2);
-    player3 = new Actor::Player(startPos3, JOYPAD_PORT_3);
-    player4 = new Actor::Player(startPos4, JOYPAD_PORT_4);
+    // Players are initialized to nullptr and created when they join
+    player1 = nullptr;
+    player2 = nullptr;
+    player3 = nullptr;
+    player4 = nullptr;
     
-    // Initialize systems
+    // Initialize systems (without players for now)
     Actor::Enemy::initialize();
     Actor::Projectile::initialize();
-    Experience::initialize(player1, player2, player3, player4);
 }
 
 SceneLast64::~SceneLast64()
@@ -81,77 +81,119 @@ void SceneLast64::updateScene(float deltaTime)
     camera.update(deltaTime);
     camera.attach();
     
-    // Update players (this will also update their weapons)
-    player1->update(deltaTime);
-    player2->update(deltaTime);
-    player3->update(deltaTime);
-    player4->update(deltaTime);
-    
-    // Update all enemies
-    Actor::Enemy::updateAll(deltaTime);
-    
-    // Update all projectiles
-    Actor::Projectile::updateAll(deltaTime);
+    switch (currentGameState) {
+        case WAITING_FOR_PLAYERS: {
+            // Check for player input to join
+            for (int i = 0; i < 4; ++i) {
+                if (!playerJoined[i]) {
+                    joypad_inputs_t inputs = joypad_get_inputs((joypad_port_t)(JOYPAD_PORT_1 + i));
+                    if (inputs.btn.a) {
+                        playerJoined[i] = true;
+                        // Create player instance
+                        T3DVec3 startPos;
+                        switch (i) {
+                            case 0: startPos = {{140.0f, 100.0f, 0.0f}}; player1 = new Actor::Player(startPos, JOYPAD_PORT_1); break;
+                            case 1: startPos = {{160.0f, 100.0f, 0.0f}}; player2 = new Actor::Player(startPos, JOYPAD_PORT_2); break;
+                            case 2: startPos = {{120.0f, 100.0f, 0.0f}}; player3 = new Actor::Player(startPos, JOYPAD_PORT_3); break;
+                            case 3: startPos = {{180.0f, 100.0f, 0.0f}}; player4 = new Actor::Player(startPos, JOYPAD_PORT_4); break;
+                        }
 
-    // --- Collision Detection ---
-    for (uint32_t i = 0; i < MAX_ENEMIES; ++i) {
-        Actor::Enemy* enemy = Actor::Enemy::getEnemy(i);
-        if (!enemy || !enemy->isActive()) continue;
-
-        for (uint32_t j = 0; j < MAX_PROJECTILES; ++j) {
-            Actor::Projectile* proj = Actor::Projectile::getProjectile(j);
-            if (!proj || !proj->isActive()) continue;
-
-            if (enemy->collidesWith(proj)) {
-                enemy->takeDamage(1);
-                proj->deactivate(); // Projectile disappears on hit
+                        // If this is the first player to join, start the round
+                        bool anyPlayerJoined = false;
+                        for (int j = 0; j < 4; ++j) {
+                            if (playerJoined[j]) {
+                                anyPlayerJoined = true;
+                                break;
+                            }
+                        }
+                        if (anyPlayerJoined && currentGameState == WAITING_FOR_PLAYERS) {
+                            currentGameState = ROUND_ACTIVE;
+                            // Initialize Experience system with all players now that at least one has joined
+                            Experience::initialize(player1, player2, player3, player4);
+                        }
+                    }
+                }
             }
+            break;
         }
-    }
-    
-    // Get player positions for enemy positioning
-    // T3DVec3 player1Pos = player1->getPosition();
-    // T3DVec3 player2Pos = player2->getPosition();
-    
-    // Spawn new enemies occasionally
-    static float enemySpawnTimer = 0.0f;
-    enemySpawnTimer += deltaTime;
-    if (enemySpawnTimer > 0.3f) { // Spawn an enemy every x seconds
-        enemySpawnTimer = 0.0f;
-        
-        // Spawn a new enemy at a random edge of the screen
-        float spawnX, spawnY;
-        int edge = rand() % 4; // 0=top, 1=right, 2=bottom, 3=left
-        
-        switch (edge) {
-            case 0: // Top
-                spawnX = SCREEN_LEFT + (rand() % (int)SCREEN_WIDTH);
-                spawnY = SCREEN_TOP;
-                break;
-            case 1: // Right
-                spawnX = SCREEN_RIGHT;
-                spawnY = SCREEN_TOP + (rand() % (int)SCREEN_HEIGHT);
-                break;
-            case 2: // Bottom
-                spawnX = SCREEN_LEFT + (rand() % (int)SCREEN_WIDTH);
-                spawnY = SCREEN_BOTTOM;
-                break;
-            case 3: // Left
-                spawnX = SCREEN_LEFT;
-                spawnY = SCREEN_TOP + (rand() % (int)SCREEN_HEIGHT);
-                break;
-            default:
-                spawnX = 0;
-                spawnY = 0;
-                break;
+
+        case ROUND_ACTIVE: {
+            roundTimer += deltaTime;
+
+            // Update players (this will also update their weapons)
+            if (player1) player1->update(deltaTime);
+            if (player2) player2->update(deltaTime);
+            if (player3) player3->update(deltaTime);
+            if (player4) player4->update(deltaTime);
+            
+            // Update all enemies
+            Actor::Enemy::updateAll(deltaTime);
+            
+            // Update all projectiles
+            Actor::Projectile::updateAll(deltaTime);
+
+            // --- Collision Detection ---
+            for (uint32_t i = 0; i < MAX_ENEMIES; ++i) {
+                Actor::Enemy* enemy = Actor::Enemy::getEnemy(i);
+                if (!enemy || !enemy->isActive()) continue;
+
+                for (uint32_t j = 0; j < MAX_PROJECTILES; ++j) {
+                    Actor::Projectile* proj = Actor::Projectile::getProjectile(j);
+                    if (!proj || !proj->isActive()) continue;
+
+                    if (enemy->collidesWith(proj)) {
+                        enemy->takeDamage(1);
+                        proj->deactivate(); // Projectile disappears on hit
+                    }
+                }
+            }
+            
+            // Get player positions for enemy positioning
+            // T3DVec3 player1Pos = player1->getPosition();
+            // T3DVec3 player2Pos = player2->getPosition();
+            
+            // Spawn new enemies occasionally
+            static float enemySpawnTimer = 0.0f;
+            enemySpawnTimer += deltaTime;
+            if (enemySpawnTimer > 0.3f) { // Spawn an enemy every x seconds
+                enemySpawnTimer = 0.0f;
+                
+                // Spawn a new enemy at a random edge of the screen
+                float spawnX, spawnY;
+                int edge = rand() % 4; // 0=top, 1=right, 2=bottom, 3=left
+                
+                switch (edge) {
+                    case 0: // Top
+                        spawnX = SCREEN_LEFT + (rand() % (int)SCREEN_WIDTH);
+                        spawnY = SCREEN_TOP;
+                        break;
+                    case 1: // Right
+                        spawnX = SCREEN_RIGHT;
+                        spawnY = SCREEN_TOP + (rand() % (int)SCREEN_HEIGHT);
+                        break;
+                    case 2: // Bottom
+                        spawnX = SCREEN_LEFT + (rand() % (int)SCREEN_WIDTH);
+                        spawnY = SCREEN_BOTTOM;
+                        break;
+                    case 3: // Left
+                        spawnX = SCREEN_LEFT;
+                        spawnY = SCREEN_TOP + (rand() % (int)SCREEN_HEIGHT);
+                        break;
+                    default:
+                        spawnX = 0;
+                        spawnY = 0;
+                        break;
+                }
+                
+                T3DVec3 pos = {{spawnX, spawnY, 0.0f}};
+                
+                // Spawn enemy with zero initial velocity (will be calculated by enemy itself)
+                // All actors exist in the same 3D space with Z=0 for the playing field
+                // Randomly select a target player for this enemy
+                Actor::Enemy::spawn(pos, 45.0f, player1, player2, player3, player4);
+            }
+            break;
         }
-        
-        T3DVec3 pos = {{spawnX, spawnY, 0.0f}};
-        
-        // Spawn enemy with zero initial velocity (will be calculated by enemy itself)
-        // All actors exist in the same 3D space with Z=0 for the playing field
-        // Randomly select a target player for this enemy
-        Actor::Enemy::spawn(pos, 45.0f, player1, player2, player3, player4);
     }
 }
 
@@ -179,10 +221,10 @@ void SceneLast64::draw3D(float deltaTime)
     t3d_state_set_drawflags((enum T3DDrawFlags)(T3D_FLAG_SHADED | T3D_FLAG_DEPTH));
 
     // Draw players using the Player class (this will also draw their weapons)
-    player1->draw3D(deltaTime);
-    player2->draw3D(deltaTime);
-    player3->draw3D(deltaTime);
-    player4->draw3D(deltaTime);
+    if (player1) player1->draw3D(deltaTime);
+    if (player2) player2->draw3D(deltaTime);
+    if (player3) player3->draw3D(deltaTime);
+    if (player4) player4->draw3D(deltaTime);
     
     // Draw all enemies
     Actor::Enemy::drawAll(deltaTime);
@@ -195,26 +237,37 @@ void SceneLast64::draw3D(float deltaTime)
 }
 
 void SceneLast64::draw2D(float deltaTime)
-{   
-    // Draw player positions
-    if (player1) {
-        T3DVec3 playerPos1 = player1->getPosition();
-        T3DVec3 playerPos2 = player2->getPosition();
-        T3DVec3 playerPos3 = player3->getPosition();
-        T3DVec3 playerPos4 = player4->getPosition();
-        Debug::printf(10, 10, "P1:%.0f/%.0f P2:%.0f/%.0f", playerPos1.x, playerPos1.y, playerPos2.x, playerPos2.y);
-        Debug::printf(10, 20, "P3:%.0f/%.0f P4:%.0f/%.0f", playerPos3.x, playerPos3.y, playerPos4.x, playerPos4.y);
-    }
-    
-    // Draw enemy and projectile counts
-    Debug::printf(230, 10, "E:%d P:%d", Actor::Enemy::getActiveCount(), Actor::Projectile::getActiveCount());
+{
+    switch (currentGameState) {
+        case WAITING_FOR_PLAYERS: {
+            // Display "Press A to join" for each player
+            for (int i = 0; i < 4; ++i) {
+                if (!playerJoined[i]) {
+                    Debug::printf(10, 10 + (i * 10), "P%d: Press A to join", i + 1);
+                }
+            }
+            break;
+        }
+        case ROUND_ACTIVE: {
+            // Draw player positions
+            if (player1) {
+                T3DVec3 playerPos1 = player1->getPosition();
+                T3DVec3 playerPos2 = player2->getPosition();
+                T3DVec3 playerPos3 = player3->getPosition();
+                T3DVec3 playerPos4 = player4->getPosition();
+                Debug::printf(10, 10, "P1:%.0f/%.0f P2:%.0f/%.0f P3:%.0f/%.0f P4:%.0f/%.0f", playerPos1.x, playerPos1.y, playerPos2.x, playerPos2.y, playerPos3.x, playerPos3.y, playerPos4.x, playerPos4.y);
+            }
+            
+            // Draw enemy and projectile counts
+            Debug::printf(230, 10, "E:%d P:%d", Actor::Enemy::getActiveCount(), Actor::Projectile::getActiveCount());
 
-    // Draw XP Bar
-    Experience::draw();
+            // Draw XP Bar
+            Experience::draw();
 
-    // Draw Player 1 stick position
-    if (player1) {
-        // joypad_inputs_t stick = joypad_get_inputs(JOYPAD_PORT_1);
-        // Debug::printf(10, 20, "Stick: %.0f/%.0f", stick.stick_x, stick.stick_y);
+            // Draw round timer
+            Debug::printf(10, 20, "Time: %.1f", roundTimer);
+
+            break;
+        }
     }
 }
