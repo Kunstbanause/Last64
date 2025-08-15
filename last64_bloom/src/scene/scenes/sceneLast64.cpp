@@ -117,7 +117,25 @@ void SceneLast64::updateScene(float deltaTime)
             break;
         }
 
-        case ROUND_ACTIVE: {
+                case ROUND_ACTIVE: {
+            // Check for player input to join (even during active round)
+            for (int i = 0; i < 4; ++i) {
+                if (!playerJoined[i]) {
+                    joypad_inputs_t inputs = joypad_get_inputs((joypad_port_t)(JOYPAD_PORT_1 + i));
+                    if (inputs.btn.a) {
+                        playerJoined[i] = true;
+                        // Create player instance
+                        T3DVec3 startPos;
+                        switch (i) {
+                            case 0: startPos = {{140.0f, 100.0f, 0.0f}}; player1 = new Actor::Player(startPos, JOYPAD_PORT_1); break;
+                            case 1: startPos = {{160.0f, 100.0f, 0.0f}}; player2 = new Actor::Player(startPos, JOYPAD_PORT_2); break;
+                            case 2: startPos = {{120.0f, 100.0f, 0.0f}}; player3 = new Actor::Player(startPos, JOYPAD_PORT_3); break;
+                            case 3: startPos = {{180.0f, 100.0f, 0.0f}}; player4 = new Actor::Player(startPos, JOYPAD_PORT_4); break;
+                        }
+                    }
+                }
+            }
+
             roundTimer += deltaTime;
 
             // Update players (this will also update their weapons)
@@ -250,12 +268,18 @@ void SceneLast64::draw2D(float deltaTime)
         }
         case ROUND_ACTIVE: {
             // Draw player positions
-            if (player1) {
-                T3DVec3 playerPos1 = player1->getPosition();
-                T3DVec3 playerPos2 = player2->getPosition();
-                T3DVec3 playerPos3 = player3->getPosition();
-                T3DVec3 playerPos4 = player4->getPosition();
-                Debug::printf(10, 10, "P1:%.0f/%.0f P2:%.0f/%.0f P3:%.0f/%.0f P4:%.0f/%.0f", playerPos1.x, playerPos1.y, playerPos2.x, playerPos2.y, playerPos3.x, playerPos3.y, playerPos4.x, playerPos4.y);
+            for (int i = 0; i < 4; ++i) {
+                Actor::Player* currentPlayer = nullptr;
+                switch (i) {
+                    case 0: currentPlayer = player1; break;
+                    case 1: currentPlayer = player2; break;
+                    case 2: currentPlayer = player3; break;
+                    case 3: currentPlayer = player4; break;
+                }
+                if (currentPlayer) {
+                    T3DVec3 playerPos = currentPlayer->getPosition();
+                    Debug::printf(10, 10 + (i * 10), "P%d:%.0f/%.0f", i + 1, playerPos.x, playerPos.y);
+                }
             }
             
             // Draw enemy and projectile counts
