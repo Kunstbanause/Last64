@@ -202,7 +202,8 @@ void SceneLast64::draw2D(float deltaTime)
         T3DVec3 playerPos2 = player2->getPosition();
         T3DVec3 playerPos3 = player3->getPosition();
         T3DVec3 playerPos4 = player4->getPosition();
-        Debug::printf(10, 10, "P1:%.0f/%.0f P2:%.0f/%.0f P3:%.0f/%.0f P4:%.0f/%.0f", playerPos1.x, playerPos1.y, playerPos2.x, playerPos2.y, playerPos3.x, playerPos3.y, playerPos4.x, playerPos4.y);
+        Debug::printf(10, 10, "P1:%.0f/%.0f P2:%.0f/%.0f", playerPos1.x, playerPos1.y, playerPos2.x, playerPos2.y);
+        Debug::printf(10, 20, "P3:%.0f/%.0f P4:%.0f/%.0f", playerPos3.x, playerPos3.y, playerPos4.x, playerPos4.y);
     }
     
     // Draw enemy and projectile counts
