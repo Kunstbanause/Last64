@@ -142,13 +142,20 @@ namespace Actor {
                 enemy->speed = speed;
                 enemy->health = enemy->maxHealth;
                 
-                // Randomly select a target player for this enemy
-                int playerIdx = rand() % 4;
-                switch (playerIdx) {
-                    case 0: enemy->targetPlayer = player1; break;
-                    case 1: enemy->targetPlayer = player2; break;
-                    case 2: enemy->targetPlayer = player3; break;
-                    case 3: enemy->targetPlayer = player4; break;
+                // Create a list of active players
+                Player* activePlayers[4];
+                int activeCount = 0;
+                if (player1) activePlayers[activeCount++] = player1;
+                if (player2) activePlayers[activeCount++] = player2;
+                if (player3) activePlayers[activeCount++] = player3;
+                if (player4) activePlayers[activeCount++] = player4;
+
+                // Randomly select a target player from active players
+                if (activeCount > 0) {
+                    enemy->targetPlayer = activePlayers[rand() % activeCount];
+                } else {
+                    // This case should ideally not happen if enemies only spawn when players are active
+                    enemy->targetPlayer = nullptr; 
                 }
                 
                 enemy->flags &= ~FLAG_DISABLED; // Enable the enemy
