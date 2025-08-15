@@ -5,7 +5,7 @@ namespace Experience {
     void initialize(Actor::Player* p1, Actor::Player* p2, Actor::Player* p3, Actor::Player* p4);
     void shutdown();
     void addXP(int amount);
-    void draw();
+    
     int getLevel();
     float getXPPercentage();
 };

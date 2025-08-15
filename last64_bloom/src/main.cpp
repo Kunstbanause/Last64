@@ -26,6 +26,7 @@
 #include "scene/scene.h"
 #include "scene/sceneManager.h"
 #include "scene/scenes/sceneMain.h"
+#include "systems/experience.h" // Added for Experience::getXPPercentage()
 
 State state{ //Constinit removed for compatibility with C++17
   .ppConf = {
@@ -170,6 +171,7 @@ int main()
       rdpq_tex_blit(&surfBlur, 0, 0, &param);
     }
 
+    rdpq_sync_pipe(); // Ensure all previous RDPQ commands are flushed
     Debug::printStart();
     if(showMenu) {
       DebugMenu::draw();
@@ -178,11 +180,29 @@ int main()
       Debug::printf(1, 1, "fps:%.0f", display_get_fps());
     }
 
-    state.activeScene->draw2D(deltaTime);
-
     #if RSPQ_PROFILE
       Debug::printf(20, 220, "%.2fms", lastUcodeTime / 1000.0f);
     #endif
+
+    state.activeScene->draw2D(deltaTime);
+
+    // Draw XP Bar
+    const int screenWidth = 320;
+    const int screenHeight = 240;
+    const int barHeight = 10;
+    float xpPercentage = Experience::getXPPercentage();
+    int barWidth = static_cast<int>(xpPercentage * screenWidth);
+
+    rdpq_set_scissor(0, 0, screenWidth, screenHeight);
+    rdpq_set_mode_standard();
+
+    // Draw the bar background
+    rdpq_set_fill_color(RGBA32(50, 50, 50, 255));
+    rdpq_fill_rectangle(0, screenHeight - barHeight, screenWidth, screenHeight);
+
+    // Draw the bar foreground
+    rdpq_set_fill_color(RGBA32(100, 200, 255, 255)); // Light blue color
+    rdpq_fill_rectangle(0, screenHeight - barHeight, barWidth, screenHeight);
 
     rdpq_detach_show();
 

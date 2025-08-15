@@ -286,7 +286,7 @@ void SceneLast64::draw2D(float deltaTime)
             Debug::printf(230, 10, "E:%d P:%d", Actor::Enemy::getActiveCount(), Actor::Projectile::getActiveCount());
 
             // Draw XP Bar
-            Experience::draw();
+            
 
             // Draw round timer
             int minutes = (int)roundTimer / 60;

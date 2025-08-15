@@ -56,26 +56,7 @@ void Experience::addXP(int amount) {
     }
 }
 
-void Experience::draw() {
-    Debug::printStart();
 
-    // Screen dimensions
-    const int screenWidth = 320;
-    const int screenHeight = 240;
-    const int barHeight = 10;
-
-    // Calculate bar width
-    float xpPercentage = (float)currentXP / (float)xpToNextLevel;
-    int barWidth = static_cast<int>(xpPercentage * screenWidth);
-
-    // Draw the bar background
-    rdpq_set_fill_color(RGBA32(50, 50, 50, 255));
-    rdpq_fill_rectangle(0, screenHeight - barHeight, screenWidth, screenHeight);
-
-    // Draw the bar foreground
-    rdpq_set_fill_color(RGBA32(100, 200, 255, 255)); // Light blue color
-    rdpq_fill_rectangle(0, screenHeight - barHeight, barWidth, screenHeight);
-}
 
 int Experience::getLevel() {
     return currentLevel;
