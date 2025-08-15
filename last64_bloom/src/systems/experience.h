@@ -2,9 +2,11 @@
 #include "../actors/player.h"
 
 namespace Experience {
-    void initialize(Actor::Player* p1, Actor::Player* p2, Actor::Player* p3, Actor::Player* p4);
+    void initialize();
     void shutdown();
     void addXP(int amount);
+    void addPlayer(Actor::Player* player);
+    void removePlayer(Actor::Player* player);
     
     int getLevel();
     float getXPPercentage();

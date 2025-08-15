@@ -6,7 +6,7 @@
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/last64_bloom/build/Last64_Bloom.elf",
-      "miDebuggerServerAddress": "localhost:9123",
+      "miDebuggerServerAddress": "127.0.0.1:9123",
       "miDebuggerPath": "/opt/libdragon/bin/mips64-elf-gdb",
       "cwd": "${workspaceFolder}/last64_bloom",
       "stopAtEntry": false,

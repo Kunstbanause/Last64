@@ -5,33 +5,52 @@
 #include "../render/debugDraw.h"
 
 namespace {
+    constexpr int MAX_PLAYERS = 4;
     int currentXP = 0;
     int xpToNextLevel = 10;
     int currentLevel = 1;
-    Actor::Player* player1 = nullptr;
-    Actor::Player* player2 = nullptr;
-    Actor::Player* player3 = nullptr;
-    Actor::Player* player4 = nullptr;
+    Actor::Player* activePlayers[MAX_PLAYERS];
+    int activePlayerCount = 0;
 
     // Exponential growth factor for XP required for next level
     const float xpGrowthFactor = 1.5f;
 }
 
-void Experience::initialize(Actor::Player* p1, Actor::Player* p2, Actor::Player* p3, Actor::Player* p4) {
+void Experience::initialize() {
     currentXP = 0;
     xpToNextLevel = 10;
     currentLevel = 1;
-    player1 = p1;
-    player2 = p2;
-    player3 = p3;
-    player4 = p4;
+    activePlayerCount = 0;
+    for (int i = 0; i < MAX_PLAYERS; ++i) {
+        activePlayers[i] = nullptr;
+    }
 }
 
 void Experience::shutdown() {
-    player1 = nullptr;
-    player2 = nullptr;
-    player3 = nullptr;
-    player4 = nullptr;
+    for (int i = 0; i < MAX_PLAYERS; ++i) {
+        activePlayers[i] = nullptr;
+    }
+    activePlayerCount = 0;
+}
+
+void Experience::addPlayer(Actor::Player* player) {
+    if (activePlayerCount < MAX_PLAYERS) {
+        activePlayers[activePlayerCount++] = player;
+    }
+}
+
+void Experience::removePlayer(Actor::Player* player) {
+    for (int i = 0; i < activePlayerCount; ++i) {
+        if (activePlayers[i] == player) {
+            // Shift elements to fill the gap
+            for (int j = i; j < activePlayerCount - 1; ++j) {
+                activePlayers[j] = activePlayers[j+1];
+            }
+            activePlayers[activePlayerCount-1] = nullptr; // Clear the last element
+            activePlayerCount--;
+            break;
+        }
+    }
 }
 
 void Experience::addXP(int amount) {
@@ -41,17 +60,10 @@ void Experience::addXP(int amount) {
         currentXP -= xpToNextLevel;
         xpToNextLevel = static_cast<int>(xpToNextLevel * xpGrowthFactor);
 
-        if (player1 && player1->getWeapon()) {
-            player1->getWeapon()->upgrade();
-        }
-        if (player2 && player2->getWeapon()) {
-            player2->getWeapon()->upgrade();
-        }
-        if (player3 && player3->getWeapon()) {
-            player3->getWeapon()->upgrade();
-        }
-        if (player4 && player4->getWeapon()) {
-            player4->getWeapon()->upgrade();
+        for (int i = 0; i < activePlayerCount; ++i) {
+            if (activePlayers[i] && activePlayers[i]->getWeapon()) {
+                activePlayers[i]->getWeapon()->upgrade();
+            }
         }
     }
 }
