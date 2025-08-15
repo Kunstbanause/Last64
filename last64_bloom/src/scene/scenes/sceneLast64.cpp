@@ -176,6 +176,20 @@ void SceneLast64::updateScene(float deltaTime)
             if (enemySpawnTimer > 0.3f) { // Spawn an enemy every x seconds
                 enemySpawnTimer = 0.0f;
                 
+                // Create a list of active players
+                Actor::Player* activePlayers[4];
+                int activePlayerCount = 0;
+                if (player1) activePlayers[activePlayerCount++] = player1;
+                if (player2) activePlayers[activePlayerCount++] = player2;
+                if (player3) activePlayers[activePlayerCount++] = player3;
+                if (player4) activePlayers[activePlayerCount++] = player4;
+
+                // Randomly select a target player from active players
+                Actor::Player* targetPlayer = nullptr;
+                if (activePlayerCount > 0) {
+                    targetPlayer = activePlayers[rand() % activePlayerCount];
+                }
+                
                 // Spawn a new enemy at a random edge of the screen
                 float spawnX, spawnY;
                 int edge = rand() % 4; // 0=top, 1=right, 2=bottom, 3=left
@@ -205,9 +219,8 @@ void SceneLast64::updateScene(float deltaTime)
                 
                 T3DVec3 pos = {{spawnX, spawnY, 0.0f}};
                 
-                // Spawn enemy
-                // Randomly select a target player for this enemy
-                Actor::Enemy::spawn(pos, 45.0f, player1, player2, player3, player4);
+                // Spawn enemy with the selected target player
+                Actor::Enemy::spawn(pos, 45.0f, targetPlayer);
             }
             break;
         }

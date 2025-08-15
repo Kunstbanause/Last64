@@ -122,7 +122,7 @@ namespace Actor {
         initialized = true;
     }
 
-    Enemy* Enemy::spawn(const T3DVec3& position, float speed, Player* player1, Player* player2, Player* player3, Player* player4) {
+    Enemy* Enemy::spawn(const T3DVec3& position, float speed, Player* targetPlayer) {
         if (!initialized) {
             initializePool();
         }
@@ -142,21 +142,8 @@ namespace Actor {
                 enemy->speed = speed;
                 enemy->health = enemy->maxHealth;
                 
-                // Create a list of active players
-                Player* activePlayers[4];
-                int activeCount = 0;
-                if (player1) activePlayers[activeCount++] = player1;
-                if (player2) activePlayers[activeCount++] = player2;
-                if (player3) activePlayers[activeCount++] = player3;
-                if (player4) activePlayers[activeCount++] = player4;
-
-                // Randomly select a target player from active players
-                if (activeCount > 0) {
-                    enemy->targetPlayer = activePlayers[rand() % activeCount];
-                } else {
-                    // This case should ideally not happen if enemies only spawn when players are active
-                    enemy->targetPlayer = nullptr; 
-                }
+                // Set the target player
+                enemy->targetPlayer = targetPlayer;
                 
                 enemy->flags &= ~FLAG_DISABLED; // Enable the enemy
                 

@@ -197,8 +197,8 @@ int main()
     rdpq_set_mode_standard();
 
     // Draw the bar background
-    rdpq_set_fill_color(RGBA32(50, 50, 50, 255));
-    rdpq_fill_rectangle(0, screenHeight - barHeight, screenWidth, screenHeight);
+    // rdpq_set_fill_color(RGBA32(50, 50, 50, 255));
+    // rdpq_fill_rectangle(0, screenHeight - barHeight, screenWidth, screenHeight);
 
     // Draw the bar foreground
     rdpq_set_fill_color(RGBA32(100, 200, 255, 255)); // Light blue color
