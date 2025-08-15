@@ -82,9 +82,9 @@ cd last64_bloom
 # Build the project
 make
 
-**IMPORTANT REMINDER: DO NOT BUILD THE PROJECT YOURSELF! The user builds it separately.**
-**DO NOT OFFER TO BUILD OR RUN MAKE COMMANDS!**
-
+**QWEN is acting from a distrobox and does not have the required build tools!**
+# Build the project from distrobox
+distrobox-host-exec make
 
 # The output ROM will be in last64_bloom/build/
 ```

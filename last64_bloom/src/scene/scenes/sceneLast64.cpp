@@ -205,8 +205,7 @@ void SceneLast64::updateScene(float deltaTime)
                 
                 T3DVec3 pos = {{spawnX, spawnY, 0.0f}};
                 
-                // Spawn enemy with zero initial velocity (will be calculated by enemy itself)
-                // All actors exist in the same 3D space with Z=0 for the playing field
+                // Spawn enemy
                 // Randomly select a target player for this enemy
                 Actor::Enemy::spawn(pos, 45.0f, player1, player2, player3, player4);
             }

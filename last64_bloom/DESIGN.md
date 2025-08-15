@@ -37,7 +37,6 @@ A minimalist reimagining of *Vampire Survivors* for the Nintendo 64 using `libdr
 - [x] Collision and damage system
 
 ### ✅ Phase 3: Progression
-- [ ] XP orb drops and collection
 - [ ] Level up system
 - [ ] Weapon types and upgrades
 
@@ -45,6 +44,9 @@ A minimalist reimagining of *Vampire Survivors* for the Nintendo 64 using `libdr
 - [ ] GUI (health, XP bars)
 - [ ] Visual effects and bloom
 - [x] Multiplayer support (4 players)
+
+## 🛠️ KNOWN ISSUES
+- All the geometry is black (not showing the configured color). Something with the custom code generated geometry or render pipeline is not correct.
 
 ## 📂 Project Structure (Suggested)
 n64-project/
