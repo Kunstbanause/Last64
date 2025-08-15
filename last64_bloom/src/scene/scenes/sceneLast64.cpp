@@ -117,7 +117,7 @@ void SceneLast64::updateScene(float deltaTime)
             break;
         }
 
-                case ROUND_ACTIVE: {
+        case ROUND_ACTIVE: {
             // Check for player input to join (even during active round)
             for (int i = 0; i < 4; ++i) {
                 if (!playerJoined[i]) {
@@ -296,9 +296,9 @@ void SceneLast64::draw2D(float deltaTime)
             
             // Draw enemy and projectile counts
             Debug::printf(230, 10, "E:%d P:%d", Actor::Enemy::getActiveCount(), Actor::Projectile::getActiveCount());
-
-            // Draw XP Bar
             
+            // Draw Level
+            Debug::printf(10, 230-10, "(L): %d", Experience::getLevel());
 
             // Draw round timer
             int minutes = (int)roundTimer / 60;
