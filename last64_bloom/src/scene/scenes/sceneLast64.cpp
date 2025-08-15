@@ -22,7 +22,7 @@ namespace {
   constexpr float SCREEN_HEIGHT = SCREEN_BOTTOM - SCREEN_TOP;
   
   // Ambient lighting
-  constexpr uint8_t colorAmbient[4] = {0xB0, 0xB0, 0xB0, 0xFF};
+  constexpr uint8_t colorAmbient[4] = {0xC0, 0xB0, 0xA0, 0xFF};
 
   // Static matrix for scene
   T3DMat4FP* sceneMatFP = nullptr;
