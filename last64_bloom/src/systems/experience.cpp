@@ -56,8 +56,6 @@ void Experience::addXP(int amount) {
     }
 }
 
-
-
 int Experience::getLevel() {
     return currentLevel;
 }

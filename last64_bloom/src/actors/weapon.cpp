@@ -8,7 +8,7 @@ namespace Actor {
     Weapon::Weapon() : Base() {
         player = nullptr;
         fireCooldown = 0.0f;
-        fireRate = 0.1f;              // 1 shots per second
+        fireRate = 0.0f;
         projectileSpeed = 100.0f;
         projectileSlowdown = 0.0f;
         upgradeLevel = 0;
