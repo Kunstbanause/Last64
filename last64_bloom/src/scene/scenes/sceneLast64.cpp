@@ -60,11 +60,11 @@ SceneLast64::SceneLast64()
 
 SceneLast64::~SceneLast64()
 {
-    delete player1; // Clean up player1 instance
-    delete player2; // Clean up player2 instance
+    delete player1;
+    delete player2;
     delete player3;
     delete player4;
-    Actor::Enemy::cleanup(); // Clean up enemy pool
+    Actor::Enemy::cleanup();
     Actor::Projectile::cleanup();
     Experience::shutdown();
     
@@ -232,23 +232,17 @@ void SceneLast64::draw3D(float deltaTime)
     // Attach camera
     camera.attach();
     
-    // Clear screen with a dark grey color (similar to original but darker)
     t3d_screen_clear_color(RGBA32(32, 32, 32, 0xFF)); // Dark grey background
-    // Clear depth buffer
     t3d_screen_clear_depth();
-    
-    // Set up environment color for bloom effect
-    rdpq_set_env_color({0xFF, 0xAA, 0xEE, 0xAA});
+    rdpq_set_env_color({0xFF, 0xAA, 0xEE, 0xAA}); //slightly see-through soft magenta
 
-    // Set up lighting to match SceneMain
     t3d_light_set_ambient(colorAmbient);
     t3d_light_set_count(0); // No directional lights, just ambient
 
-    // Push scene matrix
     t3d_matrix_push(sceneMatFP);
 
     // Set up rendering state
-    t3d_state_set_drawflags((enum T3DDrawFlags)(T3D_FLAG_SHADED | T3D_FLAG_DEPTH));
+    //t3d_state_set_drawflags((enum T3DDrawFlags)(T3D_FLAG_SHADED | T3D_FLAG_DEPTH));
 
     // Draw players using the Player class (this will also draw their weapons)
     if (player1) player1->draw3D(deltaTime);
