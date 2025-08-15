@@ -10,7 +10,7 @@ PROJECT_NAME=Last64_Bloom
 
 src = $(wildcard src/*.cpp) $(wildcard src/render/*.cpp) $(wildcard src/rsp/*.cpp)
 src += $(wildcard src/scene/*.cpp) $(wildcard src/camera/*.cpp) $(wildcard src/actors/*.cpp)
-src += $(wildcard src/memory/*.cpp) $(wildcard src/scene/scenes/*.cpp)
+src += $(wildcard src/memory/*.cpp) $(wildcard src/scene/scenes/*.cpp) $(wildcard src/systems/*.cpp)
 
 assets_png = $(wildcard assets/*.png) $(wildcard assets/env/*.png) $(wildcard assets/space/*.png)
 assets_png += $(wildcard assets/magic/*.png) $(wildcard assets/skyAnim/*.png) $(wildcard assets/mariotest/*.png)

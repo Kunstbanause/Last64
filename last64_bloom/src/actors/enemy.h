@@ -21,10 +21,13 @@ namespace Actor {
 
         T3DVec3 position;
         float speed;
+        int health;
+        int maxHealth;
         uint32_t poolIndex;
         Player* targetPlayer; // Individual target player for this enemy
 
         static void initializePool();
+        void die();
 
     public:
         Enemy();
@@ -36,9 +39,7 @@ namespace Actor {
         static void updateAll(float deltaTime);
         static void drawAll(float deltaTime);
         static uint32_t getActiveCount() { return activeCount; }
-        
-        // Method to set the global target player (kept for compatibility)
-        // static void setTargetPlayer(Player* player) { globalTargetPlayer = player; }
+        static Enemy* getEnemy(uint32_t index) { return &enemyPool[index]; }
 
         void update(float deltaTime) override;
         void draw3D(float deltaTime) override;
@@ -47,10 +48,10 @@ namespace Actor {
         void deactivate();
         bool isActive() const;
 
-        T3DVec3 getPosition() const { return position; }
-        void setPosition(const T3DVec3& newPos) { position = newPos; }
-        
-        // Method to set individual target player for this enemy
-        void setIndividualTargetPlayer(Player* player) { targetPlayer = player; }
+        void takeDamage(int amount);
+        bool collidesWith(Base* other);
+
+        T3DVec3 getPosition() const override { return position; }
+        float getRadius() const override { return 3.0f; } // Enemies are 3x3 quads
     };
 }

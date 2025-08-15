@@ -4,6 +4,7 @@
 */
 #pragma once
 #include <libdragon.h>
+#include <t3d/t3d.h>
 
 // Forward declarations
 namespace Actor
@@ -22,10 +23,10 @@ namespace Actor
     private:
 
     protected:
-      fm_vec3_t pos{};
+      T3DVec3 pos{};
 
-      bool checkFrustumAABB(const fm_vec3_t &aabbMin, const fm_vec3_t &aabbMax) const;
-      bool checkFrustumSphere(const fm_vec3_t &center, float radius) const;
+      bool checkFrustumAABB(const T3DVec3 &aabbMin, const T3DVec3 &aabbMax) const;
+      bool checkFrustumSphere(const T3DVec3 &center, float radius) const;
 
     public:
       constexpr static uint32_t FLAG_DISABLED = (1 << 0);
@@ -37,5 +38,8 @@ namespace Actor
 
       virtual void draw3D(float deltaTime) {}
       virtual void drawPTX(float deltaTime) {}
+
+      virtual T3DVec3 getPosition() const { return {0,0,0}; }
+      virtual float getRadius() const { return 0.0f; }
   };
 }

@@ -40,6 +40,7 @@ namespace Actor {
         static void updateAll(float deltaTime);
         static void drawAll(float deltaTime);
         static uint32_t getActiveCount() { return activeCount; }
+        static Projectile* getProjectile(uint32_t index) { return &projectilePool[index]; }
 
         // Overrides from Base
         void update(float deltaTime) override;
@@ -48,5 +49,8 @@ namespace Actor {
 
         void deactivate();
         bool isActive() const;
+
+        T3DVec3 getPosition() const override { return position; }
+        float getRadius() const override { return 2.0f; } // Projectiles are 2x2 quads
     };
 }

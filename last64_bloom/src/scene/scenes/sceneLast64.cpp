@@ -6,6 +6,7 @@
 #include "../../main.h"
 #include "../../debugMenu.h"
 #include "../../render/debugDraw.h"
+#include "../../systems/experience.h"
 #include <t3d/t3d.h>
 #include <t3d/tpx.h>
 #include <t3d/t3dmath.h>
@@ -47,17 +48,10 @@ SceneLast64::SceneLast64()
     player1 = new Actor::Player(startPos1, JOYPAD_PORT_1);
     player2 = new Actor::Player(startPos2, JOYPAD_PORT_2);
     
-    // Set target player for enemies
-    // Calculate a random player
-    // if (rand() % 2 == 0) {
-    //     Actor::Enemy::setTargetPlayer(player1);
-    // } else {
-    //     Actor::Enemy::setTargetPlayer(player2);
-    // }
-    
-    // Initialize enemy pool
+    // Initialize systems
     Actor::Enemy::initialize();
     Actor::Projectile::initialize();
+    Experience::initialize(player1, player2);
 }
 
 SceneLast64::~SceneLast64()
@@ -66,6 +60,7 @@ SceneLast64::~SceneLast64()
     delete player2; // Clean up player2 instance
     Actor::Enemy::cleanup(); // Clean up enemy pool
     Actor::Projectile::cleanup();
+    Experience::shutdown();
     
     // Clean up scene matrix
     if (sceneMatFP) {
@@ -89,6 +84,22 @@ void SceneLast64::updateScene(float deltaTime)
     
     // Update all projectiles
     Actor::Projectile::updateAll(deltaTime);
+
+    // --- Collision Detection ---
+    for (uint32_t i = 0; i < MAX_ENEMIES; ++i) {
+        Actor::Enemy* enemy = Actor::Enemy::getEnemy(i);
+        if (!enemy || !enemy->isActive()) continue;
+
+        for (uint32_t j = 0; j < MAX_PROJECTILES; ++j) {
+            Actor::Projectile* proj = Actor::Projectile::getProjectile(j);
+            if (!proj || !proj->isActive()) continue;
+
+            if (enemy->collidesWith(proj)) {
+                enemy->takeDamage(1);
+                proj->deactivate(); // Projectile disappears on hit
+            }
+        }
+    }
     
     // Get player positions for enemy positioning
     T3DVec3 player1Pos = player1->getPosition();
@@ -185,6 +196,9 @@ void SceneLast64::draw2D(float deltaTime)
     
     // Draw enemy and projectile counts
     Debug::printf(230, 10, "E:%d P:%d", Actor::Enemy::getActiveCount(), Actor::Projectile::getActiveCount());
+
+    // Draw XP Bar
+    Experience::draw();
 
     // Draw Player 1 stick position
     if (player1) {

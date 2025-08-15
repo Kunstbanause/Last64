@@ -16,7 +16,7 @@ namespace Actor {
         Projectile::initialize();
         
         // Set weapon-specific properties
-        fireRate = 0.3f;              // Reduced to ~3 shots per second
+        fireRate = 0.9f;
         projectileSpeed = 200.0f;
         projectileSlowdown = 0.0f;    // No slowdown
         maxUpgradeLevel = 5;

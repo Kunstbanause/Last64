@@ -33,8 +33,8 @@ A minimalist reimagining of *Vampire Survivors* for the Nintendo 64 using `libdr
 
 ### ✅ Phase 2: Combat System
 - [x] Auto-fire projectiles
-- [ ] Enemy spawning and AI
-- [ ] Collision and damage system
+- [x] Enemy spawning and AI
+- [x] Collision and damage system
 
 ### ✅ Phase 3: Progression
 - [ ] XP orb drops and collection

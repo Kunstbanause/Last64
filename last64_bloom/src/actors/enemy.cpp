@@ -4,6 +4,7 @@
 */
 #include "enemy.h"
 #include "player.h"
+#include "../systems/experience.h"
 #include <t3d/t3d.h>
 #include <t3d/tpx.h>
 #include <libdragon.h>
@@ -32,6 +33,8 @@ namespace Actor {
         poolIndex = MAX_ENEMIES; // Invalid index until spawned
         position = {0, 0, 0};
         speed = 0.0f;
+        health = 1;
+        maxHealth = 1;
         targetPlayer = nullptr; // Initialize individual target player
         flags |= FLAG_DISABLED; // Start as disabled
     }
@@ -137,6 +140,7 @@ namespace Actor {
                 enemy->poolIndex = i;
                 enemy->position = position;
                 enemy->speed = speed;
+                enemy->health = enemy->maxHealth;
                 
                 // Randomly select a target player for this enemy
                 if (rand() % 2 == 0) {
@@ -256,5 +260,33 @@ namespace Actor {
             return activeFlags[poolIndex] && !(flags & FLAG_DISABLED);
         }
         return false;
+    }
+
+    void Enemy::takeDamage(int amount) {
+        health -= amount;
+        if (health <= 0) {
+            die();
+        }
+    }
+
+    void Enemy::die() {
+        Experience::addXP(1);
+        deactivate();
+    }
+
+    bool Enemy::collidesWith(Base* other) {
+        if (!other || (other->flags & FLAG_DISABLED) || (flags & FLAG_DISABLED)) {
+            return false;
+        }
+
+        T3DVec3 otherPos = other->getPosition();
+        float otherRadius = other->getRadius();
+
+        float dx = position.x - otherPos.x;
+        float dy = position.y - otherPos.y;
+        float distanceSq = dx * dx + dy * dy;
+        float radii = getRadius() + otherRadius;
+
+        return distanceSq < (radii * radii);
     }
 }

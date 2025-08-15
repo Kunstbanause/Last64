@@ -30,4 +30,11 @@ namespace Actor {
         // Default implementation does nothing
         // This should be overridden by subclasses
     }
+
+    void Weapon::upgrade() {
+        if (upgradeLevel < maxUpgradeLevel) {
+            upgradeLevel++;
+            fireRate *= 0.5f; // 50% increase in fire rate (halves the cooldown)
+        }
+    }
 }

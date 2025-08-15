@@ -35,7 +35,7 @@ namespace Actor {
         
         virtual void fire(const T3DVec3& position, const T3DVec3& direction);
         virtual void fireManual();
-        virtual void upgrade() { if (upgradeLevel < maxUpgradeLevel) upgradeLevel++; }
+        virtual void upgrade();
         
         // Getters and setters
         void setPlayer(Player* p) { player = p; }
