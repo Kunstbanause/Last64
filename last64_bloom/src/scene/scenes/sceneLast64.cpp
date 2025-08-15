@@ -289,7 +289,13 @@ void SceneLast64::draw2D(float deltaTime)
             Experience::draw();
 
             // Draw round timer
-            Debug::printf(10, 20, "Time: %.1f", roundTimer);
+            int minutes = (int)roundTimer / 60;
+            int seconds = (int)roundTimer % 60;
+            if (minutes > 0) {
+                Debug::printf(150, 10, "%02d:%02d", minutes, seconds);
+            } else {
+                Debug::printf(150, 10, "%02d", seconds);
+            }
 
             break;
         }
