@@ -7,6 +7,7 @@
 #include "../../render/debugDraw.h"
 #include "../../actors/pointGlobe.h"
 #include "../../actors/player.h"
+#include "../../audio.h"
 #include <string_view>
 #include <typeinfo>
 
@@ -90,6 +91,7 @@ SceneMain::SceneMain()
   actors.push_back(new Actor::PointGlobe({0, 20, -560}, {.scale = 0.8f}));
   Actor::Player::initializePlayer(); // Initialize player static resources
   actors.push_back(new Actor::Player({0, 50, 30}, JOYPAD_PORT_1)); // Position player in front of camera
+  audio_play_sfx(SFX_START);
 }
 
 SceneMain::~SceneMain()
@@ -112,7 +114,7 @@ void SceneMain::updateScene(float deltaTime)
   auto frustum = camera.getFrustum();
   t3d_frustum_scale(&frustum, modelScale);
 
-  const T3DBvh *bvh = t3d_model_bvh_get(mapModel); // BVHs are optional, use '--bvh' in the gltf importer (see Makefile)
+  const T3DBvh *bvh = t3d_model_bvh_get(mapModel); // BVHs are optional, use '--bvh' in the gltf importer (see Makefile) 
   assert(bvh != nullptr);
   t3d_model_bvh_query_frustum(bvh, &frustum);
 }

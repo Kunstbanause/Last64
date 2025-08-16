@@ -28,6 +28,7 @@
 #include "scene/sceneManager.h"
 #include "scene/scenes/sceneMain.h"
 #include "systems/experience.h" // Added for Experience::getXPPercentage()
+#include "audio.h"
 
 State state{ //Constinit removed for compatibility with C++17
   .ppConf = {
@@ -77,14 +78,7 @@ int main()
   Debug::init();
 
   joypad_init();
-  
-  // Play a test sound
-  // a .wav file must be present in `assets/sfx`
-  // for this to work
-  static wav64_t wav;
-  wav64_open(&wav, "rom:/sfx/test.wav64");
-  mixer_ch_set_vol(0, 1.0f, 1.0f);
-  mixer_ch_play(0, &wav.wave);
+  audio_init_sounds();
 
   t3d_init((T3DInitParams){});
   tpx_init((TPXInitParams){});

@@ -3,6 +3,7 @@
 #include <cmath>
 #include <rdpq.h>
 #include "../render/debugDraw.h"
+#include "../audio.h"
 
 namespace {
     constexpr int MAX_PLAYERS = 4;
@@ -59,6 +60,7 @@ void Experience::addXP(int amount) {
         currentLevel++;
         currentXP -= xpToNextLevel;
         xpToNextLevel = static_cast<int>(xpToNextLevel * xpGrowthFactor);
+        audio_play_sfx(SFX_LEVEL_UP);
 
         for (int i = 0; i < activePlayerCount; ++i) {
             if (activePlayers[i] && activePlayers[i]->getWeapon()) {
