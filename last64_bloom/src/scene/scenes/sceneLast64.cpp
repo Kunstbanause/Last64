@@ -40,7 +40,7 @@ SceneLast64::SceneLast64()
     roundTimer = 0.0f;
     exposure = 30.0f; // Set exposure for HDR effect (matching the HDR example)
 
-    // Set up camera - match SceneMain more closely
+    // Set up camera - match SceneBunker more closely
     camera.fov = T3D_DEG_TO_RAD(80.0f);
     camera.near = 5.0f;
     camera.far = 295.0f;
@@ -178,16 +178,12 @@ void SceneLast64::updateScene(float deltaTime)
 
                     if (enemy->collidesWith(proj)) {
                         enemy->takeDamage(4/activePlayerCount); // Player scaled damage
-                        proj->deactivate(); // Projectile disappears on hit#
+                        proj->deactivate(); // Projectile disappears on hit
                         // Play hit sound effect
                         gSFXManager.play(SFXManager::SFX_HIT);
                     }
                 }
             }
-            
-            // Get player positions for enemy positioning
-            // T3DVec3 player1Pos = player1->getPosition();
-            // T3DVec3 player2Pos = player2->getPosition();
             
             // Spawn new enemies occasionally
             static float enemySpawnTimer = 0.0f;
@@ -245,7 +241,6 @@ void SceneLast64::updateScene(float deltaTime)
 
 void SceneLast64::draw3D(float deltaTime)
 {
-    // Attach camera
     camera.attach();
     
     t3d_screen_clear_color(RGBA32(32, 32, 32, 0xFF)); // Dark grey background

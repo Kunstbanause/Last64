@@ -8,7 +8,7 @@
 #include "../memory/matrixManager.h"
 #include "../debugMenu.h"
 
-#include "scenes/sceneMain.h"
+#include "scenes/sceneBunker.h"
 #include "scenes/sceneMagic.h"
 #include "scenes/sceneEnv.h"
 #include "scenes/scenePixel.h"
@@ -47,7 +47,7 @@ void SceneManager::update()
 
     switch(requestSceneId) {
       case 0: state.activeScene = new SceneLast64(); break; // Make SceneLast64 index 0
-      case 1: state.activeScene = new SceneMain(); break;
+      case 1: state.activeScene = new SceneBunker(); break;
       case 2: state.activeScene = new SceneEnv(); break;
       case 3: state.activeScene = new SceneMagic(); break;
       case 4: state.activeScene = new ScenePixel(); break;

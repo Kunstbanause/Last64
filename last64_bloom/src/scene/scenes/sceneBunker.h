@@ -10,7 +10,7 @@
 #include <t3d/t3d.h>
 #include <t3d/t3dmodel.h>
 
-class SceneMain : public Scene
+class SceneBunker : public Scene
 {
   private:
     T3DModel *mapModel{};
@@ -28,6 +28,6 @@ class SceneMain : public Scene
     
     void draw2D(float deltaTime) final;
 
-    SceneMain();
-    ~SceneMain();
+    SceneBunker();
+    ~SceneBunker();
 };

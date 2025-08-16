@@ -26,7 +26,7 @@
 
 #include "scene/scene.h"
 #include "scene/sceneManager.h"
-#include "scene/scenes/sceneMain.h"
+#include "scene/scenes/sceneBunker.h"
 #include "systems/experience.h"
 #include "audio.h"
 
@@ -112,10 +112,10 @@ int main()
     
     // Toggle between static and fly camera
     if(pressed.r && state.activeScene) {
-      SceneMain* sceneMain = dynamic_cast<SceneMain*>(state.activeScene);
-      if(sceneMain) {
-        sceneMain->useFlyCam = !sceneMain->useFlyCam;
-        //debugf("Camera mode: %s\n", sceneMain->useFlyCam ? "Fly" : "Static");
+      SceneBunker* sceneBunker = dynamic_cast<SceneBunker*>(state.activeScene);
+      if(sceneBunker) {
+        sceneBunker->useFlyCam = !sceneBunker->useFlyCam;
+        //debugf("Camera mode: %s\n", sceneBunker->useFlyCam ? "Fly" : "Static");
       }
     }
 

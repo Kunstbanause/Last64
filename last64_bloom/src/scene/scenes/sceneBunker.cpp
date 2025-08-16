@@ -2,7 +2,7 @@
 * @copyright 2025 - Max Bebök
 * @license MIT
 */
-#include "sceneMain.h"
+#include "sceneBunker.h"
 #include "../../main.h"
 #include "../../render/debugDraw.h"
 #include "../../actors/pointGlobe.h"
@@ -33,7 +33,7 @@ namespace {
   uint32_t triCount{0};
 }
 
-SceneMain::SceneMain()
+SceneBunker::SceneBunker()
 {
   state.ppConf.hdrFactor = 1.7f;
   state.ppConf.blurBrightness = 1.05f;
@@ -94,7 +94,7 @@ SceneMain::SceneMain()
   gSFXManager.play(SFXManager::SFX_START);
 }
 
-SceneMain::~SceneMain()
+SceneBunker::~SceneBunker()
 {
   t3d_model_free(mapModel);
   free_uncached(mapMatFP);
@@ -103,7 +103,7 @@ SceneMain::~SceneMain()
   Actor::Player::cleanupPlayer();
 }
 
-void SceneMain::updateScene(float deltaTime)
+void SceneBunker::updateScene(float deltaTime)
 {
   if (useFlyCam) {
     flyCam.update(deltaTime);
@@ -119,7 +119,7 @@ void SceneMain::updateScene(float deltaTime)
   t3d_model_bvh_query_frustum(bvh, &frustum);
 }
 
-void SceneMain::draw3D(float deltaTime)
+void SceneBunker::draw3D(float deltaTime)
 {
   t3d_screen_clear_color({0,0,0,0xFF});
   t3d_screen_clear_depth();
@@ -175,7 +175,7 @@ void SceneMain::draw3D(float deltaTime)
   t3d_matrix_pop(1);
 }
 
-void SceneMain::draw2D(float deltaTime)
+void SceneBunker::draw2D(float deltaTime)
 {
   // Draw player position if player exists
   Actor::Player* player = nullptr;
