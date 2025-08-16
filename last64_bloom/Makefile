@@ -3,6 +3,7 @@ T3D_INST=$(shell realpath ..)
 
 include $(N64_INST)/include/n64.mk
 include $(T3D_INST)/t3d.mk
+N64_WAV2VADPCM ?= audioconv64
 
  N64_CXXFLAGS += -std=gnu++20 -Os -fno-exceptions
 
@@ -18,14 +19,21 @@ assets_png += $(wildcard assets/magic/*.png) $(wildcard assets/skyAnim/*.png) $(
 assets_gltf = $(wildcard assets/*.glb) $(wildcard assets/space/*.glb) $(wildcard assets/skyAnim/*.glb)
 assets_gltf += $(wildcard assets/mariotest/*.glb)
 assets_ttf = $(wildcard assets/*.ttf)
+assets_sfx = $(wildcard assets/sfx/*.wav)
 
 assets_conv = $(patsubst assets/%,filesystem/%,$(assets_png:%.png=%.sprite)) \
-			  $(addprefix filesystem/,$(notdir $(assets_ttf:%.ttf=%.font64))) \
-			  $(patsubst assets/%,filesystem/%,$(assets_gltf:%.glb=%.t3dm))
+		  $(addprefix filesystem/,$(notdir $(assets_ttf:%.ttf=%.font64))) \
+		  $(patsubst assets/%,filesystem/%,$(assets_gltf:%.glb=%.t3dm)) \
+		  $(patsubst assets/sfx/%,filesystem/sfx/%,$(assets_sfx:%.wav=%.wav64))
 
 all: $(PROJECT_NAME).z64
 
 filesystem/scene.t3dm: T3DM_FLAGS += --bvh --base-scale=32
+
+filesystem/sfx/%.wav64: assets/sfx/%.wav
+	@mkdir -p $(dir $@)
+	@echo "    [WAV] $@"
+	cd $(dir $@) && $(N64_WAV2VADPCM) $(shell realpath $<) -o $(notdir $@)
 
 filesystem/%.sprite: assets/%.png
 	@mkdir -p $(dir $@)
@@ -42,6 +50,7 @@ filesystem/%.t3dm: assets/%.glb
 	@echo "    [T3D-MODEL] $@"
 	$(T3D_GLTF_TO_3D) "$<" $@ $(T3DM_FLAGS)
 	$(N64_BINDIR)/mkasset -c 1 -o $(dir $@) $@
+
 
 $(BUILD_DIR)/$(PROJECT_NAME).dfs: $(assets_conv)
 $(BUILD_DIR)/$(PROJECT_NAME).elf: $(src:%.cpp=$(BUILD_DIR)/%.o) $(BUILD_DIR)/src/rsp/rsp_fx.o

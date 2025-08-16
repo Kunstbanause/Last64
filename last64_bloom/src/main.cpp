@@ -13,6 +13,7 @@
 #include <libdragon.h>
 #include <rspq_constants.h>
 #include <rspq_profile.h>
+#include <mixer.h>
 
 #include <t3d/t3d.h>
 #include <t3d/tpx.h>
@@ -60,6 +61,9 @@ int main()
 	debug_init_usblog();
 
   dfs_init(DFS_DEFAULT_LOCATION);
+  audio_init(44100, 4);
+  mixer_init(16);
+
   display_init(RESOLUTION_320x240, DEPTH_16_BPP, BUFF_COUNT, GAMMA_NONE, FILTERS_RESAMPLE);
 
   rdpq_init();
@@ -73,6 +77,16 @@ int main()
   Debug::init();
 
   joypad_init();
+  
+  // Play a test sound
+  // a .wav file must be present in `assets/sfx`
+  // for this to work
+  wav64_t wav;
+  wav64_open(&wav, "rom:/sfx/test.wav64");
+  mixer_ch_set_vol(0, 1.0f, 1.0f);
+  mixer_ch_play(0, &wav.wave);
+  wav64_close(&wav);
+
   t3d_init((T3DInitParams){});
   tpx_init((TPXInitParams){});
 
@@ -222,3 +236,4 @@ int main()
     frameIdx = (frameIdx+1) % BUFF_COUNT;
   }
 }
+
