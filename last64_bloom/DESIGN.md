@@ -39,6 +39,7 @@ A minimalist reimagining of *Vampire Survivors* for the Nintendo 64 using `libdr
 ### ✅ Phase 3: Progression
 - [ ] Level up system
 - [ ] Weapon types and upgrades
+- [x] Audio test
 
 ### ✅ Phase 4: Polish & Features
 - [x] GUI: XP bar, level, press start

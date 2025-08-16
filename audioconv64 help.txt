@@ -1,0 +1,34 @@
+audioconv64
+audioconv64 -- Audio conversion tool for libdragon
+
+Usage:
+   audioconv64 [flags] <file-or-dir> [[flags] <file-or-dir>..]
+
+Supported conversions:
+   * WAV/MP3 => WAV64 (Waveforms)
+   * XM  => XM64  (MilkyTracker, OpenMPT)
+   * YM  => YM64  (Arkos Tracker II)
+
+Global options:
+   -o / --output <dir>          Specify output directory
+   -v / --verbose               Verbose mode
+   -d / --debug                 Dump uncompressed files in output directory for debugging
+   -h / --help                  Show this help message
+        --help-compress         Show detailed help for compression options
+
+WAV/MP3 options:
+   --wav-mono                   Force mono output
+   --wav-resample <N>           Resample to a different sample rate
+   --wav-compress <0|1|3>       Enable compression: 0=none, 1=vadpcm (default), 3=opus
+   --wav-loop <true|false>      Activate playback loop by default
+   --wav-loop-offset <N>        Set looping offset (in samples; default: 0)
+   --wav-seek-offset <N>[,<N>]  Add additional seeking offsets (in samples; can specify multiple times)
+
+XM options:
+   --xm-8bit                    Convert all samples to 8-bit
+   --xm-ext-samples <dir>       Export samples externally as wav64 files in the specified directory
+   --xm-compress <0|1>          Compression level for XM samples (default: 1=vadpcm)
+   --xm-compress-data <0..3>    Compression level for XM binary data (default: 1)
+
+YM options:
+   --ym-compress <true|false>   Compress output file

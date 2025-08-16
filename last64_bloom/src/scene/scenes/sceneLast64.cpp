@@ -12,6 +12,7 @@
 #include <t3d/t3dmath.h>
 #include <libdragon.h>
 #include <vector>
+#include "../../audio.h"
 
 namespace {
   // Screen boundaries
@@ -101,6 +102,7 @@ void SceneLast64::updateScene(float deltaTime)
                             case 3: startPos = {{180.0f, 100.0f, 0.0f}}; player4 = new Actor::Player(startPos, JOYPAD_PORT_4); break;
                         }
                         activePlayerCount++;
+                        audio_play_sfx(SFX_START);
 
                         // If this is the first player to join, start the round
                         bool anyPlayerJoined = false;
@@ -143,6 +145,7 @@ void SceneLast64::updateScene(float deltaTime)
                             case 3: startPos = {{180.0f, 100.0f, 0.0f}}; player4 = new Actor::Player(startPos, JOYPAD_PORT_4); newPlayer = player4; break;
                         }
                         activePlayerCount++;
+                        audio_play_sfx(SFX_JOIN);
                         if (newPlayer) {
                             Experience::addPlayer(newPlayer);
                         }
@@ -175,7 +178,9 @@ void SceneLast64::updateScene(float deltaTime)
 
                     if (enemy->collidesWith(proj)) {
                         enemy->takeDamage(4/activePlayerCount); // Player scaled damage
-                        proj->deactivate(); // Projectile disappears on hit
+                        proj->deactivate(); // Projectile disappears on hit#
+                        // Play hit sound effect
+                        audio_play_sfx(SFX_HIT);
                     }
                 }
             }

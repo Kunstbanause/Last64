@@ -2,6 +2,7 @@
     "files.associations": {
         "t3dmodel.h": "c",
         "array": "cpp",
-        "new": "cpp"
+        "new": "cpp",
+        "vector": "cpp"
     }
 }

@@ -30,10 +30,11 @@ all: $(PROJECT_NAME).z64
 
 filesystem/scene.t3dm: T3DM_FLAGS += --bvh --base-scale=32
 
+# Currently focring mono
 filesystem/sfx/%.wav64: assets/sfx/%.wav
 	@mkdir -p $(dir $@)
 	@echo "    [WAV] $@"
-	cd $(dir $@) && $(N64_WAV2VADPCM) $(shell realpath $<) -o $(notdir $@)
+	cd $(dir $@) && $(N64_WAV2VADPCM) --wav-mono $(shell realpath $<) -o $(notdir $@)
 
 filesystem/%.sprite: assets/%.png
 	@mkdir -p $(dir $@)

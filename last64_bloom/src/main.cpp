@@ -27,7 +27,7 @@
 #include "scene/scene.h"
 #include "scene/sceneManager.h"
 #include "scene/scenes/sceneMain.h"
-#include "systems/experience.h" // Added for Experience::getXPPercentage()
+#include "systems/experience.h"
 #include "audio.h"
 
 State state{ //Constinit removed for compatibility with C++17
@@ -85,7 +85,7 @@ int main()
 
   t3d_fog_set_enabled(false);
 
-  SceneManager::loadScene(0); // Load SceneLast64 (now index 0) as the initial scene
+  SceneManager::loadScene(0);
 
   uint32_t frameIdx = 0;
   bool showMenu = false;
