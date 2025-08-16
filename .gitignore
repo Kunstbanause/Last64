@@ -9,5 +9,5 @@ CMakeLists.txt
 *.blend1
 gltf_to_t3d
 .vscode/c_cpp_properties.json
-ExternAssets/
 .vscode/settings.json
+ExternAssets/
