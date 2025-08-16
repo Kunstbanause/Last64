@@ -309,7 +309,7 @@ void SceneLast64::draw2D(float deltaTime)
             Debug::printf(230, 10, "E:%d P:%d", Actor::Enemy::getActiveCount(), Actor::Projectile::getActiveCount());
             
             // Draw Level
-            Debug::printf(10, 230-10, "(L): %d", Experience::getLevel());
+            Debug::printf(10, 230-20, "(L): %d", Experience::getLevel());
 
             // Draw round timer
             int minutes = (int)roundTimer / 60;

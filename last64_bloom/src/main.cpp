@@ -66,6 +66,8 @@ int main()
   mixer_init(16);
 
   display_init(RESOLUTION_320x240, DEPTH_16_BPP, BUFF_COUNT, GAMMA_NONE, FILTERS_RESAMPLE);
+  const int screenWidth = 320;
+  const int screenHeight = 240;
 
   rdpq_init();
   //rdpq_debug_start();
@@ -190,9 +192,13 @@ int main()
     if(showMenu) {
       DebugMenu::draw();
       Debug::printf(20, 200, "%d%%", (int)(postProc[frameIdxLast].getBrightness() * 100));
-    } else {
-      Debug::printf(1, 1, "fps:%.0f", display_get_fps());
+      Debug::printf(screenWidth-50, screenHeight-15, "fps:%.0f", display_get_fps());
     }
+    if ( display_get_fps() < 30.0f ) {
+      Debug::printf(screenWidth-80, screenHeight-25, "LowFPS:%.0f", display_get_fps());
+    }
+    
+    
 
     #if RSPQ_PROFILE
       Debug::printf(20, 220, "%.2fms", lastUcodeTime / 1000.0f);
@@ -201,8 +207,6 @@ int main()
     state.activeScene->draw2D(deltaTime);
 
     // Draw XP Bar
-    const int screenWidth = 320;
-    const int screenHeight = 240;
     const int barHeight = 10;
     float xpPercentage = Experience::getXPPercentage();
     int barWidth = static_cast<int>(xpPercentage * screenWidth);
@@ -211,8 +215,8 @@ int main()
     rdpq_set_mode_standard();
 
     // Draw the bar foreground
-    rdpq_set_fill_color(RGBA32(100, 200, 255, 255)); // Light blue color
-    rdpq_fill_rectangle(0, screenHeight - barHeight, barWidth, screenHeight);
+    rdpq_set_fill_color(RGBA32(100, 200, 255, 155)); // Light blue color
+    rdpq_fill_rectangle(0, screenHeight - (barHeight * 2 ), barWidth, screenHeight);
 
     rdpq_detach_show();
 

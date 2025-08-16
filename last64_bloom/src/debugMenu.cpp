@@ -114,7 +114,7 @@ void DebugMenu::draw()
   }
 
   float posX = 20;
-  float posY = 18;
+  float posY = 70;
   Debug::print(posX, posY, "[START] Menu");
   Debug::print(display_get_width() - 100, posY, "[L/R] Scene");
   posY += 12;
@@ -130,7 +130,7 @@ void DebugMenu::draw()
       case EntryType::INT:
         if (entry.value == &sceneId) {
           // Special handling for scene selection - Updated order to match SceneManager
-          const char* sceneNames[] = {"Last64", "Main", "Env", "Magic", "Pixel"};
+          const char* sceneNames[] = {"Last64", "Env", "Magic", "Pixel", "Main"};
           int sceneIdx = *(int*)entry.value;
           if (sceneIdx >= 0 && sceneIdx <= 4) {
             Debug::printf(posX + 8, posY, "%s: %d (%s)", entry.name, sceneIdx, sceneNames[sceneIdx]);

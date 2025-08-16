@@ -47,10 +47,10 @@ void SceneManager::update()
 
     switch(requestSceneId) {
       case 0: state.activeScene = new SceneLast64(); break; // Make SceneLast64 index 0
-      case 1: state.activeScene = new SceneBunker(); break;
-      case 2: state.activeScene = new SceneEnv(); break;
-      case 3: state.activeScene = new SceneMagic(); break;
-      case 4: state.activeScene = new ScenePixel(); break;
+      case 1: state.activeScene = new SceneEnv(); break;
+      case 2: state.activeScene = new SceneMagic(); break;
+      case 3: state.activeScene = new ScenePixel(); break;
+      case 4: state.activeScene = new SceneBunker(); break;
 
       default: assertf(false, "Invalid scene-id: %d", requestSceneId);
     }
