@@ -81,11 +81,10 @@ int main()
   // Play a test sound
   // a .wav file must be present in `assets/sfx`
   // for this to work
-  wav64_t wav;
+  static wav64_t wav;
   wav64_open(&wav, "rom:/sfx/test.wav64");
   mixer_ch_set_vol(0, 1.0f, 1.0f);
   mixer_ch_play(0, &wav.wave);
-  wav64_close(&wav);
 
   t3d_init((T3DInitParams){});
   tpx_init((TPXInitParams){});
@@ -102,6 +101,13 @@ int main()
 
   for(uint64_t frame = 0;; ++frame)
   {
+    if (audio_can_write()) {
+      int nsamples = audio_get_buffer_length();
+      int16_t *buf = audio_write_begin();
+      mixer_poll(buf, nsamples);
+      audio_write_end();
+    }
+
     uint32_t frameIdxLast = (frameIdx+BUFF_COUNT-1) % BUFF_COUNT;
 
     SceneManager::update();
@@ -125,7 +131,7 @@ int main()
     // if (held.c_down) {
     //     deltaTime *= 0.1f; // Slow down to 10% speed
     // }
-    state.activeScene->update(deltaTime);
+      state.activeScene->update(deltaTime);
 
     // ----------- DRAW ------------ //
     fb = display_get();

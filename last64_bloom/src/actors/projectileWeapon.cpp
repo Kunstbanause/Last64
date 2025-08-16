@@ -91,7 +91,7 @@ namespace Actor {
         if (upgradeLevel < maxUpgradeLevel) {
             upgradeLevel++;
             // Increase fire rate for each upgrade
-            fireRate *= 0.5f; //% increase in fire rate (}
+            fireRate *= 0.9f; // increase in fire rate
         }
     };
 }
