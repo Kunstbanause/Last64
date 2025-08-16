@@ -91,7 +91,7 @@ SceneMain::SceneMain()
   actors.push_back(new Actor::PointGlobe({0, 20, -560}, {.scale = 0.8f}));
   Actor::Player::initializePlayer(); // Initialize player static resources
   actors.push_back(new Actor::Player({0, 50, 30}, JOYPAD_PORT_1)); // Position player in front of camera
-  audio_play_sfx(SFX_START);
+  gSFXManager.play(SFXManager::SFX_START);
 }
 
 SceneMain::~SceneMain()

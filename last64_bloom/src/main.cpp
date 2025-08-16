@@ -78,7 +78,7 @@ int main()
   Debug::init();
 
   joypad_init();
-  audio_init_sounds();
+  gSFXManager.init();
 
   t3d_init((T3DInitParams){});
   tpx_init((TPXInitParams){});
