@@ -8,9 +8,6 @@ namespace Actor {
     Weapon::Weapon() : Base() {
         player = nullptr;
         fireCooldown = 0.0f;
-        fireRate = 0.0f;
-        projectileSpeed = 100.0f;
-        projectileSlowdown = 0.0f;
         upgradeLevel = 0;
         maxUpgradeLevel = 3;
         spawnOffset = {0, 0, 0};
@@ -34,7 +31,8 @@ namespace Actor {
     void Weapon::upgrade() {
         if (upgradeLevel < maxUpgradeLevel) {
             upgradeLevel++;
-            fireRate *= 0.5f; // 50% increase in fire rate (halves the cooldown)
+            // Default implementation does nothing
+            // This should be overridden by subclasses to implement specific upgrade behavior
         }
     }
 }

@@ -18,7 +18,9 @@ namespace Actor {
         // Set weapon-specific properties
         fireRate = 0.9f;
         projectileSpeed = 200.0f;
-        projectileSlowdown = 0.0f;    // No slowdown
+        projectileSlowdown = 5.0f;
+
+        // Default Parameters
         maxUpgradeLevel = 5;
         spawnOffset = {0, 0, 0};
     }
@@ -84,4 +86,12 @@ namespace Actor {
 
         fire(player->getPosition(), direction);
     }
+
+    void ProjectileWeapon::upgrade() {
+        if (upgradeLevel < maxUpgradeLevel) {
+            upgradeLevel++;
+            // Increase fire rate for each upgrade
+            fireRate *= 0.5f; //% increase in fire rate (}
+        }
+    };
 }

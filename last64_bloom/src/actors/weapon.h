@@ -19,8 +19,6 @@ namespace Actor {
         Player* player;              // Reference to the player owning this weapon
         float fireCooldown;          // Current cooldown timer
         float fireRate;              // Time between shots (seconds)
-        float projectileSpeed;       // Speed of projectiles
-        float projectileSlowdown;    // Slowdown factor per second
         int upgradeLevel;            // Current upgrade level
         int maxUpgradeLevel;         // Maximum upgrade level
         T3DVec3 spawnOffset;         // Offset from firing position
@@ -40,12 +38,6 @@ namespace Actor {
         // Getters and setters
         void setPlayer(Player* p) { player = p; }
         Player* getPlayer() const { return player; }
-        
-        float getFireRate() const { return fireRate; }
-        void setFireRate(float rate) { fireRate = rate; }
-        
-        float getProjectileSpeed() const { return projectileSpeed; }
-        void setProjectileSpeed(float speed) { projectileSpeed = speed; }
         
         int getUpgradeLevel() const { return upgradeLevel; }
         int getMaxUpgradeLevel() const { return maxUpgradeLevel; }

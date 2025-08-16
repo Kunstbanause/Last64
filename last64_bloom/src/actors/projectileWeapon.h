@@ -19,8 +19,11 @@ namespace Actor {
         
         void fire(const T3DVec3& position, const T3DVec3& direction) override;
         void fireManual() override;
+        void upgrade();
 
     private:
         float fireRate;
+        float projectileSpeed;
+        float projectileSlowdown;
     };
 }
