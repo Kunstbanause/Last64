@@ -35,6 +35,7 @@ A minimalist reimagining of *Vampire Survivors* for the Nintendo 64 using `libdr
 - [x] Auto-fire projectiles
 - [x] Enemy spawning and AI
 - [x] Collision and damage system
+- [ ] Player taking damage and death
 
 ### ✅ Phase 3: Progression
 - [ ] Level up system
@@ -43,7 +44,7 @@ A minimalist reimagining of *Vampire Survivors* for the Nintendo 64 using `libdr
 
 ### ✅ Phase 4: Polish & Features
 - [x] GUI: XP bar, level, press start
-- [ ] Visual effects
+- [ ] Visual effects: Bloom, screenshake, blood particles, blood on floor
 - [x] Multiplayer support (4 players)
 
 ## 🛠️ KNOWN ISSUES
