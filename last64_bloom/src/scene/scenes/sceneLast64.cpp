@@ -193,9 +193,7 @@ void SceneLast64::updateScene(float deltaTime)
                     if (!enemy || !enemy->isActive()) continue;
 
                     if (currentPlayer->collidesWith(enemy)) {
-                        currentPlayer->takeDamage(10); // Player takes 10 damage from enemy
-                        // Optionally, deactivate enemy or give it damage too
-                        // enemy->takeDamage(1); // Example: enemy takes 1 damage from colliding with player
+                        currentPlayer->takeDamage(1);
                         // gSFXManager.play(SFXManager::SFX_PLAYER_HIT); // Assuming a player hit sound effect
                     }
                 }

@@ -91,7 +91,7 @@ namespace Actor {
         rotation = 0.0f;
         playerPort = port;
         isDead = false;
-        maxHealth = 100; // Default max health
+        maxHealth = 1; // Default max health
         health = maxHealth;
         
         // Set player color based on port

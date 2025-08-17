@@ -7,6 +7,7 @@ public:
         SFX_LEVEL_UP,
         SFX_START,
         SFX_JOIN,
+        SFX_DEATH,
         SFX_HIT
     };
 
@@ -18,6 +19,7 @@ private:
     wav64_t sfx_level_up;
     wav64_t sfx_start;
     wav64_t sfx_join;
+    wav64_t sfx_death;
     wav64_t sfx_hits[9];
     static const int sfx_hits_count = sizeof(sfx_hits) / sizeof(sfx_hits[0]);
     int next_hit_channel = 0;

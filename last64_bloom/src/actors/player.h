@@ -6,6 +6,7 @@
 #include "../actors/base.h"
 #include "../actors/projectile.h"
 #include "../actors/weapon.h"
+#include "../audio.h"
 #include <t3d/t3d.h>
 #include <libdragon.h>
 
@@ -47,7 +48,7 @@ namespace Actor {
         float getRotation() const { return rotation; }
         
         void takeDamage(int amount);
-        void kill() { isDead = true; playerColor = 0xFF0000FF; }
+        void kill() { isDead = true; playerColor = 0xFF0000FF; gSFXManager.play(SFXManager::SFX_DEATH);}
         bool getIsDead() const { return isDead; }
         bool collidesWith(Base* other);
         

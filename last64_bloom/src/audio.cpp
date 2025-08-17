@@ -9,6 +9,7 @@ void SFXManager::init()
     wav64_open(&sfx_level_up, "rom:/sfx/level.wav64");
     wav64_open(&sfx_start,    "rom:/sfx/start.wav64");
     wav64_open(&sfx_join,     "rom:/sfx/join.wav64");
+    wav64_open(&sfx_death,    "rom:/sfx/death.wav64");
     wav64_open(&sfx_hits[0],  "rom:/sfx/hitA01.wav64");
     wav64_open(&sfx_hits[1],  "rom:/sfx/hitA02.wav64");
     wav64_open(&sfx_hits[2],  "rom:/sfx/hitA03.wav64");
@@ -33,6 +34,9 @@ void SFXManager::play(SfxId id)
             break;
         case SFX_JOIN:
             mixer_ch_play(1, &sfx_join.wave);
+            break;
+        case SFX_DEATH:
+            mixer_ch_play(1, &sfx_death.wave);
             break;
         case SFX_HIT:
             mixer_ch_play(2 + next_hit_channel, &sfx_hits[rand() % sfx_hits_count].wave);
