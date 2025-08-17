@@ -27,6 +27,7 @@
 #include "scene/scene.h"
 #include "scene/sceneManager.h"
 #include "scene/scenes/sceneBunker.h"
+#include "scene/scenes/sceneLast64.h" // Include SceneLast64 header
 #include "systems/experience.h"
 #include "audio.h"
 
@@ -128,6 +129,12 @@ int main()
     //     deltaTime *= 0.1f; // Slow down to 10% speed
     // }
       state.activeScene->update(deltaTime);
+
+      // Check if the current scene (if it's SceneLast64) has requested a restart
+      SceneLast64* currentLast64Scene = dynamic_cast<SceneLast64*>(state.activeScene);
+      if (currentLast64Scene && currentLast64Scene->isRestartRequested()) {
+          SceneManager::loadScene(0); // Reload scene 0
+      }
 
     // ----------- DRAW ------------ //
     fb = display_get();

@@ -93,6 +93,9 @@ namespace Actor {
         speed = 50.0f;
         rotation = 0.0f;
         playerPort = port;
+        isDead = false;
+        maxHealth = 100; // Default max health
+        health = maxHealth;
         
         // Set player color based on port
         playerColor = (playerPort == JOYPAD_PORT_1) ? 0xFF1980FF : 0xFFFF1980; // Blue or Red
@@ -102,6 +105,27 @@ namespace Actor {
         weapon->setPlayer(this); // Set the player reference in the weapon
         
         flags &= ~FLAG_DISABLED; // Clear the disabled flag to enable the actor
+    }
+    
+    void Player::takeDamage(int amount) {
+        if (isDead) return;
+        health -= amount;
+        if (health <= 0) {
+            kill();
+        }
+    }
+    
+    bool Player::collidesWith(Base* other) {
+        // Simple circle-circle collision for now
+        T3DVec3 otherPos = other->getPosition();
+        float otherRadius = other->getRadius();
+
+        float dx = position.x - otherPos.x;
+        float dy = position.y - otherPos.y;
+        float distance = sqrtf(dx * dx + dy * dy);
+
+        // Player radius is assumed to be 3.0f, same as enemy
+        return distance < (3.0f + otherRadius);
     }
     
     Player::~Player() {
@@ -124,6 +148,8 @@ namespace Actor {
     }
     
     void Player::update(float deltaTime) {
+        if (isDead) return; // If player is dead, do nothing
+
         // Handle player input
         joypad_inputs_t stick = joypad_get_inputs(playerPort); // Get analog stick inputs
         

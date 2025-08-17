@@ -25,6 +25,9 @@ namespace Actor {
         float rotation;
         joypad_port_t playerPort; // To identify which controller this player uses
         uint32_t playerColor; // Store player-specific color
+        bool isDead;
+        int health;
+        int maxHealth;
         
         // Weapon reference
         Weapon* weapon;
@@ -42,6 +45,11 @@ namespace Actor {
         T3DVec3 getPosition() const { return position; }
         void setPosition(T3DVec3 newPos) { position = newPos; }
         float getRotation() const { return rotation; }
+        
+        void takeDamage(int amount);
+        void kill() { isDead = true; playerColor = 0xFF0000FF; }
+        bool getIsDead() const { return isDead; }
+        bool collidesWith(Base* other);
         
         // Weapon methods
         Weapon* getWeapon() const { return weapon; }

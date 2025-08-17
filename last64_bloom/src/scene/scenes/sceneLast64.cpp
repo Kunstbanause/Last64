@@ -39,6 +39,7 @@ SceneLast64::SceneLast64()
     activePlayerCount = 0;
     roundTimer = 0.0f;
     exposure = 30.0f; // Set exposure for HDR effect (matching the HDR example)
+    restartRequested = false; // Initialize the flag
 
     // Set up camera - match SceneBunker more closely
     camera.fov = T3D_DEG_TO_RAD(80.0f);
@@ -114,6 +115,9 @@ void SceneLast64::updateScene(float deltaTime)
                         }
                         if (anyPlayerJoined && currentGameState == WAITING_FOR_PLAYERS) {
                             currentGameState = ROUND_ACTIVE;
+                            // Re-initialize Enemy and Projectile systems for a new round
+                            Actor::Enemy::initialize();
+                            Actor::Projectile::initialize();
                             // Initialize Experience system
                             Experience::initialize();
                             // Add all currently joined players to the Experience system
@@ -168,6 +172,7 @@ void SceneLast64::updateScene(float deltaTime)
             Actor::Projectile::updateAll(deltaTime);
 
             // --- Collision Detection ---
+            // Enemy-Projectile Collision
             for (uint32_t i = 0; i < MAX_ENEMIES; ++i) {
                 Actor::Enemy* enemy = Actor::Enemy::getEnemy(i);
                 if (!enemy || !enemy->isActive()) continue;
@@ -183,6 +188,37 @@ void SceneLast64::updateScene(float deltaTime)
                         gSFXManager.play(SFXManager::SFX_HIT);
                     }
                 }
+            }
+
+            // Player-Enemy Collision
+            Actor::Player* players[4] = {player1, player2, player3, player4};
+            for (int p = 0; p < 4; ++p) {
+                Actor::Player* currentPlayer = players[p];
+                if (!currentPlayer || currentPlayer->getIsDead()) continue; // Only check active, alive players
+
+                for (uint32_t i = 0; i < MAX_ENEMIES; ++i) {
+                    Actor::Enemy* enemy = Actor::Enemy::getEnemy(i);
+                    if (!enemy || !enemy->isActive()) continue;
+
+                    if (currentPlayer->collidesWith(enemy)) {
+                        currentPlayer->takeDamage(10); // Player takes 10 damage from enemy
+                        // Optionally, deactivate enemy or give it damage too
+                        // enemy->takeDamage(1); // Example: enemy takes 1 damage from colliding with player
+                        // gSFXManager.play(SFXManager::SFX_PLAYER_HIT); // Assuming a player hit sound effect
+                    }
+                }
+            }
+
+            // Recalculate active players for game over check
+            int alivePlayers = 0;
+            if (player1 && !player1->getIsDead()) alivePlayers++;
+            if (player2 && !player2->getIsDead()) alivePlayers++;
+            if (player3 && !player3->getIsDead()) alivePlayers++;
+            if (player4 && !player4->getIsDead()) alivePlayers++;
+
+            if (alivePlayers == 0 && activePlayerCount > 0) { // Ensure at least one player was active before game over
+                currentGameState = GAME_OVER;
+                // gSFXManager.play(SFXManager::SFX_GAME_OVER); // Assuming a game over sound effect
             }
             
             // Spawn new enemies occasionally
@@ -235,6 +271,25 @@ void SceneLast64::updateScene(float deltaTime)
                 Actor::Enemy::spawn(pos, 45.0f, targetPlayer);
             }
             break;
+        }
+
+        case GAME_OVER: {
+            // Check for START button press to restart
+            bool restartPressed = false;
+            for (int i = 0; i < 4; ++i) {
+                joypad_inputs_t inputs = joypad_get_inputs((joypad_port_t)(JOYPAD_PORT_1 + i));
+                if (inputs.btn.a) {
+                    restartPressed = true;
+                    break;
+                }
+            }
+
+            if (restartPressed) {
+                restartRequested = true; // Signal restart
+                // All cleanup and reset logic will be handled by SceneManager::loadScene(0)
+                // and the SceneLast64 destructor/constructor.
+            }
+            // If not restarting, just stay in GAME_OVER state
         }
     }
 }
@@ -320,6 +375,12 @@ void SceneLast64::draw2D(float deltaTime)
                 Debug::printf(150, 10, "%02d", seconds);
             }
 
+            break;
+        }
+        case GAME_OVER: {
+            // Display "Game Over" message
+            Debug::printf(120, 100, "Game Over");
+            Debug::printf(100, 120, "Press A to restart");
             break;
         }
     }

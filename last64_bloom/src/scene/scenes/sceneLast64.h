@@ -18,7 +18,8 @@ class SceneLast64 : public Scene
   private:                                                                                                                                                                                                                                              
     enum GameState {
         WAITING_FOR_PLAYERS,
-        ROUND_ACTIVE
+        ROUND_ACTIVE,
+        GAME_OVER
     };
 
     GameState currentGameState;
@@ -31,7 +32,8 @@ class SceneLast64 : public Scene
     Actor::Player* player2;
     Actor::Player* player3;
     Actor::Player* player4;
-    int activePlayerCount;                                                                                                                                                                                                                             
+    int activePlayerCount;
+    bool restartRequested; // Flag to signal restart to main loop
                                                                                                                                                                                                                                                         
     StaticCam staticCam{camera};                                                                                                                                                                                                                        
                                                                                                                                                                                                                                                         
@@ -40,6 +42,7 @@ class SceneLast64 : public Scene
 
   public:                                                                                                                                                                                                                                               
     void draw2D(float deltaTime) final;                                                                                                                                                                                                                 
+    bool isRestartRequested() const { return restartRequested; }
 
     SceneLast64();                                                                                                                                                                                                                                      
     ~SceneLast64();                                                                                                                                                                                                                                     
