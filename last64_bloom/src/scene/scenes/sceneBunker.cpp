@@ -6,8 +6,6 @@
 #include "../../main.h"
 #include "../../render/debugDraw.h"
 #include "../../actors/pointGlobe.h"
-#include "../../actors/player.h"
-#include "../../audio.h"
 #include <string_view>
 #include <typeinfo>
 
@@ -89,18 +87,12 @@ SceneBunker::SceneBunker()
   }
 
   actors.push_back(new Actor::PointGlobe({0, 20, -560}, {.scale = 0.8f}));
-  Actor::Player::initializePlayer(); // Initialize player static resources
-  actors.push_back(new Actor::Player({0, 50, 30}, JOYPAD_PORT_1)); // Position player in front of camera
-  gSFXManager.play(SFXManager::SFX_START);
 }
 
 SceneBunker::~SceneBunker()
 {
   t3d_model_free(mapModel);
   free_uncached(mapMatFP);
-  
-  // Clean up player static resources
-  Actor::Player::cleanupPlayer();
 }
 
 void SceneBunker::updateScene(float deltaTime)
@@ -176,24 +168,10 @@ void SceneBunker::draw3D(float deltaTime)
 }
 
 void SceneBunker::draw2D(float deltaTime)
-{
-  // Draw player position if player exists
-  Actor::Player* player = nullptr;
-  for (auto actor : actors) {
-      player = dynamic_cast<Actor::Player*>(actor);
-      if (player) {
-          break;
-      }
-  }
-  
-  if (player) {
-      T3DVec3 playerPos = player->getPosition();
-      Debug::printf(10, 10, "PLAYER POS: %.2f, %.2f, %.2f", playerPos.x, playerPos.y, playerPos.z);
-  }
-  
+{  
   // Draw camera position
   Debug::printf(10, 20, "CAMERA POS: %.2f, %.2f, %.2f", camera.pos.x, camera.pos.y, camera.pos.z);
   
   // Show which camera mode is active
-  Debug::printf(10, 220, "CAM: %s (Press R to toggle)", useFlyCam ? "FLY" : "STATIC");
+  Debug::printf(10, 220, "CAM: %s (Press Z to toggle)", useFlyCam ? "FLY" : "STATIC");
 }

@@ -113,7 +113,7 @@ int main()
     if(pressed.start)showMenu = !showMenu;
     
     // Toggle between static and fly camera
-    if(pressed.r && state.activeScene) {
+    if(pressed.z && state.activeScene) {
       SceneBunker* sceneBunker = dynamic_cast<SceneBunker*>(state.activeScene);
       if(sceneBunker) {
         sceneBunker->useFlyCam = !sceneBunker->useFlyCam;
