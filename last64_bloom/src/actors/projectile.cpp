@@ -27,8 +27,9 @@ namespace Actor {
         position = {0, 0, 0};
         velocity = {0, 0, 0};
         speed = 0.0f;
+        slowdown = 0.0f; // Default no slowdown
         lifetime = 0.0f;
-        maxLifetime = 5.0f; // 5 second lifetime
+        maxLifetime = 1.0f;
         flags |= FLAG_DISABLED;
     }
 
@@ -110,6 +111,7 @@ namespace Actor {
                 p->position = pos;
                 p->velocity = vel;
                 p->speed = spd;
+                p->slowdown = slowdown;
                 p->lifetime = 0.0f;
                 p->flags &= ~FLAG_DISABLED;
                 return p;
@@ -146,6 +148,12 @@ namespace Actor {
         if (lifetime >= maxLifetime) {
             deactivate();
             return;
+        }
+
+        // Apply slowdown to reduce speed over time
+        speed -= slowdown * deltaTime;
+        if (speed < 0.0f) {
+            speed = 0.0f; // Don't let speed go negative
         }
 
         position.x += velocity.x * speed * deltaTime;

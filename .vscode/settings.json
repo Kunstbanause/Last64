@@ -3,6 +3,10 @@
         "t3dmodel.h": "c",
         "array": "cpp",
         "new": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "atomic": "cpp",
+        "cstdint": "cpp",
+        "random": "cpp",
+        "stop_token": "cpp"
     }
 }

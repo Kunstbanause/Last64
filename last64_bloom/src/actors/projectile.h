@@ -23,6 +23,7 @@ namespace Actor {
         T3DVec3 position;
         T3DVec3 velocity;
         float speed;
+        float slowdown; // Slowdown factor per second
         float lifetime;
         float maxLifetime;
         uint32_t poolIndex;
