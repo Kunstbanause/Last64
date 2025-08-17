@@ -3,15 +3,12 @@
 * @license MIT
 */
 #include "projectile.h"
+#include "../main.h"
 #include <t3d/t3d.h>
 #include <libdragon.h>
 #include <malloc.h>
 
-// Screen boundaries
-static constexpr float SCREEN_LEFT = 0.0f;
-static constexpr float SCREEN_RIGHT = 312.0f;
-static constexpr float SCREEN_TOP = 0.0f;
-static constexpr float SCREEN_BOTTOM = 236.0f;
+
 
 namespace Actor {
     // Static member definitions

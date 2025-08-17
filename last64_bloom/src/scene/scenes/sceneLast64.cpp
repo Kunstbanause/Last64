@@ -15,14 +15,6 @@
 #include "../../audio.h"
 
 namespace {
-  // Screen boundaries
-  constexpr float SCREEN_LEFT = 0.0f;
-  constexpr float SCREEN_RIGHT = 312.0f;
-  constexpr float SCREEN_TOP = 0.0f;
-  constexpr float SCREEN_BOTTOM = 232.0f;
-  constexpr float SCREEN_WIDTH = SCREEN_RIGHT - SCREEN_LEFT;
-  constexpr float SCREEN_HEIGHT = SCREEN_BOTTOM - SCREEN_TOP;
-  
   // Ambient lighting
   constexpr uint8_t colorAmbient[4] = {0xC0, 0xB0, 0xA0, 0xFF};
 
@@ -38,8 +30,8 @@ SceneLast64::SceneLast64()
     }
     activePlayerCount = 0;
     roundTimer = 0.0f;
-    exposure = 30.0f; // Set exposure for HDR effect (matching the HDR example)
-    restartRequested = false; // Initialize the flag
+    exposure = 30.0f; // Set exposure for HDR effect
+    restartRequested = false; // Scene restart flag for game over
 
     // Set up camera - match SceneBunker more closely
     camera.fov = T3D_DEG_TO_RAD(80.0f);
@@ -285,7 +277,7 @@ void SceneLast64::updateScene(float deltaTime)
             }
 
             if (restartPressed) {
-                restartRequested = true; // Signal restart
+                restartRequested = true; // Signal restart Scene
                 // All cleanup and reset logic will be handled by SceneManager::loadScene(0)
                 // and the SceneLast64 destructor/constructor.
             }

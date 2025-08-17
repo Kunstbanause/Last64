@@ -31,7 +31,7 @@
 #include "systems/experience.h"
 #include "audio.h"
 
-State state{ //Constinit removed for compatibility with C++17
+State state{
   .ppConf = {
     .blurSteps = 4,
     .blurBrightness = 1.0f,
@@ -67,8 +67,6 @@ int main()
   mixer_init(16);
 
   display_init(RESOLUTION_320x240, DEPTH_16_BPP, BUFF_COUNT, GAMMA_NONE, FILTERS_RESAMPLE);
-  const int screenWidth = 320;
-  const int screenHeight = 240;
 
   rdpq_init();
   //rdpq_debug_start();
@@ -199,10 +197,10 @@ int main()
     if(showMenu) {
       DebugMenu::draw();
       Debug::printf(20, 200, "%d%%", (int)(postProc[frameIdxLast].getBrightness() * 100));
-      Debug::printf(screenWidth-50, screenHeight-15, "fps:%.0f", display_get_fps());
+      Debug::printf(SCREEN_WIDTH-50, SCREEN_HEIGHT-15, "fps:%.0f", display_get_fps());
     }
     if ( display_get_fps() < 30.0f ) {
-      Debug::printf(screenWidth-80, screenHeight-25, "LowFPS:%.0f", display_get_fps());
+      Debug::printf(SCREEN_WIDTH-80, SCREEN_HEIGHT-25, "LowFPS:%.0f", display_get_fps());
     }
     
     
@@ -216,14 +214,14 @@ int main()
     // Draw XP Bar
     const int barHeight = 10;
     float xpPercentage = Experience::getXPPercentage();
-    int barWidth = static_cast<int>(xpPercentage * screenWidth);
+    int barWidth = static_cast<int>(xpPercentage * SCREEN_WIDTH);
 
-    rdpq_set_scissor(0, 0, screenWidth, screenHeight);
+    rdpq_set_scissor(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     rdpq_set_mode_standard();
 
     // Draw the bar foreground
     rdpq_set_fill_color(RGBA32(100, 200, 255, 155)); // Light blue color
-    rdpq_fill_rectangle(0, screenHeight - (barHeight * 2 ), barWidth, screenHeight);
+    rdpq_fill_rectangle(0, SCREEN_HEIGHT - (barHeight * 2 ), barWidth, SCREEN_HEIGHT);
 
     rdpq_detach_show();
 

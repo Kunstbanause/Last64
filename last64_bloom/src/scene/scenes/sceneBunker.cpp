@@ -13,13 +13,7 @@ namespace {
   constexpr uint8_t colorAmbient[4] = {0x2A, 0x2A, 0x2A, 0x00};
   constexpr float modelScale = 0.15f;
   
-  // Screen boundaries
-  constexpr float SCREEN_LEFT = 0.0f;
-  constexpr float SCREEN_RIGHT = 312.0f;
-  constexpr float SCREEN_TOP = 0.0f;
-  constexpr float SCREEN_BOTTOM = 236.0f;
-  constexpr float SCREEN_WIDTH = SCREEN_RIGHT - SCREEN_LEFT;
-  constexpr float SCREEN_HEIGHT = SCREEN_BOTTOM - SCREEN_TOP;
+  
 
   struct ObjectLayer
   {
