@@ -94,8 +94,21 @@ namespace Actor {
         maxHealth = 1; // Default max health
         health = maxHealth;
         
-        // Set player color based on port
-        playerColor = (playerPort == JOYPAD_PORT_1) ? 0xFF1980FF : 0xFFFF1980; // Blue or Red
+        // Set player color based on port // RGBA8 (0xRRGGBBAA
+        switch (playerPort) {
+            case JOYPAD_PORT_1:
+                playerColor = 0xFFFFFFFF; // White
+                break;
+            case JOYPAD_PORT_2:
+                playerColor = 0x00FF00FF; // Green
+                break;
+            case JOYPAD_PORT_3:
+                playerColor = 0x0000FFFFc; // Blue
+                break;
+            case JOYPAD_PORT_4:
+                playerColor = 0xFFFF00FF; // Yellow
+                break;
+        }
         
         // Initialize weapon
         weapon = new ProjectileWeapon();
