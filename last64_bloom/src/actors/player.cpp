@@ -103,7 +103,7 @@ namespace Actor {
                 playerColor = 0x00FF00FF; // Green
                 break;
             case JOYPAD_PORT_3:
-                playerColor = 0x0000FFFFF; // Blue
+                playerColor = 0x00FFFFFF; // Cyan
                 break;
             case JOYPAD_PORT_4:
                 playerColor = 0xFFFF00FF; // Yellow
