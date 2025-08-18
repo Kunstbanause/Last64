@@ -108,10 +108,11 @@ int main()
     SceneManager::update();
 
     joypad_poll();
-    auto pressed = joypad_get_buttons_pressed(JOYPAD_PORT_1);
-    if(pressed.start)showMenu = !showMenu;
+    if(joypad_get_buttons_pressed(JOYPAD_PORT_1).start)showMenu = !showMenu;
+    if(joypad_get_buttons_pressed(JOYPAD_PORT_2).start)showMenu = !showMenu;
     
     // Toggle between static and fly camera
+    auto pressed = joypad_get_buttons_pressed(JOYPAD_PORT_1);
     if(pressed.z && state.activeScene) {
       SceneBunker* sceneBunker = dynamic_cast<SceneBunker*>(state.activeScene);
       if(sceneBunker) {
@@ -121,11 +122,10 @@ int main()
     }
 
     float deltaTime = display_get_delta_time();
-    // Check if C-Down is held and slow down time
-    // auto held = joypad_get_buttons_held(JOYPAD_PORT_1);
-    // if (held.c_down) {
-    //     deltaTime *= 0.1f; // Slow down to 10% speed
-    // }
+    // "Pause"
+    if (showMenu) {
+      deltaTime *= 0.1f; // Slow down to 10% speed
+    }
       state.activeScene->update(deltaTime);
 
       // Check if the current scene (if it's SceneLast64) has requested a restart

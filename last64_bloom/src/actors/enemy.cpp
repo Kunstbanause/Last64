@@ -228,9 +228,14 @@ namespace Actor {
         
         if (poolIndex < MAX_ENEMIES) {
             // Calculate color healtbased on health
-            float t = (float)(maxHealth - health) / maxHealth;
+            float t = (float)(maxHealth - health) / (float)maxHealth;
             uint8_t green_blue = (uint8_t)(255.0f * t);
-            uint32_t new_color = 0xFF0000FF | (green_blue << 8) | (green_blue << 16);
+            // uint32_t new_color = 0xFF0000FF | (green_blue << 8) | (green_blue << 16);
+            uint32_t new_color = (0xFF << 24)              // R
+                   | (green_blue << 16)       // G
+                   | (green_blue << 8)        // B
+                   | 0xFF;                    // A
+
 
             // Update vertex colors for this specific enemy
             sharedVertices[poolIndex * 2].rgbaA = new_color;

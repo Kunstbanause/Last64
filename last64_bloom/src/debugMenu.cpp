@@ -29,6 +29,53 @@ namespace
   std::vector<bool*> changedFlags{};
 }
 
+static inline joypad_buttons_t joypad_get_all_pressed() {
+    joypad_buttons_t combined = {0};
+    for (int i = JOYPAD_PORT_1; i <= JOYPAD_PORT_4; i++) {
+        joypad_buttons_t b = joypad_get_buttons_pressed((joypad_port_t)i);
+
+        combined.a      |= b.a;
+        combined.b      |= b.b;
+        combined.z      |= b.z;
+        combined.start  |= b.start;
+        combined.l      |= b.l;
+        combined.r      |= b.r;
+        combined.d_up   |= b.d_up;
+        combined.d_down |= b.d_down;
+        combined.d_left |= b.d_left;
+        combined.d_right|= b.d_right;
+        combined.c_up   |= b.c_up;
+        combined.c_down |= b.c_down;
+        combined.c_left |= b.c_left;
+        combined.c_right|= b.c_right;
+    }
+    return combined;
+}
+
+static inline joypad_buttons_t joypad_get_all_held() {
+    joypad_buttons_t combined = {0};
+    for (int i = JOYPAD_PORT_1; i <= JOYPAD_PORT_4; i++) {
+        joypad_buttons_t b = joypad_get_buttons_held((joypad_port_t)i);
+
+        combined.a      |= b.a;
+        combined.b      |= b.b;
+        combined.z      |= b.z;
+        combined.start  |= b.start;
+        combined.l      |= b.l;
+        combined.r      |= b.r;
+        combined.d_up   |= b.d_up;
+        combined.d_down |= b.d_down;
+        combined.d_left |= b.d_left;
+        combined.d_right|= b.d_right;
+        combined.c_up   |= b.c_up;
+        combined.c_down |= b.c_down;
+        combined.c_left |= b.c_left;
+        combined.c_right|= b.c_right;
+    }
+    return combined;
+}
+
+
 void DebugMenu::reset()
 {
   entries.clear();
@@ -59,8 +106,8 @@ void DebugMenu::addEntry(const Entry& entry, bool *changedFlag) {
 
 void DebugMenu::draw()
 {
-  auto btn = joypad_get_buttons_pressed(JOYPAD_PORT_1);
-  auto held = joypad_get_buttons_held(JOYPAD_PORT_1);
+  auto btn  = joypad_get_all_pressed();
+  auto held = joypad_get_all_held();
 
   if(btn.l && sceneId > entries[0].min) {
     sceneId--; needsSceneLoad = true;
