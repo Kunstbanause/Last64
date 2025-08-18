@@ -33,9 +33,9 @@
 
 State state{
   .ppConf = {
-    .blurSteps = 4,
+    .blurSteps = 1,
     .blurBrightness = 1.0f,
-    .hdrFactor = 1.5f,
+    .hdrFactor = 1.0f,
     .bloomThreshold = 0.2f,
     .scalingUseRDP = true,
    },

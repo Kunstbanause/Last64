@@ -25,6 +25,7 @@ namespace Actor {
         int maxHealth;
         uint32_t poolIndex;
         Player* targetPlayer; // Individual target player for this enemy
+        float hitTimer;
 
         static void initializePool();
         void die();

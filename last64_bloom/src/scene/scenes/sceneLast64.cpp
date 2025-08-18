@@ -224,9 +224,10 @@ void SceneLast64::updateScene(float deltaTime)
             }
             
             // Spawn new enemies occasionally
-            static float enemySpawnTimer = 0.0f;
+            const float enemySpawnInterval = 0.3f; // Spawn every 10 seconds
+            static float enemySpawnTimer = enemySpawnInterval;
             enemySpawnTimer += deltaTime;
-            if (enemySpawnTimer > 0.3f) { // Spawn an enemy every x seconds
+            if (enemySpawnTimer > enemySpawnInterval) { // Spawn an enemy every x seconds
                 enemySpawnTimer = 0.0f;
                 
                 // Randomly select a target player from active players

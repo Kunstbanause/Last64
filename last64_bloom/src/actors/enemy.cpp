@@ -179,6 +179,10 @@ namespace Actor {
 
     void Enemy::update(float deltaTime) {
         if (flags & FLAG_DISABLED) return;
+
+        if (hitTimer > 0.0f) {
+            hitTimer -= deltaTime;
+        }
         
         // Get player position from the individual target player reference
         if (targetPlayer) {
@@ -227,15 +231,12 @@ namespace Actor {
         if (flags & FLAG_DISABLED) return;
         
         if (poolIndex < MAX_ENEMIES) {
-            // Calculate color healtbased on health
-            float t = (float)(maxHealth - health) / (float)maxHealth;
-            uint8_t green_blue = (uint8_t)(255.0f * t);
-            // uint32_t new_color = 0xFF0000FF | (green_blue << 8) | (green_blue << 16);
-            uint32_t new_color = (0xFF << 24)              // R
-                   | (green_blue << 16)       // G
-                   | (green_blue << 8)        // B
-                   | 0xFF;                    // A
-
+            uint32_t new_color = 0x08000000 | 0xFF; // R=8, G=0, B=0, A=255
+            // Hit flash override
+            if (hitTimer > 0.96f) {
+                uint8_t flash_white = 64;
+                new_color = (flash_white << 24) | (flash_white << 16) | (flash_white << 8) | 0xFF;
+            }
 
             // Update vertex colors for this specific enemy
             sharedVertices[poolIndex * 2].rgbaA = new_color;
@@ -244,7 +245,7 @@ namespace Actor {
             sharedVertices[poolIndex * 2 + 1].rgbaB = new_color;
 
             t3d_matrix_push(sharedMatrices[poolIndex]);
-            t3d_vert_load(&sharedVertices[poolIndex * 2], 0, 4); // Load 4 vertices (2 structures)
+            t3d_vert_load(&sharedVertices[poolIndex * 2], 0, 4);
             t3d_tri_draw(0, 1, 2);
             t3d_tri_draw(2, 3, 0);
             t3d_tri_sync();
@@ -273,6 +274,7 @@ namespace Actor {
 
     void Enemy::takeDamage(int amount) {
         health -= amount;
+        hitTimer = 1.0f;
         if (health <= 0) {
             die();
         }
