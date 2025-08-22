@@ -21,10 +21,13 @@ assets_gltf += $(wildcard assets/mariotest/*.glb)
 assets_ttf = $(wildcard assets/*.ttf)
 assets_sfx = $(wildcard assets/sfx/*.wav)
 
+assets_rgb555 = $(wildcard assets/*.rgb555)
+
 assets_conv = $(patsubst assets/%,filesystem/%,$(assets_png:%.png=%.sprite)) \
 		  $(addprefix filesystem/,$(notdir $(assets_ttf:%.ttf=%.font64))) \
 		  $(patsubst assets/%,filesystem/%,$(assets_gltf:%.glb=%.t3dm)) \
-		  $(patsubst assets/sfx/%,filesystem/sfx/%,$(assets_sfx:%.wav=%.wav64))
+		  $(patsubst assets/sfx/%,filesystem/sfx/%,$(assets_sfx:%.wav=%.wav64)) \
+		  $(patsubst assets/%,filesystem/%,$(assets_rgb555:%.rgb555=%.rgb555))
 
 all: $(PROJECT_NAME).z64
 
@@ -51,6 +54,11 @@ filesystem/%.t3dm: assets/%.glb
 	@echo "    [T3D-MODEL] $@"
 	$(T3D_GLTF_TO_3D) "$<" $@ $(T3DM_FLAGS)
 	$(N64_BINDIR)/mkasset -c 1 -o $(dir $@) $@
+
+filesystem/%.rgb555: assets/%.rgb555
+	@mkdir -p $(dir $@)
+	@echo "    [RGB555] $@"
+	@cp "$<" "$@"
 
 
 $(BUILD_DIR)/$(PROJECT_NAME).dfs: $(assets_conv)

@@ -13,6 +13,7 @@
 #include "scenes/sceneEnv.h"
 #include "scenes/scenePixel.h"
 #include "scenes/sceneLast64.h"
+#include "scenes/sceneBalatro.h"
 
 namespace {
   constinit int requestSceneId{-1};
@@ -51,6 +52,7 @@ void SceneManager::update()
       case 2: state.activeScene = new SceneMagic(); break;
       case 3: state.activeScene = new ScenePixel(); break;
       case 4: state.activeScene = new SceneBunker(); break;
+      case 5: state.activeScene = new SceneBalatro(); break; // Add SceneBalatro
 
       default: assertf(false, "Invalid scene-id: %d", requestSceneId);
     }
