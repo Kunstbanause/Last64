@@ -217,12 +217,10 @@ int main()
     int barWidth = static_cast<int>(xpPercentage * SCREEN_WIDTH);
 
     rdpq_set_scissor(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-    rdpq_set_mode_standard();
 
-    // Draw the bar foreground
-    rdpq_set_fill_color(RGBA32(100, 200, 255, 155)); // Light blue color
-    rdpq_fill_rectangle(0, SCREEN_HEIGHT - (barHeight * 2 ), barWidth, SCREEN_HEIGHT);
-
+    // Use fill mode with color
+    rdpq_set_mode_fill(RGBA32(100, 200, 255, 255)); // Light blue color
+    rdpq_fill_rectangle(0, SCREEN_HEIGHT - (barHeight * 2), barWidth, SCREEN_HEIGHT);
     rdpq_detach_show();
 
     #if RSPQ_PROFILE

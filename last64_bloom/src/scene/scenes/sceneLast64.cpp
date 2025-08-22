@@ -303,7 +303,7 @@ void SceneLast64::draw3D(float deltaTime)
     
     t3d_screen_clear_color(RGBA32(32, 32, 32, 0xFF)); // Dark grey background
     t3d_screen_clear_depth();
-    rdpq_set_env_color({0xFF, 0xAA, 0xEE, 0xAA}); //slightly see-through soft magenta
+    // rdpq_set_env_color({0xFF, 0xAA, 0xEE, 0xAA}); //slightly see-through soft magenta
 
     t3d_light_set_ambient(colorAmbient);
     t3d_light_set_count(0); // No directional lights, just ambient
