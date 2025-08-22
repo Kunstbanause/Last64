@@ -1,32 +1,17 @@
-import pygame
 import numpy as np
-import time
 from noise import pnoise2
+import struct
 
 # ----------------------
-# Config
+# Config matching your C++ version - TMEM-friendly sizes
 # ----------------------
-W, H = 320, 240
 OCTAVES = 4
 LACUNARITY = 2.7
 GAIN = 0.5
-SCROLL_SPEED = 0.05
-MARBLE_FREQ = 1.5
-SPIRAL_STRENGTH = 0.8
-ROTATE_SPEED = 0.3
-CENTER_BIAS = 2.0
+TILE_SIZE = 32  # FBM noise texture size - reduced to fit TMEM
+WARP_MAP_SIZE = 32  # Warp displacement map size
+PALETTE_SIZE = 64  # Palette LUT size - reduced to fit TMEM
 
-# N64-specific configs
-TILE_SIZE = 64  # Size of the repeating tileable noise texture
-WARP_MAP_SIZE = 32  # Size of the warp displacement map
-
-pygame.init()
-screen = pygame.display.set_mode((W, H))
-clock = pygame.time.Clock()
-
-# ----------------------
-# Helper functions
-# ----------------------
 def fbm(x, y, octaves=OCTAVES, lacunarity=LACUNARITY, gain=GAIN, t=0):
     """Fractional Brownian motion"""
     value = np.zeros_like(x)
@@ -41,198 +26,152 @@ def fbm(x, y, octaves=OCTAVES, lacunarity=LACUNARITY, gain=GAIN, t=0):
 def lerp(a, b, t):
     return a + (b - a) * t
 
-def palette(val):
-    """Balatro-inspired subdued palette using gradient"""
-    val = np.clip(val, 0, 1)
+def save_as_n64_rgb555(filename, data):
+    """Save data as N64 RGB555 format (big-endian)"""
+    height, width = data.shape[:2]
+    
+    if len(data.shape) == 3:
+        # RGB data
+        r = (data[:, :, 0] >> 3) & 0x1F  # 5 bits for red
+        g = (data[:, :, 1] >> 3) & 0x1F  # 5 bits for green
+        b = (data[:, :, 2] >> 3) & 0x1F  # 5 bits for blue
+    else:
+        # Grayscale data
+        gray = (data >> 3) & 0x1F
+        r = g = b = gray
+    
+    # Combine into 16-bit values (RGB555 format: 0RRRRRGGGGGBBBBB)
+    rgb555 = (r << 10) | (g << 5) | b
+    
+    # Save as big-endian binary file (N64 is big-endian)
+    with open(filename, 'wb') as f:
+        for row in rgb555:
+            for pixel in row:
+                # Write as big-endian 16-bit value
+                f.write(struct.pack('>H', int(pixel)))
+
+def generate_balatro_palette():
+    """Generate the exact Balatro color palette as 1D LUT"""
+    # Create 256 values from 0 to 1
+    vals = np.linspace(0, 1, PALETTE_SIZE)
+    
+    # Balatro color stops
     colors = [
         (0.0, np.array([15, 20, 40])),    # dark navy
         (0.3, np.array([70, 120, 180])),  # muted blue
         (0.6, np.array([200, 90, 60])),   # muted orange/red
         (1.0, np.array([220, 220, 220]))  # soft white
     ]
-    r = np.zeros_like(val)
-    g = np.zeros_like(val)
-    b = np.zeros_like(val)
-    for i in range(len(colors)-1):
-        lv, lc = colors[i]
-        rv, rc = colors[i+1]
-        mask = (val >= lv) & (val <= rv)
-        t = (val[mask] - lv) / (rv - lv)
-        r[mask] = lerp(lc[0], rc[0], t)
-        g[mask] = lerp(lc[1], rc[1], t)
-        b[mask] = lerp(lc[2], rc[2], t)
-    return np.dstack([r,g,b]).astype(np.uint8)
-
-def save_as_n64_rgb555(filename, data):
-    """Save data as N64 RGB555 format"""
-    # Convert to RGB555 format (16-bit)
-    # Format: 0RRRRRGGGGGBBBBB
-    r = (data[:, :, 0] >> 3) & 0x1F  # 5 bits for red
-    g = (data[:, :, 1] >> 3) & 0x1F  # 5 bits for green
-    b = (data[:, :, 2] >> 3) & 0x1F  # 5 bits for blue
     
-    # Combine into 16-bit values
-    rgb555 = (r << 10) | (g << 5) | b
+    palette_colors = np.zeros((PALETTE_SIZE, 3), dtype=np.uint8)
     
-    # Save as binary file
-    with open(filename, 'wb') as f:
-        for row in rgb555:
-            for pixel in row:
-                f.write(pixel.astype(np.uint16).tobytes())
+    for i, val in enumerate(vals):
+        # Find which color segment we're in
+        for j in range(len(colors)-1):
+            lv, lc = colors[j]
+            rv, rc = colors[j+1]
+            
+            if val >= lv and val <= rv:
+                t = (val - lv) / (rv - lv) if (rv - lv) > 0 else 0
+                palette_colors[i, 0] = int(lerp(lc[0], rc[0], t))
+                palette_colors[i, 1] = int(lerp(lc[1], rc[1], t))
+                palette_colors[i, 2] = int(lerp(lc[2], rc[2], t))
+                break
+    
+    # Reshape to 256x1x3 for saving
+    return palette_colors.reshape((PALETTE_SIZE, 1, 3))
 
 def generate_tileable_fbm(size, t=0):
-    """Generate a tileable FBM noise texture"""
-    # Create coordinate grids
-    x = np.linspace(0, 4, size)
-    y = np.linspace(0, 4, size)
-    x, y = np.meshgrid(x, y)
+    """Generate tileable FBM noise texture"""
+    # Create seamless coordinates using sine/cosine wrapping
+    i = np.arange(size)
+    x_coords = np.cos(2 * np.pi * i / size) * size / (2 * np.pi)
+    y_coords = np.sin(2 * np.pi * i / size) * size / (2 * np.pi)
+    
+    x, y = np.meshgrid(x_coords, y_coords)
     
     # Generate FBM noise
     noise = fbm(x, y, t=t)
     
-    return noise
+    # Normalize to [0, 255] for grayscale
+    noise = (noise - noise.min()) / (noise.max() - noise.min() + 1e-6)
+    noise_gray = (noise * 255).astype(np.uint8)
+    
+    return noise_gray
 
 def generate_warp_map(size, t=0):
-    """Generate a warp displacement map"""
-    # Create coordinate grids
-    x = np.linspace(0, 4, size)
-    y = np.linspace(0, 4, size)
-    x, y = np.meshgrid(x, y)
+    """Generate warp displacement map using RG channels"""
+    # Create seamless coordinates
+    i = np.arange(size)
+    x_coords = np.cos(2 * np.pi * i / size) * size / (2 * np.pi)
+    y_coords = np.sin(2 * np.pi * i / size) * size / (2 * np.pi)
     
-    # Generate two channels of FBM noise for displacement
+    x, y = np.meshgrid(x_coords, y_coords)
+    
+    # Generate two channels of FBM noise for X and Y displacement
     warp_x = fbm(x, y, t=t)
-    warp_y = fbm(x+100, y+100, t=t)
+    warp_y = fbm(x + 100, y + 100, t=t)  # Offset for different pattern
     
     # Normalize to [0, 1] range
     warp_x = (warp_x - warp_x.min()) / (warp_x.max() - warp_x.min() + 1e-6)
     warp_y = (warp_y - warp_y.min()) / (warp_y.max() - warp_y.min() + 1e-6)
     
-    # Convert to RGB (using R and G channels for displacement)
+    # Pack into RGB channels
     warp_map = np.zeros((size, size, 3), dtype=np.uint8)
-    warp_map[:, :, 0] = (warp_x * 255).astype(np.uint8)  # R channel
-    warp_map[:, :, 1] = (warp_y * 255).astype(np.uint8)  # G channel
-    warp_map[:, :, 2] = 0  # B channel (unused)
+    warp_map[:, :, 0] = (warp_x * 255).astype(np.uint8)  # R = X displacement
+    warp_map[:, :, 1] = (warp_y * 255).astype(np.uint8)  # G = Y displacement
+    warp_map[:, :, 2] = 128  # B = neutral (0.5 in normalized space)
     
     return warp_map
 
-def generate_palette_lut():
-    """Generate the 256-color palette LUT"""
-    # Create a 1D array of values from 0 to 1
-    vals = np.linspace(0, 1, 256)
+def generate_all_textures(t=0):
+    """Generate all required N64 textures"""
+    print("Generating N64 Balatro textures...")
     
-    # Apply palette mapping
-    palette_colors = np.zeros((256, 3), dtype=np.uint8)
-    for i, val in enumerate(vals):
-        # Simple linear mapping for now (will be replaced with actual palette)
-        palette_colors[i] = [int(val * 255), int(val * 255), int(val * 255)]
+    # Generate FBM noise texture (64x64 grayscale)
+    print("- Generating FBM noise texture (64x64)...")
+    fbm_texture = generate_tileable_fbm(TILE_SIZE, t)
+    save_as_n64_rgb555("fbm_noise.rgb555", fbm_texture)
     
-    # Reshape to 256x1 image
-    palette_colors = palette_colors.reshape((256, 1, 3))
-    
-    return palette_colors
-
-# ----------------------
-# Texture generation
-# ----------------------
-def generate_textures(t):
-    """Generate all required textures"""
-    # Generate tileable FBM noise texture
-    fbm_noise = generate_tileable_fbm(TILE_SIZE, t)
-    # Normalize to [0, 1] and convert to RGB
-    fbm_noise = (fbm_noise - fbm_noise.min()) / (fbm_noise.max() - fbm_noise.min() + 1e-6)
-    fbm_rgb = np.zeros((TILE_SIZE, TILE_SIZE, 3), dtype=np.uint8)
-    fbm_rgb[:, :, 0] = (fbm_noise * 255).astype(np.uint8)
-    fbm_rgb[:, :, 1] = (fbm_noise * 255).astype(np.uint8)
-    fbm_rgb[:, :, 2] = (fbm_noise * 255).astype(np.uint8)
-    
-    # Generate warp displacement map
+    # Generate warp displacement map (32x32 RG)
+    print("- Generating warp displacement map (32x32)...")
     warp_map = generate_warp_map(WARP_MAP_SIZE, t)
+    save_as_n64_rgb555("warp_map.rgb555", warp_map)
     
-    # Generate palette LUT
-    palette_lut = generate_palette_lut()
+    # Generate Balatro color palette (256x1)
+    print("- Generating Balatro palette LUT (256x1)...")
+    palette_lut = generate_balatro_palette()
+    save_as_n64_rgb555("palette_lut.rgb555", palette_lut)
     
-    return fbm_rgb, warp_map, palette_lut
+    print("All textures saved!")
+    print(f"- fbm_noise.rgb555: {TILE_SIZE}x{TILE_SIZE} RGB555 ({TILE_SIZE*TILE_SIZE*2} bytes)")
+    print(f"- warp_map.rgb555: {WARP_MAP_SIZE}x{WARP_MAP_SIZE} RGB555 ({WARP_MAP_SIZE*WARP_MAP_SIZE*2} bytes)")
+    print(f"- palette_lut.rgb555: {PALETTE_SIZE}x1 RGB555 ({PALETTE_SIZE*2} bytes)")
+    print(f"Total texture memory: {(TILE_SIZE*TILE_SIZE + WARP_MAP_SIZE*WARP_MAP_SIZE + PALETTE_SIZE) * 2} bytes")
 
-# ----------------------
-# Main frame generation
-# ----------------------
-def generate_frame(t):
-    y, x = np.mgrid[0:H, 0:W]
+def generate_test_variations():
+    """Generate multiple texture variations for testing"""
+    print("Generating texture variations...")
     
-    # Normalize coordinates
-    x = x / W * 4.0
-    y = y / H * 4.0
+    # Generate a few time-based variations
+    times = [0.0, 1.0, 2.0, 3.0]
     
-    # ----------------------
-    # Scrolling FBM noise
-    # ----------------------
-    scroll = t * SCROLL_SPEED
-    warp_x = fbm(x, y, t=scroll)
-    warp_y = fbm(x+100, y+100, t=scroll)
-    
-    # ----------------------
-    # Spiral / center bias
-    # ----------------------
-    cx, cy = 2.0, 2.0  # center in normalized coordinates
-    dx = x - cx
-    dy = y - cy
-    r = np.sqrt(dx**2 + dy**2)
-    angle = SPIRAL_STRENGTH * r + t*ROTATE_SPEED
-    cos_a = np.cos(angle)
-    sin_a = np.sin(angle)
-    
-    # Rotate coordinates
-    x_rot = cx + dx*cos_a - dy*sin_a + warp_x*0.5
-    y_rot = cy + dx*sin_a + dy*cos_a + warp_y*0.5
-    
-    # ----------------------
-    # Marble pattern
-    # ----------------------
-    marble = np.sin(MARBLE_FREQ * x_rot + fbm(x_rot, y_rot, t=t*0.05)*2.0 + t)
-    
-    # ----------------------
-    # Improved center bias - preserve detail, just shift brightness range
-    # ----------------------
-    center_falloff = 1 - np.power(r / 2.0, CENTER_BIAS)
-    marble = marble * 0.7 + center_falloff * 0.3
-    
-    # Normalize for palette
-    val = (marble - marble.min()) / (marble.max() - marble.min() + 1e-6)
-    
-    return palette(val)
-
-# ----------------------
-# Main loop
-# ----------------------
-running = True
-start = time.time()
-texture_gen_counter = 0
-
-while running:
-    t = time.time() - start
-    frame = generate_frame(t)
-    surf = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
-    screen.blit(surf, (0, 0))
-    pygame.display.flip()
-    clock.tick(30)
-    
-    # Generate N64 textures every 2 seconds
-    if int(t) > texture_gen_counter:
-        texture_gen_counter = int(t)
-        print(f"Generating N64 textures at t={t}")
+    for i, t in enumerate(times):
+        print(f"- Generating variation {i+1} (t={t})...")
         
-        # Generate textures
-        fbm_rgb, warp_map, palette_lut = generate_textures(t)
+        fbm_texture = generate_tileable_fbm(TILE_SIZE, t)
+        warp_map = generate_warp_map(WARP_MAP_SIZE, t)
         
-        # Save as N64 RGB555 format
-        save_as_n64_rgb555("fbm_noise.rgb555", fbm_rgb)
-        save_as_n64_rgb555("warp_map.rgb555", warp_map)
-        save_as_n64_rgb555("palette_lut.rgb555", palette_lut)
-        
-        print("Textures saved!")
+        save_as_n64_rgb555(f"fbm_noise_v{i+1}.rgb555", fbm_texture)
+        save_as_n64_rgb555(f"warp_map_v{i+1}.rgb555", warp_map)
     
-    for e in pygame.event.get():
-        if e.type == pygame.QUIT:
-            running = False
+    print("Variations saved!")
 
-pygame.quit()
+if __name__ == "__main__":
+    # Generate the main textures
+    generate_all_textures(t=0.0)
+    
+    # Optionally generate test variations
+    # generate_test_variations()
+    
+    print("\nReady for N64! Copy the .rgb555 files to your ROM directory.")
