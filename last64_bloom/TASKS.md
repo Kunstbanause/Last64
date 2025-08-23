@@ -39,6 +39,9 @@
 ### ✅ Phase 7: UI Improvements
 - [x] Enhanced weapon overview to show all weapons for each player
 
+### ✅ Phase 8: Debugging Features
+- [x] Added debug button (L) to level up players for testing
+
 ## 🛠️ Implemented Features
 
 ### Weapons
@@ -57,3 +60,4 @@
 ~~Weapon initialization/cleanup issue causing crashes on upgrade has been fixed.~~
 ~~Excessive safety checks in projectile system have been cleaned up.~~
 ~~Weapon overview now shows all weapons for each player.~~
+~~Debug button (L) added to level up players for testing.~~

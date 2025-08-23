@@ -172,6 +172,16 @@ void SceneLast64::updateScene(float deltaTime)
 
             roundTimer += deltaTime;
 
+            // Debug input: Press L button to level up all players (for testing)
+            for (int i = 0; i < 4; ++i) {
+                joypad_buttons_t pressed = joypad_get_buttons_pressed((joypad_port_t)(JOYPAD_PORT_1 + i));
+                if (pressed.l) {
+                    // Add XP to trigger level up
+                    Experience::addXP(100);
+                    break; // Only trigger once per frame
+                }
+            }
+
             // Update players (this will also update their weapons)
             if (player1) player1->update(deltaTime);
             if (player2) player2->update(deltaTime);
