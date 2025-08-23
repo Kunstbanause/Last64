@@ -15,17 +15,28 @@
 - [x] Auto-fire projectiles
 - [x] Enemy spawning and AI
 - [x] Collision and damage system
-- [ ] Player taking damage and death
+- [x] Player taking damage and death
 
 ### ✅ Phase 3: Progression
-- [ ] Level up system
-- [ ] Weapon types and upgrades
+- [x] Level up system
+- [x] Weapon types and upgrades
 - [x] Audio test
 
 ### ✅ Phase 4: Polish & Features
 - [x] GUI: XP bar, level, press start
-- [ ] Visual effects: Bloom, screenshake, blood particles, blood on floor
+- [x] Visual effects: Bloom, screenshake, blood particles, blood on floor
 - [x] Multiplayer support (4 players)
+
+## 🛠️ Implemented Features
+
+### Weapons
+- **Projectile Weapon**: Basic weapon that fires projectiles in a straight line
+- **Homing Weapon**: Fires projectiles that home in on nearby enemies
+- **Circular Weapon**: Fires projectiles in a circular pattern around the player
+
+### Upgrades
+- **Weapon Upgrades**: Each weapon can be upgraded to increase its effectiveness
+- **New Weapons**: Players can acquire new weapon types as they level up
 
 ## 🛠️ KNOWN ISSUES
 ~~All the geometry is black (not showing the configured color). Something with the custom code generated geometry or render pipeline is not correct.~~
