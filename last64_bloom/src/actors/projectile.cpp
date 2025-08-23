@@ -221,21 +221,12 @@ namespace Actor {
     void Projectile::drawPTX(float deltaTime) {}
 
     void Projectile::deactivate() {
-        // Comprehensive safety check to prevent null pointer dereference
-        if (activeFlags == nullptr) {
+        if (poolIndex < MAX_PROJECTILES) {
+            activeFlags[poolIndex] = false;
             flags |= FLAG_DISABLED;
-            return;
-        }
-        
-        if (poolIndex >= MAX_PROJECTILES || poolIndex < 0) {
-            flags |= FLAG_DISABLED;
-            return;
-        }
-        
-        activeFlags[poolIndex] = false;
-        flags |= FLAG_DISABLED;
-        if (activeCount > 0) {
-            activeCount--;
+            if (activeCount > 0) {
+                activeCount--;
+            }
         }
     }
 

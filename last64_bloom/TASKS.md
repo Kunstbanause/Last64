@@ -34,6 +34,10 @@
 ### ✅ Phase 6: Bug Fixes
 - [x] Fixed projectile null pointer dereference crash
 - [x] Fixed weapon initialization/cleanup issue causing crashes on upgrade
+- [x] Cleaned up excessive safety checks in projectile system
+
+### ✅ Phase 7: UI Improvements
+- [x] Enhanced weapon overview to show all weapons for each player
 
 ## 🛠️ Implemented Features
 
@@ -51,3 +55,5 @@
 ~~All the geometry is black (not showing the configured color). Something with the custom code generated geometry or render pipeline is not correct.~~
 ~~Projectile null pointer dereference crash has been fixed.~~
 ~~Weapon initialization/cleanup issue causing crashes on upgrade has been fixed.~~
+~~Excessive safety checks in projectile system have been cleaned up.~~
+~~Weapon overview now shows all weapons for each player.~~

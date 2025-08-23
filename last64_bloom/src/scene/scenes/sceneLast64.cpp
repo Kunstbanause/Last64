@@ -13,6 +13,7 @@
 #include <t3d/t3dmath.h>
 #include <libdragon.h>
 #include <vector>
+#include <string.h>
 #include "../../audio.h"
 
 namespace {
@@ -367,33 +368,51 @@ void SceneLast64::draw2D(float deltaTime)
                     case 3: currentPlayer = player4; break;
                 }
                 if (currentPlayer) {
-                    // Display player weapons in a compact format
+                    // Display all player weapons in a compact format
                     auto& weapons = currentPlayer->getWeapons();
                     if (!weapons.empty()) {
-                        // Show first weapon type and level
-                        char weaponChar = '?';
-                        int level = 0;
-                        if (weapons[0]) {
-                            level = weapons[0]->getUpgradeLevel();
-                            
-                            // Use first letter of weapon type as identifier
-                            // P=Projectile, H=Homing, C=Circular
-                            switch (weapons[0]->getWeaponType()) {
-                                case Actor::WeaponType::PROJECTILE:
-                                    weaponChar = 'P';
-                                    break;
-                                case Actor::WeaponType::HOMING:
-                                    weaponChar = 'H';
-                                    break;
-                                case Actor::WeaponType::CIRCULAR:
-                                    weaponChar = 'C';
-                                    break;
-                                default:
-                                    weaponChar = 'W';
-                                    break;
+                        // Create a string to show all weapons
+                        char weaponString[50] = {0}; // Buffer for weapon info
+                        char temp[10] = {0};
+                        strcpy(weaponString, "P");
+                        char playerNum[2] = {0};
+                        playerNum[0] = '0' + (i + 1);
+                        strcat(weaponString, playerNum);
+                        strcat(weaponString, ":");
+                        
+                        // Add info for each weapon
+                        for (size_t j = 0; j < weapons.size() && j < 3; ++j) { // Limit to 3 weapons for display
+                            if (weapons[j]) {
+                                char weaponChar = '?';
+                                int level = weapons[j]->getUpgradeLevel();
+                                
+                                // Use first letter of weapon type as identifier
+                                // P=Projectile, H=Homing, C=Circular
+                                switch (weapons[j]->getWeaponType()) {
+                                    case Actor::WeaponType::PROJECTILE:
+                                        weaponChar = 'P';
+                                        break;
+                                    case Actor::WeaponType::HOMING:
+                                        weaponChar = 'H';
+                                        break;
+                                    case Actor::WeaponType::CIRCULAR:
+                                        weaponChar = 'C';
+                                        break;
+                                    default:
+                                        weaponChar = 'W';
+                                        break;
+                                }
+                                
+                                // Add weapon info to string
+                                temp[0] = weaponChar;
+                                temp[1] = '0' + level;
+                                temp[2] = (j < weapons.size() - 1 && j < 2) ? ',' : '\0'; // Add comma if not last
+                                temp[3] = '\0';
+                                strcat(weaponString, temp);
                             }
                         }
-                        Debug::printf(10, 10 + (i * 10), "P%d:%c%d", i + 1, weaponChar, level);
+                        
+                        Debug::printf(10, 10 + (i * 10), "%s", weaponString);
                     } else {
                         Debug::printf(10, 10 + (i * 10), "P%d:None", i + 1);
                     }
