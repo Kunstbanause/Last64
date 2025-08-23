@@ -178,6 +178,7 @@ void SceneLast64::updateScene(float deltaTime)
             // --- Collision Detection ---
             // Enemy-Projectile Collision
             for (uint32_t i = 0; i < MAX_ENEMIES; ++i) {
+                if (!Actor::Enemy::isActive(i)) continue;
                 Actor::Enemy* enemy = Actor::Enemy::getEnemy(i);
                 if (!enemy || !enemy->isActive()) continue;
 
@@ -186,7 +187,7 @@ void SceneLast64::updateScene(float deltaTime)
                     if (!proj || !proj->isActive()) continue;
 
                     if (enemy->collidesWith(proj)) {
-                        enemy->takeDamage(4/activePlayerCount); // Player scaled damage
+                        enemy->takeDamage(proj->getDamage()); // Use projectile's damage value
                         proj->deactivate(); // Projectile disappears on hit
                         // Play hit sound effect
                         gSFXManager.play(SFXManager::SFX_HIT);
@@ -327,9 +328,6 @@ void SceneLast64::draw3D(float deltaTime)
     
     // Draw all enemies
     Actor::Enemy::drawAll(deltaTime);
-
-    // Draw all projectiles
-    Actor::Projectile::drawAll(deltaTime);
 
     // Pop scene matrix
     t3d_matrix_pop(1);

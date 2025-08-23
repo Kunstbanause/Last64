@@ -3,6 +3,8 @@
 * @license MIT
 */
 #include "projectile.h"
+#include "enemy.h"
+#include "player.h"
 #include "../main.h"
 #include <t3d/t3d.h>
 #include <libdragon.h>
@@ -30,6 +32,8 @@ namespace Actor {
         slowdown = 0.0f; // Default no slowdown
         lifetime = 0.0f;
         maxLifetime = 1.0f;
+        damage = 1; // Default damage
+        color = DEFAULT_PROJECTILE_COLOR; // Default color
         flags |= FLAG_DISABLED;
     }
 
@@ -75,16 +79,16 @@ namespace Actor {
             sharedVertices[idx] = (T3DVertPacked){};
             sharedVertices[idx].posA[0] = -2; sharedVertices[idx].posA[1] = -2; sharedVertices[idx].posA[2] = 0;
             sharedVertices[idx].posB[0] =  2; sharedVertices[idx].posB[1] = -2; sharedVertices[idx].posB[2] = 0;
-            sharedVertices[idx].rgbaA = 0xFF00FFFF;
-            sharedVertices[idx].rgbaB = 0xFF00FFFF;
+            sharedVertices[idx].rgbaA = DEFAULT_PROJECTILE_COLOR;
+            sharedVertices[idx].rgbaB = DEFAULT_PROJECTILE_COLOR;
             sharedVertices[idx].normA = norm;
             sharedVertices[idx].normB = norm;
 
             sharedVertices[idx+1] = (T3DVertPacked){};
             sharedVertices[idx+1].posA[0] =  2; sharedVertices[idx+1].posA[1] =  2; sharedVertices[idx+1].posA[2] = 0;
             sharedVertices[idx+1].posB[0] = -2; sharedVertices[idx+1].posB[1] =  2; sharedVertices[idx+1].posB[2] = 0;
-            sharedVertices[idx+1].rgbaA = 0xFF00FFFF;
-            sharedVertices[idx+1].rgbaB = 0xFF00FFFF;
+            sharedVertices[idx+1].rgbaA = DEFAULT_PROJECTILE_COLOR;
+            sharedVertices[idx+1].rgbaB = DEFAULT_PROJECTILE_COLOR;
             sharedVertices[idx+1].normA = norm;
             sharedVertices[idx+1].normB = norm;
         }
@@ -99,7 +103,7 @@ namespace Actor {
         initialized = true;
     }
 
-    Projectile* Projectile::spawn(const T3DVec3& pos, const T3DVec3& vel, float spd, float slowdown) {
+    Projectile* Projectile::spawn(const T3DVec3& pos, const T3DVec3& vel, float spd, float slowdown, int damage, uint32_t color) {
         if (!initialized) initializePool();
 
         for (uint32_t i = 0; i < MAX_PROJECTILES; i++) {
@@ -113,6 +117,8 @@ namespace Actor {
                 p->speed = spd;
                 p->slowdown = slowdown;
                 p->lifetime = 0.0f;
+                p->damage = damage; // Set the damage value
+                p->color = color; // Set the color
                 p->flags &= ~FLAG_DISABLED;
                 return p;
             }
@@ -166,6 +172,21 @@ namespace Actor {
             return;
         }
 
+        // Check for collisions with enemies
+        for (uint32_t i = 0; i < MAX_ENEMIES; i++) {
+            if (Actor::Enemy::isActive(i)) {
+                Actor::Enemy* enemy = Actor::Enemy::getEnemy(i);
+                if (enemy && enemy->isActive() && enemy->collidesWith(this)) {
+                    enemy->takeDamage(damage);
+                    deactivate();
+                    return;
+                }
+            }
+        }
+
+        // Check for collisions with players (for enemy projectiles)
+        // This would be implemented if we had enemy projectiles
+
         if (poolIndex < MAX_PROJECTILES) {
             t3d_mat4fp_from_srt_euler(
                 sharedMatrices[poolIndex],
@@ -180,6 +201,12 @@ namespace Actor {
         if (flags & FLAG_DISABLED) return;
 
         if (poolIndex < MAX_PROJECTILES) {
+            // Update vertex colors for this specific projectile
+            sharedVertices[poolIndex * 2].rgbaA = color;
+            sharedVertices[poolIndex * 2].rgbaB = color;
+            sharedVertices[poolIndex * 2 + 1].rgbaA = color;
+            sharedVertices[poolIndex * 2 + 1].rgbaB = color;
+
             t3d_matrix_push(sharedMatrices[poolIndex]);
             t3d_vert_load(&sharedVertices[poolIndex * 2], 0, 4);
             t3d_tri_draw(0, 1, 2);

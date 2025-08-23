@@ -8,6 +8,9 @@
 
 #define MAX_PROJECTILES 100
 
+// Default projectile color (cyan)
+#define DEFAULT_PROJECTILE_COLOR 0xFF00FFFF
+
 namespace Actor {
     class Projectile : public Base {
     private:
@@ -27,6 +30,8 @@ namespace Actor {
         float lifetime;
         float maxLifetime;
         uint32_t poolIndex;
+        int damage; // Damage dealt by this projectile
+        uint32_t color; // Color of this projectile
 
         static void initializePool();
 
@@ -37,7 +42,7 @@ namespace Actor {
         // Static methods for managing the pool
         static void initialize();
         static void cleanup();
-        static Projectile* spawn(const T3DVec3& position, const T3DVec3& velocity, float speed, float slowdown);
+        static Projectile* spawn(const T3DVec3& position, const T3DVec3& velocity, float speed, float slowdown, int damage = 1, uint32_t color = DEFAULT_PROJECTILE_COLOR);
         static void updateAll(float deltaTime);
         static void drawAll(float deltaTime);
         static uint32_t getActiveCount() { return activeCount; }
@@ -53,5 +58,8 @@ namespace Actor {
 
         T3DVec3 getPosition() const override { return position; }
         float getRadius() const override { return 2.0f; } // Projectiles are 2x2 quads
+        int getDamage() const { return damage; }
+        uint32_t getColor() const { return color; }
+        void setColor(uint32_t newColor) { color = newColor; }
     };
 }

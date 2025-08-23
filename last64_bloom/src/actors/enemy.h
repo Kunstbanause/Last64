@@ -41,6 +41,7 @@ namespace Actor {
         static void drawAll(float deltaTime);
         static uint32_t getActiveCount() { return activeCount; }
         static Enemy* getEnemy(uint32_t index) { return &enemyPool[index]; }
+        static bool isActive(uint32_t index) { return activeFlags[index]; }
 
         void update(float deltaTime) override;
         void draw3D(float deltaTime) override;
