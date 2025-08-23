@@ -16,9 +16,6 @@
 
 namespace Actor {
     WeaponCircular::WeaponCircular() : WeaponBase(WeaponType::CIRCULAR) {
-        // Initialize projectile pool
-        Projectile::initialize();
-        
         // Set weapon-specific properties
         fireRate = 2.0f;              // Slower fire rate
         projectileSpeed = 100.0f;     // Slower projectile speed
@@ -31,8 +28,7 @@ namespace Actor {
     }
     
     WeaponCircular::~WeaponCircular() {
-        // Cleanup projectile pool
-        Projectile::cleanup();
+        // No cleanup needed - projectile system is managed by the scene
     }
     
     void WeaponCircular::update(float deltaTime) {

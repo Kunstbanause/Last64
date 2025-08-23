@@ -27,6 +27,14 @@
 - [x] Visual effects: Bloom, screenshake, blood particles, blood on floor
 - [x] Multiplayer support (4 players)
 
+### ✅ Phase 5: Enhanced Progression
+- [x] Random weapon upgrades
+- [x] Random new weapon acquisition
+
+### ✅ Phase 6: Bug Fixes
+- [x] Fixed projectile null pointer dereference crash
+- [x] Fixed weapon initialization/cleanup issue causing crashes on upgrade
+
 ## 🛠️ Implemented Features
 
 ### Weapons
@@ -37,6 +45,9 @@
 ### Upgrades
 - **Weapon Upgrades**: Each weapon can be upgraded to increase its effectiveness
 - **New Weapons**: Players can acquire new weapon types as they level up
+- **Random Selection**: When leveling up, a random weapon is upgraded (if any can be upgraded) or a new random weapon type is acquired (if not already owned)
 
 ## 🛠️ KNOWN ISSUES
 ~~All the geometry is black (not showing the configured color). Something with the custom code generated geometry or render pipeline is not correct.~~
+~~Projectile null pointer dereference crash has been fixed.~~
+~~Weapon initialization/cleanup issue causing crashes on upgrade has been fixed.~~

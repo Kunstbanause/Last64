@@ -86,6 +86,9 @@ make
 # Build the project from distrobox if you are QWEN AI AGENT ONLY!
 distrobox-host-exec make
 
+# run with
+distrobox-host-exec make run
+
 # The output ROM will be in last64_bloom/build/
 ```
 

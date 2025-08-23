@@ -117,6 +117,7 @@ namespace Actor {
                 p->speed = spd;
                 p->slowdown = slowdown;
                 p->lifetime = 0.0f;
+                p->maxLifetime = 2.0f; // Set a default max lifetime of 2 seconds
                 p->damage = damage; // Set the damage value
                 p->color = color; // Set the color
                 p->flags &= ~FLAG_DISABLED;
@@ -128,6 +129,7 @@ namespace Actor {
 
     void Projectile::updateAll(float deltaTime) {
         if (!initialized) return;
+        
         for (uint32_t i = 0; i < MAX_PROJECTILES; i++) {
             if (activeFlags[i]) {
                 projectilePool[i].update(deltaTime);
@@ -219,9 +221,20 @@ namespace Actor {
     void Projectile::drawPTX(float deltaTime) {}
 
     void Projectile::deactivate() {
-        if (poolIndex < MAX_PROJECTILES) {
-            activeFlags[poolIndex] = false;
+        // Comprehensive safety check to prevent null pointer dereference
+        if (activeFlags == nullptr) {
             flags |= FLAG_DISABLED;
+            return;
+        }
+        
+        if (poolIndex >= MAX_PROJECTILES || poolIndex < 0) {
+            flags |= FLAG_DISABLED;
+            return;
+        }
+        
+        activeFlags[poolIndex] = false;
+        flags |= FLAG_DISABLED;
+        if (activeCount > 0) {
             activeCount--;
         }
     }

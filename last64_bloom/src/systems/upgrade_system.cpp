@@ -16,22 +16,27 @@ namespace UpgradeSystem {
         
         // Get player's weapons
         auto& weapons = player->getWeapons();
-        if (weapons.empty()) return options;
         
-        // Check if player can upgrade any weapon
+        // Find all weapons that can be upgraded
+        std::vector<Actor::WeaponBase*> upgradableWeapons;
         for (auto& weapon : weapons) {
             if (weapon && canUpgradeWeapon(weapon)) {
-                UpgradeOption upgradeOption;
-                upgradeOption.type = UpgradeType::WEAPON_UPGRADE;
-                upgradeOption.weapon = weapon;
-                options.push_back(upgradeOption);
-                break; // Only one upgrade option for now
+                upgradableWeapons.push_back(weapon);
             }
         }
         
+        // If there are upgradable weapons, randomly select one
+        if (!upgradableWeapons.empty()) {
+            int randomIndex = rand() % upgradableWeapons.size();
+            UpgradeOption upgradeOption;
+            upgradeOption.type = UpgradeType::WEAPON_UPGRADE;
+            upgradeOption.weapon = upgradableWeapons[randomIndex];
+            options.push_back(upgradeOption);
+        }
+        
         // Check if player can get a new weapon (different from current)
-        // Try up to 3 times to find a valid new weapon
-        for (int i = 0; i < 3; i++) {
+        // Try up to 10 times to find a valid new weapon (increased from 3)
+        for (int i = 0; i < 10; i++) {
             int weaponType = rand() % 3;
             Actor::WeaponBase* newWeapon = createWeapon(weaponType);
             

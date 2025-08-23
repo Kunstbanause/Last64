@@ -1,4 +1,6 @@
 #include "experience.h"
+#include "upgrade_system.h"
+#include "../systems/weapon_base.h"
 #include <libdragon.h>
 #include <cmath>
 #include <rdpq.h>
@@ -65,11 +67,21 @@ void Experience::addXP(int amount) {
         // Generate upgrade options for each player
         for (int i = 0; i < activePlayerCount; ++i) {
             if (activePlayers[i]) {
-                // In a full implementation, we would present options to the player here
-                // For now, just upgrade the first weapon if available
-                auto& weapons = activePlayers[i]->getWeapons();
-                if (!weapons.empty() && weapons[0]) {
-                    weapons[0]->upgrade();
+                // Generate upgrade options
+                auto upgradeOptions = UpgradeSystem::generateUpgradeOptions(activePlayers[i]);
+                
+                // If we have options, apply a random one
+                if (!upgradeOptions.empty()) {
+                    int randomIndex = rand() % upgradeOptions.size();
+                    UpgradeSystem::applyUpgrade(activePlayers[i], upgradeOptions[randomIndex]);
+                    
+                    // Clean up any new weapon options that weren't selected
+                    for (auto& option : upgradeOptions) {
+                        if (option.type == UpgradeSystem::UpgradeType::NEW_WEAPON && 
+                            option.weapon != upgradeOptions[randomIndex].weapon) {
+                            delete option.weapon;
+                        }
+                    }
                 }
             }
         }

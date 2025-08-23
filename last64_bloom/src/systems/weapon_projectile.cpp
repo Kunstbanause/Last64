@@ -12,9 +12,6 @@
 
 namespace Actor {
     WeaponProjectile::WeaponProjectile() : WeaponBase(WeaponType::PROJECTILE) {
-        // Initialize projectile pool
-        Projectile::initialize();
-        
         // Set weapon-specific properties
         fireRate = 0.9f;
         projectileSpeed = 200.0f;
@@ -28,8 +25,7 @@ namespace Actor {
     }
     
     WeaponProjectile::~WeaponProjectile() {
-        // Cleanup projectile pool
-        Projectile::cleanup();
+        // No cleanup needed - projectile system is managed by the scene
     }
     
     void WeaponProjectile::update(float deltaTime) {

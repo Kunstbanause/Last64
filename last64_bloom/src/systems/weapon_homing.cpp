@@ -17,9 +17,6 @@
 
 namespace Actor {
     WeaponHoming::WeaponHoming() : WeaponBase(WeaponType::HOMING) {
-        // Initialize projectile pool
-        Projectile::initialize();
-        
         // Set weapon-specific properties
         fireRate = 1.5f;              // Slower fire rate
         projectileSpeed = 150.0f;     // Slower projectile speed
@@ -32,8 +29,7 @@ namespace Actor {
     }
     
     WeaponHoming::~WeaponHoming() {
-        // Cleanup projectile pool
-        Projectile::cleanup();
+        // No cleanup needed - projectile system is managed by the scene
     }
     
     void WeaponHoming::update(float deltaTime) {
