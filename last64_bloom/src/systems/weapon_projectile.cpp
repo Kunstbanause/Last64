@@ -90,8 +90,8 @@ namespace Actor {
                 direction.z
             }};
             
-            // Spawn projectile with spread direction (standard damage = 1, default color)
-            Projectile::spawn(spawnPos, spreadDirection, projectileSpeed, projectileSlowdown, 1, DEFAULT_PROJECTILE_COLOR);
+            // Spawn projectile with spread direction, default color)
+            Projectile::spawn(spawnPos, spreadDirection, projectileSpeed, projectileSlowdown, 3, DEFAULT_PROJECTILE_COLOR);
         }
     }
 

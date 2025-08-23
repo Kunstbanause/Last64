@@ -122,8 +122,8 @@ namespace Actor {
             }
         }
         
-        // Spawn a projectile with double damage (damage = 2) and special color
-        Projectile::spawn(spawnPos, fireDirection, projectileSpeed, projectileSlowdown, 2, HOMING_PROJECTILE_COLOR);
+        // Spawn a projectile with double damage and special color
+        Projectile::spawn(spawnPos, fireDirection, projectileSpeed, projectileSlowdown, 8, HOMING_PROJECTILE_COLOR);
     }
 
     void WeaponHoming::fireManual() {
