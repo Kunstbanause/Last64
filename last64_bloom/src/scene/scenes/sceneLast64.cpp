@@ -329,6 +329,9 @@ void SceneLast64::draw3D(float deltaTime)
     // Draw all enemies
     Actor::Enemy::drawAll(deltaTime);
 
+    // Draw all projectiles
+    Actor::Projectile::drawAll(deltaTime);
+
     // Pop scene matrix
     t3d_matrix_pop(1);
 }

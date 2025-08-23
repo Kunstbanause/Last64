@@ -59,8 +59,7 @@ namespace Actor {
     }
     
     void HomingProjectileWeapon::draw3D(float deltaTime) {
-        // Draw all projectiles
-        Projectile::drawAll(deltaTime);
+        // No longer drawing projectiles here - handled by scene
     }
     
     void HomingProjectileWeapon::drawPTX(float deltaTime) {

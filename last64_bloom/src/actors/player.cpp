@@ -1,10 +1,7 @@
-/**
-* @copyright 2025 - Max Bebök
-* @license MIT
-*/
 #include "player.h"
 #include "../systems/projectile_weapon.h"
 #include "../systems/homing_projectile_weapon.h"
+#include "../systems/circular_projectile_weapon.h"
 #include "../main.h"
 #include <t3d/t3d.h>
 #include <t3d/tpx.h>
@@ -111,16 +108,15 @@ namespace Actor {
                 break;
         }
         
-        // Initialize weapons
+        // Initialize weapons - all weapons active simultaneously
         weapon1 = new ProjectileWeapon();
         weapon1->setPlayer(this);
         
         weapon2 = new HomingProjectileWeapon();
         weapon2->setPlayer(this);
         
-        // Start with weapon1 active
-        activeWeapon = weapon1;
-        activeWeaponIndex = 0;
+        weapon3 = new CircularProjectileWeapon();
+        weapon3->setPlayer(this);
         
         flags &= ~FLAG_DISABLED; // Clear the disabled flag to enable the actor
     }
@@ -169,7 +165,10 @@ namespace Actor {
             weapon2 = nullptr;
         }
         
-        activeWeapon = nullptr;
+        if (weapon3) {
+            delete weapon3;
+            weapon3 = nullptr;
+        }
     }
     
     void Player::update(float deltaTime) {
@@ -206,22 +205,33 @@ namespace Actor {
         }
         // Z position stays constant (we're moving on the X/Y plane)
         
-        // Update active weapon
-        if (activeWeapon) {
-            activeWeapon->update(deltaTime);
+        // Update all weapons
+        if (weapon1) {
+            weapon1->update(deltaTime);
+        }
+        
+        if (weapon2) {
+            weapon2->update(deltaTime);
+        }
+        
+        if (weapon3) {
+            weapon3->update(deltaTime);
         }
         
         // Check if A button is pressed for manual firing
         joypad_buttons_t pressed = joypad_get_buttons_pressed(playerPort);
         if (pressed.a) {
-            if (activeWeapon) {
-                activeWeapon->fireManual();
+            if (weapon1) {
+                weapon1->fireManual();
             }
-        }
-        
-        // Check if B button is pressed for weapon switching
-        if (pressed.b) {
-            switchWeapon();
+            
+            if (weapon2) {
+                weapon2->fireManual();
+            }
+            
+            if (weapon3) {
+                weapon3->fireManual();
+            }
         }
         
         // Update rotation based on movement direction
@@ -259,26 +269,32 @@ namespace Actor {
         t3d_matrix_pop(1);
     }
     
-    // Draw weapon projectiles
-    if (activeWeapon) {
-        activeWeapon->draw3D(deltaTime);
+    // Draw weapon projectiles from all weapons
+    if (weapon1) {
+        weapon1->draw3D(deltaTime);
+    }
+    
+    if (weapon2) {
+        weapon2->draw3D(deltaTime);
+    }
+    
+    if (weapon3) {
+        weapon3->draw3D(deltaTime);
     }
 }
     
     void Player::drawPTX(float deltaTime) {
-        // Draw weapon particle effects
-        if (activeWeapon) {
-            activeWeapon->drawPTX(deltaTime);
+        // Draw weapon particle effects from all weapons
+        if (weapon1) {
+            weapon1->drawPTX(deltaTime);
+        }
+        
+        if (weapon2) {
+            weapon2->drawPTX(deltaTime);
+        }
+        
+        if (weapon3) {
+            weapon3->drawPTX(deltaTime);
         }
     }
 };
-
-void Actor::Player::switchWeapon() {
-    if (activeWeaponIndex == 0) {
-        activeWeapon = weapon2;
-        activeWeaponIndex = 1;
-    } else {
-        activeWeapon = weapon1;
-        activeWeaponIndex = 0;
-    }
-}
