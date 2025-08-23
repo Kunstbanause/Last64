@@ -32,10 +32,8 @@ namespace Actor {
         int health;
         int maxHealth;
         
-        // Weapons reference - all weapons active simultaneously
-        WeaponBase* weapon1;  // Standard projectile weapon
-        WeaponBase* weapon2;  // Homing projectile weapon
-        WeaponBase* weapon3;  // Third weapon (we'll add a new one)
+        // Single weapon reference - randomly assigned at start
+        WeaponBase* weapon;  // The player's weapon
         
         static void initialize();
         static void cleanup();
@@ -57,9 +55,7 @@ namespace Actor {
         bool collidesWith(Base* other);
         
         // Weapon methods
-        WeaponBase* getWeapon1() const { return weapon1; }
-        WeaponBase* getWeapon2() const { return weapon2; }
-        WeaponBase* getWeapon3() const { return weapon3; }
+        WeaponBase* getWeapon() const { return weapon; }
         
         static void initializePlayer() { initialize(); }
         static void cleanupPlayer() { cleanup(); }

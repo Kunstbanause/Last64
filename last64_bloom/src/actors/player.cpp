@@ -108,15 +108,20 @@ namespace Actor {
                 break;
         }
         
-        // Initialize weapons - all weapons active simultaneously
-        weapon1 = new WeaponProjectile();
-        weapon1->setPlayer(this);
-        
-        weapon2 = new WeaponHoming();
-        weapon2->setPlayer(this);
-        
-        weapon3 = new WeaponCircular();
-        weapon3->setPlayer(this);
+        // Initialize a single random weapon
+        int weaponType = rand() % 3;
+        switch (weaponType) {
+            case 0:
+                weapon = new WeaponProjectile();
+                break;
+            case 1:
+                weapon = new WeaponHoming();
+                break;
+            case 2:
+                weapon = new WeaponCircular();
+                break;
+        }
+        weapon->setPlayer(this);
         
         flags &= ~FLAG_DISABLED; // Clear the disabled flag to enable the actor
     }
@@ -154,20 +159,10 @@ namespace Actor {
             playerMatrix = nullptr;
         }
         
-        // Clean up weapons
-        if (weapon1) {
-            delete weapon1;
-            weapon1 = nullptr;
-        }
-        
-        if (weapon2) {
-            delete weapon2;
-            weapon2 = nullptr;
-        }
-        
-        if (weapon3) {
-            delete weapon3;
-            weapon3 = nullptr;
+        // Clean up weapon
+        if (weapon) {
+            delete weapon;
+            weapon = nullptr;
         }
     }
     
@@ -205,32 +200,16 @@ namespace Actor {
         }
         // Z position stays constant (we're moving on the X/Y plane)
         
-        // Update all weapons
-        if (weapon1) {
-            weapon1->update(deltaTime);
+        // Update weapon
+        if (weapon) {
+            weapon->update(deltaTime);
         }
         
-        if (weapon2) {
-            weapon2->update(deltaTime);
-        }
-        
-        if (weapon3) {
-            weapon3->update(deltaTime);
-        }
-        
-        // Check if A button is pressed for manual firing
+        // Check if button is pressed for manual firing
         joypad_buttons_t pressed = joypad_get_buttons_pressed(playerPort);
-        if (pressed.a) {
-            if (weapon1) {
-                weapon1->fireManual();
-            }
-            
-            if (weapon2) {
-                weapon2->fireManual();
-            }
-            
-            if (weapon3) {
-                weapon3->fireManual();
+        if (pressed.z) {
+            if (weapon) {
+                weapon->fireManual();
             }
         }
         
@@ -269,32 +248,16 @@ namespace Actor {
         t3d_matrix_pop(1);
     }
     
-    // Draw weapon projectiles from all weapons
-    if (weapon1) {
-        weapon1->draw3D(deltaTime);
-    }
-    
-    if (weapon2) {
-        weapon2->draw3D(deltaTime);
-    }
-    
-    if (weapon3) {
-        weapon3->draw3D(deltaTime);
+    // Draw weapon projectiles
+    if (weapon) {
+        weapon->draw3D(deltaTime);
     }
 }
     
     void Player::drawPTX(float deltaTime) {
-        // Draw weapon particle effects from all weapons
-        if (weapon1) {
-            weapon1->drawPTX(deltaTime);
-        }
-        
-        if (weapon2) {
-            weapon2->drawPTX(deltaTime);
-        }
-        
-        if (weapon3) {
-            weapon3->drawPTX(deltaTime);
+        // Draw weapon particle effects
+        if (weapon) {
+            weapon->drawPTX(deltaTime);
         }
     }
 };
