@@ -7,6 +7,7 @@
 #include "../../debugMenu.h"
 #include "../../render/debugDraw.h"
 #include "../../systems/experience.h"
+#include "../../systems/upgrade_system.h"
 #include <t3d/t3d.h>
 #include <t3d/tpx.h>
 #include <t3d/t3dmath.h>
@@ -74,6 +75,13 @@ SceneLast64::~SceneLast64()
 
 void SceneLast64::updateScene(float deltaTime)
 {
+    // Add debug output to show the scene is updating
+    static int updateCounter = 0;
+    updateCounter++;
+    if (updateCounter % 60 == 0) {
+        debugf("SceneLast64 updating... Counter: %d, State: %d\n", updateCounter, currentGameState);
+    }
+    
     // Update camera
     camera.update(deltaTime);
     camera.attach();

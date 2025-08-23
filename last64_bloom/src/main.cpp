@@ -65,6 +65,9 @@ int main()
   dfs_init(DFS_DEFAULT_LOCATION);
   audio_init(44100, 4);
   mixer_init(16);
+  
+  // Initialize random number generator
+  srand(TICKS_READ());
 
   display_init(RESOLUTION_320x240, DEPTH_16_BPP, BUFF_COUNT, GAMMA_NONE, FILTERS_RESAMPLE);
 
@@ -131,12 +134,20 @@ int main()
       // Check if the current scene (if it's SceneLast64) has requested a restart
       SceneLast64* currentLast64Scene = dynamic_cast<SceneLast64*>(state.activeScene);
       if (currentLast64Scene && currentLast64Scene->isRestartRequested()) {
+          debugf("Restarting scene...\n");
           SceneManager::loadScene(0); // Reload scene 0
       }
 
     // ----------- DRAW ------------ //
     fb = display_get();
     rdpq_attach(fb, display_get_zbuf());
+
+    // Add debug output every 60 frames to show the game is running
+    static int frameCounter = 0;
+    frameCounter++;
+    if (frameCounter % 60 == 0) {
+        debugf("Game running... Frame: %d\n", frameCounter);
+    }
 
     if(state.autoExposure) {
       lastBrightnessIdx = (lastBrightnessIdx+1) % lastBrightness.size();

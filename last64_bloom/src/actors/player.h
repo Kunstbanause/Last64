@@ -9,10 +9,12 @@
 #include "../audio.h"
 #include <t3d/t3d.h>
 #include <libdragon.h>
+#include <vector>
 
 namespace Actor {
     // Forward declarations
     class WeaponBase;
+    
     class Player : public Base {
     private:
         static T3DVertPacked* sharedVertices;
@@ -32,8 +34,8 @@ namespace Actor {
         int health;
         int maxHealth;
         
-        // Single weapon reference - randomly assigned at start
-        WeaponBase* weapon;  // The player's weapon
+        // Multiple weapons - players can have multiple weapons
+        std::vector<WeaponBase*> weapons;  // The player's weapons
         
         static void initialize();
         static void cleanup();
@@ -55,7 +57,9 @@ namespace Actor {
         bool collidesWith(Base* other);
         
         // Weapon methods
-        WeaponBase* getWeapon() const { return weapon; }
+        std::vector<WeaponBase*>& getWeapons() { return weapons; }
+        void addWeapon(WeaponBase* weapon);
+        void removeWeapon(WeaponBase* weapon);
         
         static void initializePlayer() { initialize(); }
         static void cleanupPlayer() { cleanup(); }

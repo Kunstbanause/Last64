@@ -1,3 +1,7 @@
+/**
+* @copyright 2025 - Max Bebök
+* @license MIT
+*/
 #include "player.h"
 #include "../systems/weapon_projectile.h"
 #include "../systems/weapon_homing.h"
@@ -7,6 +11,7 @@
 #include <t3d/tpx.h>
 #include <libdragon.h>
 #include <malloc.h>
+#include <algorithm>
 
 
 
@@ -110,18 +115,22 @@ namespace Actor {
         
         // Initialize a single random weapon
         int weaponType = rand() % 3;
+        WeaponBase* initialWeapon = nullptr;
         switch (weaponType) {
             case 0:
-                weapon = new WeaponProjectile();
+                initialWeapon = new WeaponProjectile();
                 break;
             case 1:
-                weapon = new WeaponHoming();
+                initialWeapon = new WeaponHoming();
                 break;
             case 2:
-                weapon = new WeaponCircular();
+                initialWeapon = new WeaponCircular();
                 break;
         }
-        weapon->setPlayer(this);
+        if (initialWeapon) {
+            initialWeapon->setPlayer(this);
+            weapons.push_back(initialWeapon);
+        }
         
         flags &= ~FLAG_DISABLED; // Clear the disabled flag to enable the actor
     }
@@ -130,7 +139,7 @@ namespace Actor {
         if (isDead) return;
         health -= amount;
         if (health <= 0) {
-            kill();
+            //kill(); //XXX
         }
     }
     
@@ -159,11 +168,14 @@ namespace Actor {
             playerMatrix = nullptr;
         }
         
-        // Clean up weapon
-        if (weapon) {
-            delete weapon;
-            weapon = nullptr;
+        // Clean up all weapons
+        for (auto& weapon : weapons) {
+            if (weapon) {
+                delete weapon;
+                weapon = nullptr;
+            }
         }
+        weapons.clear();
     }
     
     void Player::update(float deltaTime) {
@@ -175,7 +187,7 @@ namespace Actor {
         float moveSpeed = speed * deltaTime;
         
         // 3D movement - X and Y for horizontal/vertical movement, Z stays constant
-        // Note: In the N64's coordinate system with the camera looking down the Z-axis,
+        // Note: In the N64's coordidinate system with the camera looking down the Z-axis,
         // positive Y is up, negative Y is down, positive X is right, negative X is left
         // 
         // Using analog stick for smooth movement in all directions
@@ -200,16 +212,20 @@ namespace Actor {
         }
         // Z position stays constant (we're moving on the X/Y plane)
         
-        // Update weapon
-        if (weapon) {
-            weapon->update(deltaTime);
+        // Update all weapons
+        for (auto& weapon : weapons) {
+            if (weapon) {
+                weapon->update(deltaTime);
+            }
         }
         
-        // Check if button is pressed for manual firing
+        // Check if Z button is pressed for manual firing
         joypad_buttons_t pressed = joypad_get_buttons_pressed(playerPort);
         if (pressed.z) {
-            if (weapon) {
-                weapon->fireManual();
+            for (auto& weapon : weapons) {
+                if (weapon) {
+                    weapon->fireManual();
+                }
             }
         }
         
@@ -248,16 +264,32 @@ namespace Actor {
         t3d_matrix_pop(1);
     }
     
-    // Draw weapon projectiles
-    if (weapon) {
-        weapon->draw3D(deltaTime);
+    // Draw weapon projectiles from all weapons
+    for (auto& weapon : weapons) {
+        if (weapon) {
+            weapon->draw3D(deltaTime);
+        }
     }
 }
     
     void Player::drawPTX(float deltaTime) {
-        // Draw weapon particle effects
-        if (weapon) {
-            weapon->drawPTX(deltaTime);
+        // Draw weapon particle effects from all weapons
+        for (auto& weapon : weapons) {
+            if (weapon) {
+                weapon->drawPTX(deltaTime);
+            }
         }
     }
 };
+
+void Actor::Player::addWeapon(Actor::WeaponBase* weapon) {
+    if (weapon) {
+        weapons.push_back(weapon);
+    }
+}
+
+void Actor::Player::removeWeapon(Actor::WeaponBase* weapon) {
+    if (weapon) {
+        weapons.erase(std::remove(weapons.begin(), weapons.end(), weapon), weapons.end());
+    }
+}

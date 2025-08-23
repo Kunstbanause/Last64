@@ -63,8 +63,12 @@ void Experience::addXP(int amount) {
         gSFXManager.play(SFXManager::SFX_LEVEL_UP);
 
         for (int i = 0; i < activePlayerCount; ++i) {
-            if (activePlayers[i] && activePlayers[i]->getWeapon()) {
-                activePlayers[i]->getWeapon()->upgrade();
+            if (activePlayers[i]) {
+                // For now, just upgrade the first weapon if available
+                auto& weapons = activePlayers[i]->getWeapons();
+                if (!weapons.empty() && weapons[0]) {
+                    weapons[0]->upgrade();
+                }
             }
         }
     }
