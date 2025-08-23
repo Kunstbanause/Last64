@@ -5,12 +5,14 @@
 #pragma once
 #include "../actors/base.h"
 #include "../actors/projectile.h"
-#include "../systems/base_weapon.h"
+#include "../systems/weapon_base.h"
 #include "../audio.h"
 #include <t3d/t3d.h>
 #include <libdragon.h>
 
 namespace Actor {
+    // Forward declarations
+    class WeaponBase;
     class Player : public Base {
     private:
         static T3DVertPacked* sharedVertices;
@@ -31,9 +33,9 @@ namespace Actor {
         int maxHealth;
         
         // Weapons reference - all weapons active simultaneously
-        Weapon* weapon1;  // Standard projectile weapon
-        Weapon* weapon2;  // Homing projectile weapon
-        Weapon* weapon3;  // Third weapon (we'll add a new one)
+        WeaponBase* weapon1;  // Standard projectile weapon
+        WeaponBase* weapon2;  // Homing projectile weapon
+        WeaponBase* weapon3;  // Third weapon (we'll add a new one)
         
         static void initialize();
         static void cleanup();
@@ -55,9 +57,9 @@ namespace Actor {
         bool collidesWith(Base* other);
         
         // Weapon methods
-        Weapon* getWeapon1() const { return weapon1; }
-        Weapon* getWeapon2() const { return weapon2; }
-        Weapon* getWeapon3() const { return weapon3; }
+        WeaponBase* getWeapon1() const { return weapon1; }
+        WeaponBase* getWeapon2() const { return weapon2; }
+        WeaponBase* getWeapon3() const { return weapon3; }
         
         static void initializePlayer() { initialize(); }
         static void cleanupPlayer() { cleanup(); }

@@ -3,16 +3,16 @@
 * @license MIT
 */
 #pragma once
-#include "base_weapon.h"
+#include "weapon_base.h"
 #include "../actors/projectile.h"
 #include "../actors/enemy.h"
 #include <t3d/t3d.h>
 
 namespace Actor {
-    class HomingProjectileWeapon : public Weapon {
+    class WeaponHoming : public WeaponBase {
     public:
-        HomingProjectileWeapon();
-        ~HomingProjectileWeapon();
+        WeaponHoming();
+        ~WeaponHoming();
         
         void update(float deltaTime) override;
         void draw3D(float deltaTime) override;

@@ -1,7 +1,7 @@
 #include "player.h"
-#include "../systems/projectile_weapon.h"
-#include "../systems/homing_projectile_weapon.h"
-#include "../systems/circular_projectile_weapon.h"
+#include "../systems/weapon_projectile.h"
+#include "../systems/weapon_homing.h"
+#include "../systems/weapon_circular.h"
 #include "../main.h"
 #include <t3d/t3d.h>
 #include <t3d/tpx.h>
@@ -109,13 +109,13 @@ namespace Actor {
         }
         
         // Initialize weapons - all weapons active simultaneously
-        weapon1 = new ProjectileWeapon();
+        weapon1 = new WeaponProjectile();
         weapon1->setPlayer(this);
         
-        weapon2 = new HomingProjectileWeapon();
+        weapon2 = new WeaponHoming();
         weapon2->setPlayer(this);
         
-        weapon3 = new CircularProjectileWeapon();
+        weapon3 = new WeaponCircular();
         weapon3->setPlayer(this);
         
         flags &= ~FLAG_DISABLED; // Clear the disabled flag to enable the actor

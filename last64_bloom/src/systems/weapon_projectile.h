@@ -3,15 +3,15 @@
 * @license MIT
 */
 #pragma once
-#include "base_weapon.h"
+#include "weapon_base.h"
 #include "../actors/projectile.h"
 #include <t3d/t3d.h>
 
 namespace Actor {
-    class CircularProjectileWeapon : public Weapon {
+    class WeaponProjectile : public WeaponBase {
     public:
-        CircularProjectileWeapon();
-        ~CircularProjectileWeapon();
+        WeaponProjectile();
+        ~WeaponProjectile();
         
         void update(float deltaTime) override;
         void draw3D(float deltaTime) override;
@@ -25,6 +25,7 @@ namespace Actor {
         float fireRate;
         float projectileSpeed;
         float projectileSlowdown;
-        int projectileCount;          // Number of projectiles in the circle
+        float spreadAngle;           // Angle between projectiles in a burst
+        int projectilesPerBurst;     // Number of projectiles per burst
     };
 }

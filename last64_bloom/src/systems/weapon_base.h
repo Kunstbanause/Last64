@@ -14,7 +14,7 @@ namespace Actor {
     class Projectile;
     class Player;
     
-    class Weapon : public Base {
+    class WeaponBase : public Base {
     protected:
         Player* player;              // Reference to the player owning this weapon
         float fireCooldown;          // Current cooldown timer
@@ -24,8 +24,8 @@ namespace Actor {
         T3DVec3 spawnOffset;         // Offset from firing position
         
     public:
-        Weapon();
-        ~Weapon();
+        WeaponBase();
+        ~WeaponBase();
         
         virtual void update(float deltaTime) override = 0;
         virtual void draw3D(float deltaTime) override = 0;

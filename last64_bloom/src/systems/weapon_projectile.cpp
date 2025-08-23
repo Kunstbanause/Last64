@@ -2,7 +2,7 @@
 * @copyright 2025 - Max Bebök
 * @license MIT
 */
-#include "projectile_weapon.h"
+#include "weapon_projectile.h"
 #include <libdragon.h>
 #include <cmath>
 
@@ -11,7 +11,7 @@
 #endif
 
 namespace Actor {
-    ProjectileWeapon::ProjectileWeapon() : Weapon() {
+    WeaponProjectile::WeaponProjectile() : WeaponBase() {
         // Initialize projectile pool
         Projectile::initialize();
         
@@ -27,12 +27,12 @@ namespace Actor {
         spawnOffset = {0, 0, 0};
     }
     
-    ProjectileWeapon::~ProjectileWeapon() {
+    WeaponProjectile::~WeaponProjectile() {
         // Cleanup projectile pool
         Projectile::cleanup();
     }
     
-    void ProjectileWeapon::update(float deltaTime) {
+    void WeaponProjectile::update(float deltaTime) {
         // Update fire cooldown
         if (fireCooldown > 0) {
             fireCooldown -= deltaTime;
@@ -54,15 +54,15 @@ namespace Actor {
         }
     }
     
-    void ProjectileWeapon::draw3D(float deltaTime) {
+    void WeaponProjectile::draw3D(float deltaTime) {
         // No longer drawing projectiles here - handled by scene
     }
     
-    void ProjectileWeapon::drawPTX(float deltaTime) {
+    void WeaponProjectile::drawPTX(float deltaTime) {
         // No particle effects for this weapon
     }
     
-    void ProjectileWeapon::fire(const T3DVec3& position, const T3DVec3& direction) {
+    void WeaponProjectile::fire(const T3DVec3& position, const T3DVec3& direction) {
         // Calculate spawn position with offset
         T3DVec3 spawnPos = {{
             position.x + spawnOffset.x,
@@ -95,7 +95,7 @@ namespace Actor {
         }
     }
 
-    void ProjectileWeapon::fireManual() {
+    void WeaponProjectile::fireManual() {
         if(!player)return;
 
         // Fire in a random direction
@@ -109,12 +109,12 @@ namespace Actor {
         fire(player->getPosition(), direction);
     }
 
-    void ProjectileWeapon::upgrade() {
+    void WeaponProjectile::upgrade() {
         if (upgradeLevel < maxUpgradeLevel) {
             upgradeLevel++;
             // Increase fire rate for each upgrade
             fireRate *= 0.9f; // increase in fire rate
             // Note: Additional projectiles are handled in the fire() method
         }
-    };
+    }
 }

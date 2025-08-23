@@ -2,7 +2,7 @@
 * @copyright 2025 - Max Bebök
 * @license MIT
 */
-#include "homing_projectile_weapon.h"
+#include "weapon_homing.h"
 #include "../actors/player.h"
 #include <libdragon.h>
 #include <cmath>
@@ -13,10 +13,10 @@
 #endif
 
 // Define a new color for homing projectiles (bright orange)
-#define HOMING_PROJECTILE_COLOR 0xFF8040FF
+#define HOMING_PROJECTILE_COLOR 0xFFFF8040
 
 namespace Actor {
-    HomingProjectileWeapon::HomingProjectileWeapon() : Weapon() {
+    WeaponHoming::WeaponHoming() : WeaponBase() {
         // Initialize projectile pool
         Projectile::initialize();
         
@@ -31,12 +31,12 @@ namespace Actor {
         spawnOffset = {0, 0, 0};
     }
     
-    HomingProjectileWeapon::~HomingProjectileWeapon() {
+    WeaponHoming::~WeaponHoming() {
         // Cleanup projectile pool
         Projectile::cleanup();
     }
     
-    void HomingProjectileWeapon::update(float deltaTime) {
+    void WeaponHoming::update(float deltaTime) {
         // Update fire cooldown
         if (fireCooldown > 0) {
             fireCooldown -= deltaTime;
@@ -58,15 +58,15 @@ namespace Actor {
         }
     }
     
-    void HomingProjectileWeapon::draw3D(float deltaTime) {
+    void WeaponHoming::draw3D(float deltaTime) {
         // No longer drawing projectiles here - handled by scene
     }
     
-    void HomingProjectileWeapon::drawPTX(float deltaTime) {
+    void WeaponHoming::drawPTX(float deltaTime) {
         // No particle effects for this weapon
     }
     
-    void HomingProjectileWeapon::fire(const T3DVec3& position, const T3DVec3& direction) {
+    void WeaponHoming::fire(const T3DVec3& position, const T3DVec3& direction) {
         // Calculate spawn position with offset
         T3DVec3 spawnPos = {{
             position.x + spawnOffset.x,
@@ -126,7 +126,7 @@ namespace Actor {
         Projectile::spawn(spawnPos, fireDirection, projectileSpeed, projectileSlowdown, 2, HOMING_PROJECTILE_COLOR);
     }
 
-    void HomingProjectileWeapon::fireManual() {
+    void WeaponHoming::fireManual() {
         if(!player) return;
 
         // Fire in the player's forward direction
@@ -140,7 +140,7 @@ namespace Actor {
         fire(player->getPosition(), direction);
     }
 
-    void HomingProjectileWeapon::upgrade() {
+    void WeaponHoming::upgrade() {
         if (upgradeLevel < maxUpgradeLevel) {
             upgradeLevel++;
             // Increase fire rate and projectile speed for each upgrade
@@ -148,5 +148,5 @@ namespace Actor {
             projectileSpeed *= 1.1f; // Increase projectile speed
             detectionRange *= 1.1f;  // Increase detection range
         }
-    };
+    }
 }

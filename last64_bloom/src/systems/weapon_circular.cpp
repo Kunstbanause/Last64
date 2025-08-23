@@ -2,7 +2,7 @@
 * @copyright 2025 - Max Bebök
 * @license MIT
 */
-#include "circular_projectile_weapon.h"
+#include "weapon_circular.h"
 #include "../actors/player.h"
 #include <libdragon.h>
 #include <cmath>
@@ -12,10 +12,10 @@
 #endif
 
 // Define a new color for circular projectiles (bright purple)
-#define CIRCULAR_PROJECTILE_COLOR 0xFF00FFFF
+#define CIRCULAR_PROJECTILE_COLOR 0xFFFF00FF
 
 namespace Actor {
-    CircularProjectileWeapon::CircularProjectileWeapon() : Weapon() {
+    WeaponCircular::WeaponCircular() : WeaponBase() {
         // Initialize projectile pool
         Projectile::initialize();
         
@@ -30,12 +30,12 @@ namespace Actor {
         spawnOffset = {0, 0, 0};
     }
     
-    CircularProjectileWeapon::~CircularProjectileWeapon() {
+    WeaponCircular::~WeaponCircular() {
         // Cleanup projectile pool
         Projectile::cleanup();
     }
     
-    void CircularProjectileWeapon::update(float deltaTime) {
+    void WeaponCircular::update(float deltaTime) {
         // Update fire cooldown
         if (fireCooldown > 0) {
             fireCooldown -= deltaTime;
@@ -57,15 +57,15 @@ namespace Actor {
         }
     }
     
-    void CircularProjectileWeapon::draw3D(float deltaTime) {
+    void WeaponCircular::draw3D(float deltaTime) {
         // No longer drawing projectiles here - handled by scene
     }
     
-    void CircularProjectileWeapon::drawPTX(float deltaTime) {
+    void WeaponCircular::drawPTX(float deltaTime) {
         // No particle effects for this weapon
     }
     
-    void CircularProjectileWeapon::fire(const T3DVec3& position, const T3DVec3& direction) {
+    void WeaponCircular::fire(const T3DVec3& position, const T3DVec3& direction) {
         // Calculate spawn position with offset
         T3DVec3 spawnPos = {{
             position.x + spawnOffset.x,
@@ -90,7 +90,7 @@ namespace Actor {
         }
     }
 
-    void CircularProjectileWeapon::fireManual() {
+    void WeaponCircular::fireManual() {
         if(!player) return;
 
         // Fire in a circular pattern around the player
@@ -98,12 +98,12 @@ namespace Actor {
         fire(playerPos, {{0, 0, 0}});
     }
 
-    void CircularProjectileWeapon::upgrade() {
+    void WeaponCircular::upgrade() {
         if (upgradeLevel < maxUpgradeLevel) {
             upgradeLevel++;
             // Increase fire rate and number of projectiles for each upgrade
             fireRate *= 0.9f;     // Increase fire rate
             // Number of projectiles increases with upgrade level in the fire() method
         }
-    };
+    }
 }

@@ -2,10 +2,10 @@
 * @copyright 2025 - Max Bebök
 * @license MIT
 */
-#include "base_weapon.h"
+#include "weapon_base.h"
 
 namespace Actor {
-    Weapon::Weapon() : Base() {
+    WeaponBase::WeaponBase() : Base() {
         player = nullptr;
         fireCooldown = 0.0f;
         upgradeLevel = 0;
@@ -14,21 +14,21 @@ namespace Actor {
         flags &= ~FLAG_DISABLED; // Clear the disabled flag to enable the actor
     }
     
-    Weapon::~Weapon() {
+    WeaponBase::~WeaponBase() {
         // Nothing to do here
     }
     
-    void Weapon::fire(const T3DVec3& position, const T3DVec3& direction) {
+    void WeaponBase::fire(const T3DVec3& position, const T3DVec3& direction) {
         // Default implementation does nothing
         // This should be overridden by subclasses
     }
 
-    void Weapon::fireManual() {
+    void WeaponBase::fireManual() {
         // Default implementation does nothing
         // This should be overridden by subclasses
     }
 
-    void Weapon::upgrade() {
+    void WeaponBase::upgrade() {
         if (upgradeLevel < maxUpgradeLevel) {
             upgradeLevel++;
             // Default implementation does nothing
