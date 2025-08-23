@@ -19,6 +19,8 @@ namespace Actor {
         fireRate = 0.9f;
         projectileSpeed = 200.0f;
         projectileSlowdown = 200.0f;
+        spreadAngle = 0.15f;          // 0.15 radians spread (about 8.6 degrees) for tighter spread
+        projectilesPerBurst = 3;     // Start with 3 projectiles per burst
 
         // Default Parameters
         maxUpgradeLevel = 5;
@@ -69,8 +71,29 @@ namespace Actor {
             position.z + spawnOffset.z
         }};
         
-        // Spawn projectile
-        Projectile::spawn(spawnPos, direction, projectileSpeed, projectileSlowdown);
+        // Calculate the number of projectiles to fire based on upgrade level
+        // Limit to a maximum of 6 projectiles to prevent memory issues
+        int totalProjectiles = projectilesPerBurst + upgradeLevel;
+        if (totalProjectiles > 6) {
+            totalProjectiles = 6;
+        }
+        
+        // Fire a burst of projectiles with slight spread
+        for (int i = 0; i < totalProjectiles; i++) {
+            // Calculate spread for this projectile
+            // Create a spread that's centered around the main direction
+            float spread = spreadAngle * (i - (totalProjectiles - 1) / 2.0f);
+            
+            // Apply spread to direction (rotate around Z-axis)
+            T3DVec3 spreadDirection = {{
+                direction.x * cosf(spread) - direction.y * sinf(spread),
+                direction.x * sinf(spread) + direction.y * cosf(spread),
+                direction.z
+            }};
+            
+            // Spawn projectile with spread direction
+            Projectile::spawn(spawnPos, spreadDirection, projectileSpeed, projectileSlowdown);
+        }
     }
 
     void ProjectileWeapon::fireManual() {
@@ -92,6 +115,7 @@ namespace Actor {
             upgradeLevel++;
             // Increase fire rate for each upgrade
             fireRate *= 0.9f; // increase in fire rate
+            // Note: Additional projectiles are handled in the fire() method
         }
     };
 }
