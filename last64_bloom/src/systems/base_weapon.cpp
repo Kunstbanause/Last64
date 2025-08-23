@@ -2,7 +2,7 @@
 * @copyright 2025 - Max Bebök
 * @license MIT
 */
-#include "weapon.h"
+#include "base_weapon.h"
 
 namespace Actor {
     Weapon::Weapon() : Base() {

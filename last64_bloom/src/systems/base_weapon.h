@@ -4,7 +4,7 @@
 */
 #pragma once
 #include "../actors/base.h"
-#include "player.h"
+#include "../actors/player.h"
 #include <t3d/t3d.h>
 
 #define MAX_PROJECTILES 100

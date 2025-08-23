@@ -3,7 +3,7 @@
 * @license MIT
 */
 #include "player.h"
-#include "projectileWeapon.h"
+#include "../systems/projectile_weapon.h"
 #include "../main.h"
 #include <t3d/t3d.h>
 #include <t3d/tpx.h>

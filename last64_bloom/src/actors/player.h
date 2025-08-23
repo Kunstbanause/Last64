@@ -5,7 +5,7 @@
 #pragma once
 #include "../actors/base.h"
 #include "../actors/projectile.h"
-#include "../actors/weapon.h"
+#include "../systems/base_weapon.h"
 #include "../audio.h"
 #include <t3d/t3d.h>
 #include <libdragon.h>

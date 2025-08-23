@@ -2,7 +2,7 @@
 * @copyright 2025 - Max Bebök
 * @license MIT
 */
-#include "projectileWeapon.h"
+#include "projectile_weapon.h"
 #include <libdragon.h>
 #include <cmath>
 

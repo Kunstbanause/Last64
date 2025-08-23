@@ -3,8 +3,8 @@
 * @license MIT
 */
 #pragma once
-#include "weapon.h"
-#include "projectile.h"
+#include "base_weapon.h"
+#include "../actors/projectile.h"
 #include <t3d/t3d.h>
 
 namespace Actor {
