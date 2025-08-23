@@ -11,7 +11,7 @@
 #endif
 
 namespace Actor {
-    WeaponProjectile::WeaponProjectile() : WeaponBase() {
+    WeaponProjectile::WeaponProjectile() : WeaponBase(WeaponType::PROJECTILE) {
         // Initialize projectile pool
         Projectile::initialize();
         

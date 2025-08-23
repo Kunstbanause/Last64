@@ -62,8 +62,10 @@ void Experience::addXP(int amount) {
         xpToNextLevel = static_cast<int>(xpToNextLevel * xpGrowthFactor);
         gSFXManager.play(SFXManager::SFX_LEVEL_UP);
 
+        // Generate upgrade options for each player
         for (int i = 0; i < activePlayerCount; ++i) {
             if (activePlayers[i]) {
+                // In a full implementation, we would present options to the player here
                 // For now, just upgrade the first weapon if available
                 auto& weapons = activePlayers[i]->getWeapons();
                 if (!weapons.empty() && weapons[0]) {

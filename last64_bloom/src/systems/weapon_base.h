@@ -7,12 +7,16 @@
 #include "../actors/player.h"
 #include <t3d/t3d.h>
 
-#define MAX_PROJECTILES 100
-
 namespace Actor {
     // Forward declarations
     class Projectile;
     class Player;
+    
+    enum class WeaponType {
+        PROJECTILE,
+        HOMING,
+        CIRCULAR
+    };
     
     class WeaponBase : public Base {
     protected:
@@ -22,9 +26,10 @@ namespace Actor {
         int upgradeLevel;            // Current upgrade level
         int maxUpgradeLevel;         // Maximum upgrade level
         T3DVec3 spawnOffset;         // Offset from firing position
+        WeaponType weaponType;       // Type of weapon for identification
         
     public:
-        WeaponBase();
+        WeaponBase(WeaponType type);
         ~WeaponBase();
         
         virtual void update(float deltaTime) override = 0;
@@ -41,6 +46,7 @@ namespace Actor {
         
         int getUpgradeLevel() const { return upgradeLevel; }
         int getMaxUpgradeLevel() const { return maxUpgradeLevel; }
+        WeaponType getWeaponType() const { return weaponType; }
         
         T3DVec3 getSpawnOffset() const { return spawnOffset; }
         void setSpawnOffset(const T3DVec3& offset) { spawnOffset = offset; }

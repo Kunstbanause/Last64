@@ -16,7 +16,7 @@
 #define HOMING_PROJECTILE_COLOR 0xFFFF8040
 
 namespace Actor {
-    WeaponHoming::WeaponHoming() : WeaponBase() {
+    WeaponHoming::WeaponHoming() : WeaponBase(WeaponType::HOMING) {
         // Initialize projectile pool
         Projectile::initialize();
         

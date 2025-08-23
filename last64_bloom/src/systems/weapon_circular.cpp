@@ -15,7 +15,7 @@
 #define CIRCULAR_PROJECTILE_COLOR 0xFFFF00FF
 
 namespace Actor {
-    WeaponCircular::WeaponCircular() : WeaponBase() {
+    WeaponCircular::WeaponCircular() : WeaponBase(WeaponType::CIRCULAR) {
         // Initialize projectile pool
         Projectile::initialize();
         

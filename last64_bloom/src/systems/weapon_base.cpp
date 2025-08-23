@@ -5,12 +5,13 @@
 #include "weapon_base.h"
 
 namespace Actor {
-    WeaponBase::WeaponBase() : Base() {
+    WeaponBase::WeaponBase(WeaponType type) : Base() {
         player = nullptr;
         fireCooldown = 0.0f;
         upgradeLevel = 0;
         maxUpgradeLevel = 3;
         spawnOffset = {0, 0, 0};
+        weaponType = type;
         flags &= ~FLAG_DISABLED; // Clear the disabled flag to enable the actor
     }
     

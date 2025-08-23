@@ -357,7 +357,7 @@ void SceneLast64::draw2D(float deltaTime)
             break;
         }
         case ROUND_ACTIVE: {
-            // Draw player positions
+            // Draw player weapons overview
             for (int i = 0; i < 4; ++i) {
                 Actor::Player* currentPlayer = nullptr;
                 switch (i) {
@@ -367,8 +367,36 @@ void SceneLast64::draw2D(float deltaTime)
                     case 3: currentPlayer = player4; break;
                 }
                 if (currentPlayer) {
-                    T3DVec3 playerPos = currentPlayer->getPosition();
-                    Debug::printf(10, 10 + (i * 10), "P%d:%.0f/%.0f", i + 1, playerPos.x, playerPos.y);
+                    // Display player weapons in a compact format
+                    auto& weapons = currentPlayer->getWeapons();
+                    if (!weapons.empty()) {
+                        // Show first weapon type and level
+                        char weaponChar = '?';
+                        int level = 0;
+                        if (weapons[0]) {
+                            level = weapons[0]->getUpgradeLevel();
+                            
+                            // Use first letter of weapon type as identifier
+                            // P=Projectile, H=Homing, C=Circular
+                            switch (weapons[0]->getWeaponType()) {
+                                case Actor::WeaponType::PROJECTILE:
+                                    weaponChar = 'P';
+                                    break;
+                                case Actor::WeaponType::HOMING:
+                                    weaponChar = 'H';
+                                    break;
+                                case Actor::WeaponType::CIRCULAR:
+                                    weaponChar = 'C';
+                                    break;
+                                default:
+                                    weaponChar = 'W';
+                                    break;
+                            }
+                        }
+                        Debug::printf(10, 10 + (i * 10), "P%d:%c%d", i + 1, weaponChar, level);
+                    } else {
+                        Debug::printf(10, 10 + (i * 10), "P%d:None", i + 1);
+                    }
                 }
             }
             
