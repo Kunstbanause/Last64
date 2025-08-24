@@ -96,7 +96,7 @@ void SceneLast64::updateScene(float deltaTime)
             for (int i = 0; i < 4; ++i) {
                 if (!playerJoined[i]) {
                     joypad_inputs_t inputs = joypad_get_inputs((joypad_port_t)(JOYPAD_PORT_1 + i));
-                    if (inputs.btn.a) {
+                    if (inputs.btn.a || inputs.btn.z) {
                         playerJoined[i] = true;
                         // Create player instance
                         T3DVec3 startPos;
@@ -153,7 +153,7 @@ void SceneLast64::updateScene(float deltaTime)
             for (int i = 0; i < 4; ++i) {
                 if (!playerJoined[i]) {
                     joypad_inputs_t inputs = joypad_get_inputs((joypad_port_t)(JOYPAD_PORT_1 + i));
-                    if (inputs.btn.a) {
+                    if (inputs.btn.a || inputs.btn.z) {
                         playerJoined[i] = true;
                         // Create player instance
                         T3DVec3 startPos;
@@ -266,7 +266,7 @@ void SceneLast64::updateScene(float deltaTime)
             bool restartPressed = false;
             for (int i = 0; i < 4; ++i) {
                 joypad_inputs_t inputs = joypad_get_inputs((joypad_port_t)(JOYPAD_PORT_1 + i));
-                if (inputs.btn.a) {
+                if (inputs.btn.a || inputs.btn.z) {
                     restartPressed = true;
                     break;
                 }
