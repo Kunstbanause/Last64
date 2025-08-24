@@ -115,7 +115,7 @@ namespace Actor {
         }
         
         // Initialize a single random weapon
-        int weaponType = 3;//rand() % 4;
+        int weaponType = rand() % 4;
         WeaponBase* initialWeapon = nullptr;
         switch (weaponType) {
             case 0:
