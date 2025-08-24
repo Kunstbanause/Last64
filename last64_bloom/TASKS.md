@@ -38,10 +38,19 @@
 
 ### ✅ Phase 7: UI Improvements
 - [x] Enhanced weapon overview to show all weapons for each player
-- [ ] Enemies go to dead players again
+- [x] Enemies go to dead players again
 
 ### ✅ Phase 8: Debugging Features
 - [x] Added debug button (L) to level up players for testing
+
+### ✅ Phase 9: Enemy Spawning & Boss
+- [x] Implemented rudimentary spawn manager
+- [x] Enemies spawn in waves
+- [x] Added first boss enemy
+- [x] Fixed bug: Enemies targeting dead players
+
+### 🛠️ Phase 10: Bug Fixes
+- [ ] Fix bug: Wave counter is not cleared after all players have died Deconstructor missing!
 
 ## 🛠️ Implemented Features
 
@@ -62,3 +71,6 @@
 ~~Excessive safety checks in projectile system have been cleaned up.~~
 ~~Weapon overview now shows all weapons for each player.~~
 ~~Debug button (L) added to level up players for testing.~~
+~~Enemies now correctly target dead players again.~~
+- [ ] Bug: Wave counter is not cleared after all players have died
+~~Enemies now correctly target dead players again.~~

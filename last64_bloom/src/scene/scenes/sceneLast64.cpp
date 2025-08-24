@@ -68,6 +68,7 @@ SceneLast64::~SceneLast64()
     Actor::Enemy::cleanup();
     Actor::Projectile::cleanup();
     Experience::shutdown();
+    SpawnManager::deinitialize();
     
     // Clean up scene matrix
     if (sceneMatFP) {

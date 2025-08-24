@@ -40,4 +40,7 @@ namespace SpawnManager {
     
     // Get the current wave configuration
     const WaveConfig& getCurrentWaveConfig();
+    
+    // Deinitialize the spawn manager
+    void deinitialize();
 }

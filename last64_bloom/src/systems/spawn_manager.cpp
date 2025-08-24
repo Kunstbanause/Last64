@@ -232,4 +232,23 @@ namespace SpawnManager {
             }
         }
     }
+    
+    void deinitialize() {
+        if (!initialized) return;
+
+        // Reset all static variables to their initial state
+        currentWave = 0;
+        waveTimer = 0.0f;
+        spawnTimer = 0.0f;
+        initialized = false;
+        bossSpawned = false;
+
+        // Clear player references
+        for (int i = 0; i < 4; ++i) {
+            players[i] = nullptr;
+        }
+
+        // Note: waveConfigs data is not dynamically allocated, so it does not need explicit clearing.
+        // If waveConfigs held pointers or other complex types that required cleanup, those would be handled here.
+    }
 }
