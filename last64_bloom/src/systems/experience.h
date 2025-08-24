@@ -10,5 +10,11 @@ namespace Experience {
     
     int getLevel();
     float getXPPercentage();
-    int getActivePlayerCount(); // Add this function
+    int getActivePlayerCount();
+    
+    // Get number of alive players
+    int getAlivePlayerCount();
+    
+    // Get a random alive player (returns nullptr if none are alive)
+    Actor::Player* getRandomAlivePlayer();
 };

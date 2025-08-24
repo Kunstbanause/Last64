@@ -191,6 +191,16 @@ namespace Actor {
             hitTimer -= deltaTime;
         }
         
+        // Check if our target player is still alive, if not, find a new one
+        if (targetPlayer && targetPlayer->getIsDead()) {
+            targetPlayer = Experience::getRandomAlivePlayer();
+        }
+        
+        // If we still don't have a target player, try to get one
+        if (!targetPlayer) {
+            targetPlayer = Experience::getRandomAlivePlayer();
+        }
+        
         // Get player position from the individual target player reference
         if (targetPlayer) {
             T3DVec3 playerPos = targetPlayer->getPosition();

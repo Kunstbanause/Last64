@@ -99,3 +99,32 @@ float Experience::getXPPercentage() {
 int Experience::getActivePlayerCount() {
     return activePlayerCount;
 }
+
+int Experience::getAlivePlayerCount() {
+    int count = 0;
+    for (int i = 0; i < activePlayerCount; ++i) {
+        if (activePlayers[i] && !activePlayers[i]->getIsDead()) {
+            count++;
+        }
+    }
+    return count;
+}
+
+Actor::Player* Experience::getRandomAlivePlayer() {
+    // Create a temporary array of alive players
+    Actor::Player* alivePlayers[MAX_PLAYERS];
+    int aliveCount = 0;
+    
+    for (int i = 0; i < activePlayerCount; ++i) {
+        if (activePlayers[i] && !activePlayers[i]->getIsDead()) {
+            alivePlayers[aliveCount++] = activePlayers[i];
+        }
+    }
+    
+    // Return a random alive player or nullptr if none are alive
+    if (aliveCount > 0) {
+        return alivePlayers[rand() % aliveCount];
+    }
+    
+    return nullptr;
+}
