@@ -8,6 +8,7 @@
 #include "../../render/debugDraw.h"
 #include "../../systems/experience.h"
 #include "../../systems/upgrade_system.h"
+#include "../../systems/spawn_manager.h"
 #include <t3d/t3d.h>
 #include <t3d/tpx.h>
 #include <t3d/t3dmath.h>
@@ -55,6 +56,7 @@ SceneLast64::SceneLast64()
     // Initialize systems (without players for now)
     Actor::Enemy::initialize();
     Actor::Projectile::initialize();
+    SpawnManager::initialize();
 }
 
 SceneLast64::~SceneLast64()
@@ -188,6 +190,12 @@ void SceneLast64::updateScene(float deltaTime)
             if (player3) player3->update(deltaTime);
             if (player4) player4->update(deltaTime);
             
+            // Update spawn manager with player references
+            SpawnManager::setPlayers(player1, player2, player3, player4);
+            
+            // Update spawn manager
+            SpawnManager::update(deltaTime);
+            
             // Update all enemies
             Actor::Enemy::updateAll(deltaTime);
             
@@ -241,59 +249,6 @@ void SceneLast64::updateScene(float deltaTime)
             if (alivePlayers == 0 && activePlayerCount > 0) { // Ensure at least one player was active before game over
                 currentGameState = GAME_OVER;
                 // gSFXManager.play(SFXManager::SFX_GAME_OVER); // Assuming a game over sound effect
-            }
-            
-            // Spawn new enemies occasionally
-            const float enemySpawnInterval = 0.3f; // Spawn every 10 seconds
-            static float enemySpawnTimer = enemySpawnInterval;
-            enemySpawnTimer += deltaTime;
-            if (enemySpawnTimer > enemySpawnInterval) { // Spawn an enemy every x seconds
-                enemySpawnTimer = 0.0f;
-                
-                // Randomly select a target player from alive players
-                Actor::Player* targetPlayer = nullptr;
-                std::vector<Actor::Player*> alivePlayersList;
-                if (player1 && !player1->getIsDead()) alivePlayersList.push_back(player1);
-                if (player2 && !player2->getIsDead()) alivePlayersList.push_back(player2);
-                if (player3 && !player3->getIsDead()) alivePlayersList.push_back(player3);
-                if (player4 && !player4->getIsDead()) alivePlayersList.push_back(player4);
-                
-                // Select a random alive player as the target
-                if (!alivePlayersList.empty()) {
-                    targetPlayer = alivePlayersList[rand() % alivePlayersList.size()];
-                }
-                
-                // Spawn a new enemy at a random edge of the screen
-                float spawnX, spawnY;
-                int edge = rand() % 4; // 0=top, 1=right, 2=bottom, 3=left
-                
-                switch (edge) {
-                    case 0: // Top
-                        spawnX = SCREEN_LEFT + (rand() % (int)SCREEN_WIDTH);
-                        spawnY = SCREEN_TOP;
-                        break;
-                    case 1: // Right
-                        spawnX = SCREEN_RIGHT;
-                        spawnY = SCREEN_TOP + (rand() % (int)SCREEN_HEIGHT);
-                        break;
-                    case 2: // Bottom
-                        spawnX = SCREEN_LEFT + (rand() % (int)SCREEN_WIDTH);
-                        spawnY = SCREEN_BOTTOM;
-                        break;
-                    case 3: // Left
-                        spawnX = SCREEN_LEFT;
-                        spawnY = SCREEN_TOP + (rand() % (int)SCREEN_HEIGHT);
-                        break;
-                    default:
-                        spawnX = 0;
-                        spawnY = 0;
-                        break;
-                }
-                
-                T3DVec3 pos = {{spawnX, spawnY, 0.0f}};
-                
-                // Spawn enemy with the selected target player
-                Actor::Enemy::spawn(pos, 45.0f, targetPlayer);
             }
             break;
         }
@@ -438,7 +393,10 @@ void SceneLast64::draw2D(float deltaTime)
             Debug::printf(230, 10, "E:%d P:%d", Actor::Enemy::getActiveCount(), Actor::Projectile::getActiveCount());
             
             // Draw Level
-            Debug::printf(10, 230-20, "(L): %d", Experience::getLevel());
+            Debug::printf(10, SCREEN_HEIGHT-30, "Level:%d", Experience::getLevel());
+            
+            // Draw current wave
+            Debug::printf(SCREEN_WIDTH/2-20, SCREEN_HEIGHT-20, "Wave:%d", SpawnManager::getCurrentWave() + 1);
 
             // Draw round timer
             int minutes = (int)roundTimer / 60;

@@ -33,6 +33,9 @@ namespace Actor {
         health = 8;
         maxHealth = 8;
         targetPlayer = nullptr; // Initialize individual target player
+        size = EnemySize::SMALL;
+        color = 0xFF0000FF; // Default red color
+        xpReward = 1;
         flags |= FLAG_DISABLED; // Start as disabled
     }
 
@@ -119,7 +122,7 @@ namespace Actor {
         initialized = true;
     }
 
-    Enemy* Enemy::spawn(const T3DVec3& position, float speed, Player* targetPlayer) {
+    Enemy* Enemy::spawn(const T3DVec3& position, float speed, Player* targetPlayer, EnemySize size, uint32_t color, int xpReward) {
         if (!initialized) {
             initializePool();
         }
@@ -137,6 +140,23 @@ namespace Actor {
                 enemy->poolIndex = i;
                 enemy->position = position;
                 enemy->speed = speed;
+                enemy->health = enemy->maxHealth;
+                enemy->size = size;
+                enemy->color = color;
+                enemy->xpReward = xpReward;
+                
+                // Set enemy properties based on size
+                switch (size) {
+                    case EnemySize::SMALL:
+                        enemy->maxHealth = 8;
+                        break;
+                    case EnemySize::MEDIUM:
+                        enemy->maxHealth = 16;
+                        break;
+                    case EnemySize::LARGE:
+                        enemy->maxHealth = 24;
+                        break;
+                }
                 enemy->health = enemy->maxHealth;
                 
                 // Set the target player
@@ -231,7 +251,7 @@ namespace Actor {
         if (flags & FLAG_DISABLED) return;
         
         if (poolIndex < MAX_ENEMIES) {
-            uint32_t new_color = 0x08000000 | 0xFF; // R=8, G=0, B=0, A=255
+            uint32_t new_color = color; // Use the enemy's color
             // Hit flash override
             if (hitTimer > 0.96f) {
                 uint8_t flash_white = 64;
@@ -243,6 +263,30 @@ namespace Actor {
             sharedVertices[poolIndex * 2].rgbaB = new_color;
             sharedVertices[poolIndex * 2 + 1].rgbaA = new_color;
             sharedVertices[poolIndex * 2 + 1].rgbaB = new_color;
+
+            // Calculate scale based on enemy size
+            float scale = 1.0f;
+            switch (size) {
+                case EnemySize::SMALL:
+                    scale = 1.0f;
+                    break;
+                case EnemySize::MEDIUM:
+                    scale = 1.5f;
+                    break;
+                case EnemySize::LARGE:
+                    scale = 2.0f;
+                    break;
+            }
+
+            // Update matrix with scale
+            if (poolIndex < MAX_ENEMIES) {
+                t3d_mat4fp_from_srt_euler(
+                    sharedMatrices[poolIndex],
+                    (T3DVec3){{scale, scale, scale}},  // scale
+                    (T3DVec3){{0.0f, 0.0f, 0.0f}},  // rotation
+                    position                         // translation
+                );
+            }
 
             t3d_matrix_push(sharedMatrices[poolIndex]);
             t3d_vert_load(&sharedVertices[poolIndex * 2], 0, 4);
@@ -287,7 +331,7 @@ namespace Actor {
     }
 
     void Enemy::die() {
-        Experience::addXP(1);
+        Experience::addXP(xpReward);
         deactivate();
     }
 
@@ -305,5 +349,18 @@ namespace Actor {
         float radii = getRadius() + otherRadius;
 
         return distanceSq < (radii * radii);
+    }
+    
+    float Enemy::getRadius() const {
+        switch (size) {
+            case EnemySize::SMALL:
+                return 3.0f;
+            case EnemySize::MEDIUM:
+                return 4.5f;
+            case EnemySize::LARGE:
+                return 6.0f;
+            default:
+                return 3.0f;
+        }
     }
 }

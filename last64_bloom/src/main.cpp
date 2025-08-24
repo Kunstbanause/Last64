@@ -208,10 +208,10 @@ int main()
     if(showMenu) {
       DebugMenu::draw();
       Debug::printf(20, 200, "%d%%", (int)(postProc[frameIdxLast].getBrightness() * 100));
-      Debug::printf(SCREEN_WIDTH-50, SCREEN_HEIGHT-15, "fps:%.0f", display_get_fps());
+      Debug::printf(SCREEN_WIDTH-64, SCREEN_HEIGHT-20, "fps:%.0f", display_get_fps());
     }
     if ( display_get_fps() < 30.0f ) {
-      Debug::printf(SCREEN_WIDTH-80, SCREEN_HEIGHT-25, "LowFPS:%.0f", display_get_fps());
+      Debug::printf(SCREEN_WIDTH-80, SCREEN_HEIGHT-30, "LowFPS:%.0f", display_get_fps());
     }
     
     

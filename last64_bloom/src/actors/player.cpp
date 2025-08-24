@@ -91,11 +91,11 @@ namespace Actor {
         
         position = startPos;
         velocity = {0, 0, 0};
-        speed = 50.0f;
+        speed = 26.0f;
         rotation = 0.0f;
         playerPort = port;
         isDead = false;
-        maxHealth = 1; // Default max health
+        maxHealth = 1; // Player max health
         health = maxHealth;
         
         // Set player color based on port // RGBA8 (0xRRGGBBAA
