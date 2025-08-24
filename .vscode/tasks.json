@@ -1,7 +1,6 @@
 {
     "version": "2.0.0",
     "tasks": [
-
         {
             "label": "make",
             "type": "shell",
@@ -22,25 +21,16 @@
                 "kind": "build",
                 "isDefault": false
             },
-            "problemMatcher": [
-                {
-                "pattern": [
-                    {
-                    "regexp": ".*",
-                    "file": 1,
-                    "line": 1,
-                    "message": 0
-                    }
-                ],
+            "problemMatcher": {
+                "base": "$gcc",
                 "background": {
                     "activeOnStart": true,
                     "beginsPattern": ".*Loaded Last64_Bloom.*",
                     "endsPattern": ".*Loading scene.*"
                 }
-                }
-            ],
-            "isBackground": true
             },
+            "isBackground": true
+        },
         {
             "label": "kill-ares",
             "type": "shell",
