@@ -122,7 +122,7 @@ namespace Actor {
         initialized = true;
     }
 
-    Enemy* Enemy::spawn(const T3DVec3& position, float speed, Player* targetPlayer, EnemySize size, uint32_t color, int xpReward) {
+    Enemy* Enemy::spawn(const T3DVec3& position, float speed, Player* targetPlayer, EnemySize size, uint32_t color, int xpReward, int health) {
         if (!initialized) {
             initializePool();
         }
@@ -140,24 +140,11 @@ namespace Actor {
                 enemy->poolIndex = i;
                 enemy->position = position;
                 enemy->speed = speed;
-                enemy->health = enemy->maxHealth;
                 enemy->size = size;
                 enemy->color = color;
                 enemy->xpReward = xpReward;
-                
-                // Set enemy properties based on size
-                switch (size) {
-                    case EnemySize::SMALL:
-                        enemy->maxHealth = 8;
-                        break;
-                    case EnemySize::MEDIUM:
-                        enemy->maxHealth = 16;
-                        break;
-                    case EnemySize::LARGE:
-                        enemy->maxHealth = 24;
-                        break;
-                }
-                enemy->health = enemy->maxHealth;
+                enemy->maxHealth = health;
+                enemy->health = health;
                 
                 // Set the target player
                 enemy->targetPlayer = targetPlayer;

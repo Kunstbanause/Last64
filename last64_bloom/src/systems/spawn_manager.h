@@ -24,7 +24,7 @@ namespace SpawnManager {
     void initialize();
     
     // Update the spawn manager (call every frame)
-    void update(float deltaTime);
+    void update(float deltaTime, float roundTimer);
     
     // Get the current wave number
     int getCurrentWave();

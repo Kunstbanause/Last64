@@ -46,7 +46,7 @@ namespace Actor {
 
         static void initialize();
         static void cleanup();
-        static Enemy* spawn(const T3DVec3& position, float speed, Player* targetPlayer, EnemySize size = EnemySize::SMALL, uint32_t color = 0xFF0000FF, int xpReward = 1);
+        static Enemy* spawn(const T3DVec3& position, float speed, Player* targetPlayer, EnemySize size = EnemySize::SMALL, uint32_t color = 0xFF0000FF, int xpReward = 1, int health = 8);
         static void updateAll(float deltaTime);
         static void drawAll(float deltaTime);
         static uint32_t getActiveCount() { return activeCount; }

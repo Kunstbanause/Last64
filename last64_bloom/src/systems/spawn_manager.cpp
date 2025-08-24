@@ -171,7 +171,8 @@ namespace SpawnManager {
                 float speed = 15.0f * config.speedMultiplier;
                 
                 // Spawn enemy with the selected target player and parameters
-                Actor::Enemy* boss = Actor::Enemy::spawn(pos, speed, targetPlayer, config.enemySize, config.enemyColor, config.xpReward);
+                // Spawn enemy with the selected target player and parameters
+                Actor::Enemy* boss = Actor::Enemy::spawn(pos, speed, targetPlayer, config.enemySize, config.enemyColor, config.xpReward, 8 * config.healthMultiplier);
                 
                 bossSpawned = true;
             }
@@ -227,7 +228,7 @@ namespace SpawnManager {
                 
                 // Spawn enemy with the selected target player and parameters
                 Actor::Enemy* enemy =
-                        Actor::Enemy::spawn(pos, speed, targetPlayer, config.enemySize, config.enemyColor, config.xpReward);
+                        Actor::Enemy::spawn(pos, speed, targetPlayer, config.enemySize, config.enemyColor, config.xpReward, 8 * config.healthMultiplier);
             }
         }
     }
