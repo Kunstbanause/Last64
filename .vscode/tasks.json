@@ -24,23 +24,23 @@
             },
             "problemMatcher": [
                 {
-                    "pattern": [
-                        {
-                            "regexp": ".*Loaded Last64_Bloom.*",
-                            "file": 1,
-                            "line": 1,
-                            "message": 0
-                        }
-                    ],
-                    "background": {
-                        "activeOnStart": true,
-                        "beginsPattern": ".*make.*",
-                        "endsPattern": ".*Opening TCP-server on.*"
+                "pattern": [
+                    {
+                    "regexp": ".*",
+                    "file": 1,
+                    "line": 1,
+                    "message": 0
                     }
+                ],
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".*Loaded Last64_Bloom.*",
+                    "endsPattern": ".*Opening TCP-server on.*"
+                }
                 }
             ],
             "isBackground": true
-        },
+            },
         {
             "label": "kill-ares",
             "type": "shell",
