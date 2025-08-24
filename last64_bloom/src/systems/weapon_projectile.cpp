@@ -16,6 +16,7 @@ namespace Actor {
         fireRate = 0.9f;
         projectileSpeed = 200.0f;
         projectileSlowdown = 200.0f;
+        projectileLifetime = 1.2f;   // Default lifetime of 2 seconds
         spreadAngle = 0.15f;          // 0.15 radians spread (about 8.6 degrees) for tighter spread
         projectilesPerBurst = 3;     // Start with 3 projectiles per burst
 
@@ -88,7 +89,7 @@ namespace Actor {
             }};
             
             // Spawn projectile with spread direction, default color)
-            Projectile::spawn(spawnPos, spreadDirection, projectileSpeed, projectileSlowdown, damage, DEFAULT_PROJECTILE_COLOR);
+            Projectile::spawn(spawnPos, spreadDirection, projectileSpeed, projectileSlowdown, projectileLifetime, damage, DEFAULT_PROJECTILE_COLOR);
         }
     }
 

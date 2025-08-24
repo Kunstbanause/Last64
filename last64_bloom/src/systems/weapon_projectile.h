@@ -25,6 +25,7 @@ namespace Actor {
         float fireRate;
         float projectileSpeed;
         float projectileSlowdown;
+        float projectileLifetime;    // Lifetime of projectiles
         float spreadAngle;           // Angle between projectiles in a burst
         int projectilesPerBurst;     // Number of projectiles per burst
     };

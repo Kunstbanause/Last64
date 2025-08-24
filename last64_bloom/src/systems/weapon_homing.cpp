@@ -21,6 +21,7 @@ namespace Actor {
         fireRate = 1.5f;              // Slower fire rate
         projectileSpeed = 150.0f;     // Slower projectile speed
         projectileSlowdown = 100.0f;  // Less slowdown
+        projectileLifetime = 2.2f;   // Longer lifetime for homing projectiles
         detectionRange = 100.0f;      // Detection range for enemies
 
         // Default Parameters
@@ -120,7 +121,7 @@ namespace Actor {
         }
         
         // Spawn a projectile with double damage and special color
-        Projectile::spawn(spawnPos, fireDirection, projectileSpeed, projectileSlowdown, damage, HOMING_PROJECTILE_COLOR);
+        Projectile::spawn(spawnPos, fireDirection, projectileSpeed, projectileSlowdown, projectileLifetime, damage, HOMING_PROJECTILE_COLOR);
     }
 
     void WeaponHoming::fireManual() {

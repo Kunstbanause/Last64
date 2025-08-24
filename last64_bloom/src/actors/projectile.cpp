@@ -103,7 +103,7 @@ namespace Actor {
         initialized = true;
     }
 
-    Projectile* Projectile::spawn(const T3DVec3& pos, const T3DVec3& vel, float spd, float slowdown, int damage, uint32_t color) {
+    Projectile* Projectile::spawn(const T3DVec3& pos, const T3DVec3& vel, float spd, float slowdown, float maxLifetime, int damage, uint32_t color) {
         if (!initialized) initializePool();
 
         for (uint32_t i = 0; i < MAX_PROJECTILES; i++) {
@@ -117,7 +117,7 @@ namespace Actor {
                 p->speed = spd;
                 p->slowdown = slowdown;
                 p->lifetime = 0.0f;
-                p->maxLifetime = 2.0f; // Set a default max lifetime of 2 seconds
+                p->maxLifetime = maxLifetime; // Use the provided max lifetime
                 p->damage = damage; // Set the damage value
                 p->color = color; // Set the color
                 p->flags &= ~FLAG_DISABLED;

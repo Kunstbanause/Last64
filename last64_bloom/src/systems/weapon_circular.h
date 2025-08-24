@@ -25,6 +25,7 @@ namespace Actor {
         float fireRate;
         float projectileSpeed;
         float projectileSlowdown;
+        float projectileLifetime;      // Lifetime of projectiles
         int projectileCount;          // Number of projectiles in the circle
     };
 }

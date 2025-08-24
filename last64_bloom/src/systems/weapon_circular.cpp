@@ -20,6 +20,7 @@ namespace Actor {
         fireRate = 2.0f;              // Slower fire rate
         projectileSpeed = 100.0f;     // Slower projectile speed
         projectileSlowdown = 50.0f;   // Less slowdown
+        projectileLifetime = 0.8f;    // Shorter lifetime for circular projectiles
         projectileCount = 8;          // Number of projectiles in circle
 
         // Default Parameters
@@ -83,7 +84,7 @@ namespace Actor {
             }};
             
             // Spawn projectile with circular direction and special color
-            Projectile::spawn(spawnPos, fireDirection, projectileSpeed, projectileSlowdown, damage, CIRCULAR_PROJECTILE_COLOR);
+            Projectile::spawn(spawnPos, fireDirection, projectileSpeed, projectileSlowdown, projectileLifetime, damage, CIRCULAR_PROJECTILE_COLOR);
         }
     }
 
