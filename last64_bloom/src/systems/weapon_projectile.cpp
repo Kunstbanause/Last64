@@ -22,6 +22,7 @@ namespace Actor {
         // Default Parameters
         maxUpgradeLevel = 5;
         spawnOffset = {0, 0, 0};
+        damage = 4;
     }
     
     WeaponProjectile::~WeaponProjectile() {
@@ -87,7 +88,7 @@ namespace Actor {
             }};
             
             // Spawn projectile with spread direction, default color)
-            Projectile::spawn(spawnPos, spreadDirection, projectileSpeed, projectileSlowdown, 3, DEFAULT_PROJECTILE_COLOR);
+            Projectile::spawn(spawnPos, spreadDirection, projectileSpeed, projectileSlowdown, damage, DEFAULT_PROJECTILE_COLOR);
         }
     }
 

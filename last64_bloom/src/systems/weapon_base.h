@@ -25,6 +25,7 @@ namespace Actor {
         float fireRate;              // Time between shots (seconds)
         int upgradeLevel;            // Current upgrade level
         int maxUpgradeLevel;         // Maximum upgrade level
+        int damage;                  // Damage per projectile
         T3DVec3 spawnOffset;         // Offset from firing position
         WeaponType weaponType;       // Type of weapon for identification
         

@@ -10,4 +10,5 @@ namespace Experience {
     
     int getLevel();
     float getXPPercentage();
+    int getActivePlayerCount(); // Add this function
 };

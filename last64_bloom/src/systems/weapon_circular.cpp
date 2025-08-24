@@ -25,6 +25,7 @@ namespace Actor {
         // Default Parameters
         maxUpgradeLevel = 3;          // Fewer upgrade levels
         spawnOffset = {0, 0, 0};
+        damage = 4;
     }
     
     WeaponCircular::~WeaponCircular() {
@@ -81,8 +82,8 @@ namespace Actor {
                 0.0f
             }};
             
-            // Spawn projectile with circular direction (damage = 1) and special color
-            Projectile::spawn(spawnPos, fireDirection, projectileSpeed, projectileSlowdown, 1, CIRCULAR_PROJECTILE_COLOR);
+            // Spawn projectile with circular direction and special color
+            Projectile::spawn(spawnPos, fireDirection, projectileSpeed, projectileSlowdown, damage, CIRCULAR_PROJECTILE_COLOR);
         }
     }
 

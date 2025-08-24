@@ -38,6 +38,7 @@
 
 ### ✅ Phase 7: UI Improvements
 - [x] Enhanced weapon overview to show all weapons for each player
+- [ ] Enemies go to dead players again
 
 ### ✅ Phase 8: Debugging Features
 - [x] Added debug button (L) to level up players for testing

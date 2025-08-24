@@ -3,9 +3,9 @@
 * @license MIT
 */
 #include "projectile.h"
-#include "enemy.h"
-#include "player.h"
+#include "enemy.h"  // Include enemy header for collision detection
 #include "../main.h"
+#include "../systems/experience.h"
 #include <t3d/t3d.h>
 #include <libdragon.h>
 #include <malloc.h>
@@ -32,7 +32,7 @@ namespace Actor {
         slowdown = 0.0f; // Default no slowdown
         lifetime = 0.0f;
         maxLifetime = 1.0f;
-        damage = 1; // Default damage
+        damage = 4; // Default damage so it can be divived by 4 players
         color = DEFAULT_PROJECTILE_COLOR; // Default color
         flags |= FLAG_DISABLED;
     }
@@ -179,9 +179,10 @@ namespace Actor {
             if (Actor::Enemy::isActive(i)) {
                 Actor::Enemy* enemy = Actor::Enemy::getEnemy(i);
                 if (enemy && enemy->isActive() && enemy->collidesWith(this)) {
-                    enemy->takeDamage(damage);
-                    deactivate();
-                    return;
+                    enemy->takeDamage(damage); // This will be updated when we pass the player count
+                    deactivate(); // Projectile disappears on hit
+                    // Play hit sound effect
+                    gSFXManager.play(SFXManager::SFX_HIT);
                 }
             }
         }

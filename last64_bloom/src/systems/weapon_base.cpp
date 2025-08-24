@@ -11,6 +11,7 @@ namespace Actor {
         upgradeLevel = 0;
         maxUpgradeLevel = 3;
         spawnOffset = {0, 0, 0};
+        damage = 4; // Default damage
         weaponType = type;
         flags &= ~FLAG_DISABLED; // Clear the disabled flag to enable the actor
     }

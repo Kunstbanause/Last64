@@ -26,6 +26,7 @@ namespace Actor {
         // Default Parameters
         maxUpgradeLevel = 3;          // Fewer upgrade levels
         spawnOffset = {0, 0, 0};
+        damage = 8;                   // Higher damage as its a single pojectile
     }
     
     WeaponHoming::~WeaponHoming() {
@@ -119,7 +120,7 @@ namespace Actor {
         }
         
         // Spawn a projectile with double damage and special color
-        Projectile::spawn(spawnPos, fireDirection, projectileSpeed, projectileSlowdown, 8, HOMING_PROJECTILE_COLOR);
+        Projectile::spawn(spawnPos, fireDirection, projectileSpeed, projectileSlowdown, damage, HOMING_PROJECTILE_COLOR);
     }
 
     void WeaponHoming::fireManual() {

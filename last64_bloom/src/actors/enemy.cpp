@@ -273,7 +273,13 @@ namespace Actor {
     }
 
     void Enemy::takeDamage(int amount) {
-        health -= amount;
+        // Get the number of active players from the Experience system
+        int activePlayers = Experience::getActivePlayerCount();
+        
+        // Scale damage inversely with the number of active players
+        // More players = less effective damage per hit
+        int scaledDamage = (activePlayers > 0) ? (amount + activePlayers - 1) / activePlayers : amount; // Integer division with rounding up
+        health -= scaledDamage;
         hitTimer = 1.0f;
         if (health <= 0) {
             die();

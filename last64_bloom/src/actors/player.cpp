@@ -139,7 +139,7 @@ namespace Actor {
         if (isDead) return;
         health -= amount;
         if (health <= 0) {
-            //kill(); //XXX
+            kill(); //Player Death
         }
     }
     
