@@ -28,37 +28,37 @@ namespace SpawnManager {
         waveConfigs[0].baseEnemyCount = 5;
         waveConfigs[0].speedMultiplier = 1.0f;
         waveConfigs[0].healthMultiplier = 1;
-        waveConfigs[0].enemySize = EnemySize::SMALL;
+        waveConfigs[0].enemySize = Actor::EnemySize::SMALL;
         waveConfigs[0].enemyColor = 0xFF0000FF; // Red
         waveConfigs[0].xpReward = 1;
         
         // Wave 2: Medium enemies with more health
         waveConfigs[1].waveNumber = 2;
-        waveConfigs[1].spawnInterval = 1.5f;  // Spawn every 1.5 seconds
-        waveConfigs[1].baseEnemyCount = 8;
-        waveConfigs[1].speedMultiplier = 1.2f;
-        waveConfigs[1].healthMultiplier = 2;
-        waveConfigs[1].enemySize = EnemySize::MEDIUM;
-        waveConfigs[1].enemyColor = 0xFF00FFFF; // Yellow
+        waveConfigs[1].spawnInterval = 0.5f;
+        waveConfigs[1].baseEnemyCount = 50;
+        waveConfigs[1].speedMultiplier = 2.5f;
+        waveConfigs[1].healthMultiplier = 5;
+        waveConfigs[1].enemySize = Actor::EnemySize::MEDIUM;
+        waveConfigs[1].enemyColor = 0xFFFF00FF; // Yellow
         waveConfigs[1].xpReward = 2;
         
         // Wave 3: Large, fast enemies with high health
         waveConfigs[2].waveNumber = 3;
         waveConfigs[2].spawnInterval = 1.0f;  // Spawn every 1 second
-        waveConfigs[2].baseEnemyCount = 12;
+        waveConfigs[2].baseEnemyCount = 20;
         waveConfigs[2].speedMultiplier = 1.5f;
-        waveConfigs[2].healthMultiplier = 3;
-        waveConfigs[2].enemySize = EnemySize::LARGE;
-        waveConfigs[2].enemyColor = 0xFFFF00FF; // Cyan
+        waveConfigs[2].healthMultiplier = 10;
+        waveConfigs[2].enemySize = Actor::EnemySize::MEDIUM;
+        waveConfigs[2].enemyColor = 0x00FFFFFF; // Cyan
         waveConfigs[2].xpReward = 3;
         
         // Boss Wave: Single large boss enemy
         waveConfigs[3].waveNumber = 4;
         waveConfigs[3].spawnInterval = 5.0f;  // Not used for boss
         waveConfigs[3].baseEnemyCount = 1;
-        waveConfigs[3].speedMultiplier = 0.8f;
-        waveConfigs[3].healthMultiplier = 10;
-        waveConfigs[3].enemySize = EnemySize::LARGE;
+        waveConfigs[3].speedMultiplier = 1.0f;
+        waveConfigs[3].healthMultiplier = 100;
+        waveConfigs[3].enemySize = Actor::EnemySize::LARGE;
         waveConfigs[3].enemyColor = 0xFF0000FF; // Red (Boss color)
         waveConfigs[3].xpReward = 10;
     }
@@ -122,6 +122,7 @@ namespace SpawnManager {
             }
         }
         
+        
         // Get current wave config
         const WaveConfig& config = getCurrentWaveConfig();
         
@@ -169,12 +170,8 @@ namespace SpawnManager {
                 T3DVec3 pos = {{spawnX, spawnY, 0.0f}};
                 float speed = 15.0f * config.speedMultiplier;
                 
-                // Spawn enemy with the selected target player
-                Actor::Enemy* boss = Actor::Enemy::spawn(pos, speed, targetPlayer);
-                if (boss) {
-                    // Note: We would need to modify the enemy class to support different sizes and XP rewards
-                    // For now, we'll just use the existing enemy class
-                }
+                // Spawn enemy with the selected target player and parameters
+                Actor::Enemy* boss = Actor::Enemy::spawn(pos, speed, targetPlayer, config.enemySize, config.enemyColor, config.xpReward);
                 
                 bossSpawned = true;
             }
@@ -228,12 +225,9 @@ namespace SpawnManager {
                 T3DVec3 pos = {{spawnX, spawnY, 0.0f}};
                 float speed = 20.0f * config.speedMultiplier;
                 
-                // Spawn enemy with the selected target player
-                Actor::Enemy* enemy = Actor::Enemy::spawn(pos, speed, targetPlayer);
-                if (enemy) {
-                    // Note: We would need to modify the enemy class to support different sizes and XP rewards
-                    // For now, we'll just use the existing enemy class
-                }
+                // Spawn enemy with the selected target player and parameters
+                Actor::Enemy* enemy =
+                        Actor::Enemy::spawn(pos, speed, targetPlayer, config.enemySize, config.enemyColor, config.xpReward);
             }
         }
     }

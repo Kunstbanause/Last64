@@ -274,7 +274,7 @@ namespace Actor {
                     scale = 1.5f;
                     break;
                 case EnemySize::LARGE:
-                    scale = 2.0f;
+                    scale = 4.0f;
                     break;
             }
 
@@ -358,7 +358,7 @@ namespace Actor {
             case EnemySize::MEDIUM:
                 return 4.5f;
             case EnemySize::LARGE:
-                return 6.0f;
+                return 8.0f;
             default:
                 return 3.0f;
         }

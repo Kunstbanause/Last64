@@ -8,13 +8,6 @@
 #include "../actors/enemy.h"
 
 namespace SpawnManager {
-    // Enemy types with different sizes
-    enum class EnemySize {
-        SMALL,
-        MEDIUM,
-        LARGE
-    };
-
     // Wave configuration structure
     struct WaveConfig {
         int waveNumber;
@@ -22,7 +15,7 @@ namespace SpawnManager {
         int baseEnemyCount;         // Base number of enemies to spawn
         float speedMultiplier;      // Multiplier for enemy speed
         int healthMultiplier;       // Multiplier for enemy health
-        EnemySize enemySize;        // Size of enemies in this wave
+        Actor::EnemySize enemySize; // Size of enemies in this wave
         uint32_t enemyColor;        // Color of enemies in this wave
         int xpReward;              // XP reward for killing enemies in this wave
     };
@@ -31,13 +24,16 @@ namespace SpawnManager {
     void initialize();
     
     // Update the spawn manager (call every frame)
-    void update(float deltaTime, float roundTimer);
+    void update(float deltaTime);
     
     // Get the current wave number
     int getCurrentWave();
     
     // Get the time elapsed in the current wave
     float getWaveTime();
+    
+    // Get the total game time
+    float getTotalTime();
     
     // Set the players for targeting
     void setPlayers(Actor::Player* player1, Actor::Player* player2, Actor::Player* player3, Actor::Player* player4);
