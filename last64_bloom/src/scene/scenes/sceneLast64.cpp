@@ -250,15 +250,17 @@ void SceneLast64::updateScene(float deltaTime)
             if (enemySpawnTimer > enemySpawnInterval) { // Spawn an enemy every x seconds
                 enemySpawnTimer = 0.0f;
                 
-                // Randomly select a target player from active players
+                // Randomly select a target player from alive players
                 Actor::Player* targetPlayer = nullptr;
-                if (activePlayerCount > 0) {
-                    std::vector<Actor::Player*> activePlayersList;
-                    if (player1) activePlayersList.push_back(player1);
-                    if (player2) activePlayersList.push_back(player2);
-                    if (player3) activePlayersList.push_back(player3);
-                    if (player4) activePlayersList.push_back(player4);
-                    targetPlayer = activePlayersList[rand() % activePlayersList.size()];
+                std::vector<Actor::Player*> alivePlayersList;
+                if (player1 && !player1->getIsDead()) alivePlayersList.push_back(player1);
+                if (player2 && !player2->getIsDead()) alivePlayersList.push_back(player2);
+                if (player3 && !player3->getIsDead()) alivePlayersList.push_back(player3);
+                if (player4 && !player4->getIsDead()) alivePlayersList.push_back(player4);
+                
+                // Select a random alive player as the target
+                if (!alivePlayersList.empty()) {
+                    targetPlayer = alivePlayersList[rand() % alivePlayersList.size()];
                 }
                 
                 // Spawn a new enemy at a random edge of the screen
