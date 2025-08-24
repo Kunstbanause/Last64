@@ -6,6 +6,7 @@
 #include "../systems/weapon_projectile.h"
 #include "../systems/weapon_homing.h"
 #include "../systems/weapon_circular.h"
+#include "../systems/weapon_spiral.h"
 #include "../main.h"
 #include <t3d/t3d.h>
 #include <t3d/tpx.h>
@@ -114,7 +115,7 @@ namespace Actor {
         }
         
         // Initialize a single random weapon
-        int weaponType = rand() % 3;
+        int weaponType = 3;//rand() % 4;
         WeaponBase* initialWeapon = nullptr;
         switch (weaponType) {
             case 0:
@@ -125,6 +126,9 @@ namespace Actor {
                 break;
             case 2:
                 initialWeapon = new WeaponCircular();
+                break;
+            case 3:
+                initialWeapon = new WeaponSpiral();
                 break;
         }
         if (initialWeapon) {

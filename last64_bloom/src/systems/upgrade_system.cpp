@@ -6,6 +6,7 @@
 #include "weapon_projectile.h"
 #include "weapon_homing.h"
 #include "weapon_circular.h"
+#include "weapon_spiral.h"
 #include <cstdlib>
 #include <algorithm>
 #include <typeinfo>
@@ -37,7 +38,7 @@ namespace UpgradeSystem {
         // Check if player can get a new weapon (different from current)
         // Try up to 10 times to find a valid new weapon (increased from 3)
         for (int i = 0; i < 10; i++) {
-            int weaponType = rand() % 3;
+            int weaponType = rand() % 4;
             Actor::WeaponBase* newWeapon = createWeapon(weaponType);
             
             if (newWeapon && canAddWeapon(player, newWeapon)) {
@@ -94,13 +95,15 @@ namespace UpgradeSystem {
     }
     
     Actor::WeaponBase* createWeapon(int weaponType) {
-        switch (weaponType) {
+            switch (weaponType) {
             case 0:
                 return new Actor::WeaponProjectile();
             case 1:
                 return new Actor::WeaponHoming();
             case 2:
                 return new Actor::WeaponCircular();
+            case 3:
+                return new Actor::WeaponSpiral();
             default:
                 return nullptr;
         }

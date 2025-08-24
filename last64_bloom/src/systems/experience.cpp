@@ -66,7 +66,7 @@ void Experience::addXP(int amount) {
 
         // Generate upgrade options for each player
         for (int i = 0; i < activePlayerCount; ++i) {
-            if (activePlayers[i]) {
+            if (activePlayers[i] && !activePlayers[i]->getIsDead()) {
                 // Generate upgrade options
                 auto upgradeOptions = UpgradeSystem::generateUpgradeOptions(activePlayers[i]);
                 

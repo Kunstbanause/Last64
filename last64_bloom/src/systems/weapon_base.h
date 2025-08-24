@@ -15,7 +15,8 @@ namespace Actor {
     enum class WeaponType {
         PROJECTILE,
         HOMING,
-        CIRCULAR
+        CIRCULAR,
+        SPIRAL
     };
     
     class WeaponBase : public Base {

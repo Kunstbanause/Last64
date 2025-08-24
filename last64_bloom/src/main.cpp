@@ -142,10 +142,10 @@ int main()
     fb = display_get();
     rdpq_attach(fb, display_get_zbuf());
 
-    // Add debug output every 60 frames to show the game is running
+    // Add debug output every x frames to show the game is running
     static int frameCounter = 0;
     frameCounter++;
-    if (frameCounter % 60 == 0) {
+    if (frameCounter % 300 == 0) {
         debugf("Game running... Frame: %d\n", frameCounter);
     }
 

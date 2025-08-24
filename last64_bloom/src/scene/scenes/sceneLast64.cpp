@@ -79,7 +79,7 @@ void SceneLast64::updateScene(float deltaTime)
     // Add debug output to show the scene is updating
     static int updateCounter = 0;
     updateCounter++;
-    if (updateCounter % 60 == 0) {
+    if (updateCounter % 500 == 0) {
         debugf("SceneLast64 updating... Counter: %d, State: %d\n", updateCounter, currentGameState);
     }
     
@@ -156,9 +156,9 @@ void SceneLast64::updateScene(float deltaTime)
                         T3DVec3 startPos;
                         Actor::Player* newPlayer = nullptr;
                         switch (i) {
-                            case 0: startPos = {{140.0f, 100.0f, 0.0f}}; player1 = new Actor::Player(startPos, JOYPAD_PORT_1); newPlayer = player1; break;
-                            case 1: startPos = {{160.0f, 100.0f, 0.0f}}; player2 = new Actor::Player(startPos, JOYPAD_PORT_2); newPlayer = player2; break;
-                            case 2: startPos = {{120.0f, 100.0f, 0.0f}}; player3 = new Actor::Player(startPos, JOYPAD_PORT_3); newPlayer = player3; break;
+                            case 0: startPos = {{120.0f, 100.0f, 0.0f}}; player1 = new Actor::Player(startPos, JOYPAD_PORT_1); newPlayer = player1; break;
+                            case 1: startPos = {{140.0f, 100.0f, 0.0f}}; player2 = new Actor::Player(startPos, JOYPAD_PORT_2); newPlayer = player2; break;
+                            case 2: startPos = {{160.0f, 100.0f, 0.0f}}; player3 = new Actor::Player(startPos, JOYPAD_PORT_3); newPlayer = player3; break;
                             case 3: startPos = {{180.0f, 100.0f, 0.0f}}; player4 = new Actor::Player(startPos, JOYPAD_PORT_4); newPlayer = player4; break;
                         }
                         activePlayerCount++;
@@ -399,7 +399,7 @@ void SceneLast64::draw2D(float deltaTime)
                                 int level = weapons[j]->getUpgradeLevel();
                                 
                                 // Use first letter of weapon type as identifier
-                                // P=Projectile, H=Homing, C=Circular
+                                // P=Projectile, H=Homing, C=Circular, S=Spiral, ...
                                 switch (weapons[j]->getWeaponType()) {
                                     case Actor::WeaponType::PROJECTILE:
                                         weaponChar = 'P';
@@ -410,8 +410,11 @@ void SceneLast64::draw2D(float deltaTime)
                                     case Actor::WeaponType::CIRCULAR:
                                         weaponChar = 'C';
                                         break;
+                                    case Actor::WeaponType::SPIRAL:
+                                        weaponChar = 'S';
+                                        break;
                                     default:
-                                        weaponChar = 'W';
+                                        weaponChar = 'X';
                                         break;
                                 }
                                 
