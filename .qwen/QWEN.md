@@ -1,14 +1,10 @@
-# QWEN.md - Context for Tiny3D and Last64_Bloom
-
-This file provides an overview of the Tiny3D project and the user's personal project, Last64_Bloom, for use as context in future interactions, particularly with AI assistants.
-
-## Tiny3D Framework Overview
+# Tiny3D Framework Overview
 
 Tiny3D is a 3D graphics library and custom RSP (Reality Signal Processor) microcode for the Nintendo 64 (N64), built on top of the [libdragon](https://github.com/DragonMinded/libdragon/tree/preview) development framework.
 
 The main goal is to provide a fast and efficient 3D API for N64 homebrew development, offering both low-level control over the RSP and a higher-level, easier-to-use C API. It includes features like a full 3D pipeline, lighting (ambient, directional, point), matrix operations, culling, skinned mesh animation, and a GLTF model importer with Fast64 support for Blender.
 
-### Last64_Bloom (User Project)
+## Last64_Bloom (User Project)
 
 Last64_Bloom is the personal project we want to built using the Tiny3D framework. It is a minimalist reimagining of *Vampire Survivors* for the N64, featuring an abstract visual style inspired by games like *REZ* and *Geometry Wars*. The project heavily utilizes advanced visual effects, particularly HDR and Bloom, to create its aesthetic, relying on simple geometric shapes (triangles, circles, quads) instead of traditional textures or sprites.
 
@@ -146,4 +142,4 @@ The compiled ROM for Last64_Bloom will be in the `last64_bloom/build/` directory
     *   `last64_bloom/DESIGN.md`: Outlines the visual style, core concepts, and development milestones for the Last64_Bloom project.
     *   `last64_bloom/Readme.md`: Details the implementation of the custom HDR and Bloom post-processing effects used in the project.
 
-*(This file was generated based on an analysis of the project structure and key files on Wednesday, 13 August 2025.)*
+*(This file was generated based on an analysis of the project structure and key files on Sunday, 24 August 2025.)*
