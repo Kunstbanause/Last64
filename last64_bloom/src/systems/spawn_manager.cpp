@@ -13,7 +13,6 @@ namespace SpawnManager {
     static WaveConfig waveConfigs[4]; // 3 waves + 1 boss wave
     static int currentWave = 0;
     static float waveTimer = 0.0f;
-    static float totalTimer = 0.0f;
     static float spawnTimer = 0.0f;
     static bool initialized = false;
     static bool bossSpawned = false;
@@ -70,7 +69,6 @@ namespace SpawnManager {
         initializeWaves();
         currentWave = 0;
         waveTimer = 0.0f;
-        totalTimer = 0.0f;
         spawnTimer = 0.0f;
         bossSpawned = false;
         
@@ -92,10 +90,6 @@ namespace SpawnManager {
         return waveTimer;
     }
     
-    float getTotalTime() {
-        return totalTimer;
-    }
-    
     const WaveConfig& getCurrentWaveConfig() {
         // Return the boss wave config if boss is spawned
         if (bossSpawned && currentWave >= 3) {
@@ -105,15 +99,14 @@ namespace SpawnManager {
         return waveConfigs[std::min(currentWave, 2)];
     }
     
-    void update(float deltaTime) {
+    void update(float deltaTime, float roundTimer) {
         if (!initialized) return;
         
         // Update timers
         waveTimer += deltaTime;
-        totalTimer += deltaTime;
         
         // Determine current wave based on total time (1 minute per wave)
-        int newWave = (int)(totalTimer / 60.0f);
+        int newWave = (int)(roundTimer / 60.0f);
         if (newWave > 3) newWave = 3; // Cap at boss wave
         
         // If we've moved to a new wave, reset wave timer

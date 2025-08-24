@@ -35,7 +35,7 @@
                 "background": {
                     "activeOnStart": true,
                     "beginsPattern": ".*Loaded Last64_Bloom.*",
-                    "endsPattern": ".*Opening TCP-server on.*"
+                    "endsPattern": ".*Loading scene.*"
                 }
                 }
             ],

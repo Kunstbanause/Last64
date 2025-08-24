@@ -31,16 +31,13 @@ namespace SpawnManager {
     void initialize();
     
     // Update the spawn manager (call every frame)
-    void update(float deltaTime);
+    void update(float deltaTime, float roundTimer);
     
     // Get the current wave number
     int getCurrentWave();
     
     // Get the time elapsed in the current wave
     float getWaveTime();
-    
-    // Get the total game time
-    float getTotalTime();
     
     // Set the players for targeting
     void setPlayers(Actor::Player* player1, Actor::Player* player2, Actor::Player* player3, Actor::Player* player4);

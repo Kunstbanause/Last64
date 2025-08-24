@@ -175,7 +175,6 @@ void SceneLast64::updateScene(float deltaTime)
             roundTimer += deltaTime;
 
             // Debug input: Press L button to level up all players (for testing)
-            // Debug input: Press R button to skip to next wave
             for (int i = 0; i < 4; ++i) {
                 joypad_buttons_t pressed = joypad_get_buttons_pressed((joypad_port_t)(JOYPAD_PORT_1 + i));
                 if (pressed.l) {
@@ -183,6 +182,7 @@ void SceneLast64::updateScene(float deltaTime)
                     Experience::addXP(100);
                     break; // Only trigger once per frame
                 }
+            // Debug input: Press R button to skip to next wave
                 if (pressed.r) {
                     // Skip to next wave by adjusting the round timer
                     int currentWave = SpawnManager::getCurrentWave();
@@ -201,7 +201,7 @@ void SceneLast64::updateScene(float deltaTime)
             SpawnManager::setPlayers(player1, player2, player3, player4);
             
             // Update spawn manager
-            SpawnManager::update(deltaTime);
+            SpawnManager::update(deltaTime, roundTimer);
             
             // Update all enemies
             Actor::Enemy::updateAll(deltaTime);
