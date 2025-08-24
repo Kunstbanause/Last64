@@ -24,28 +24,28 @@ namespace SpawnManager {
     void initializeWaves() {
         // Wave 1: Small, weak enemies
         waveConfigs[0].waveNumber = 1;
-        waveConfigs[0].spawnInterval = 2.0f;  // Spawn every 2 seconds
+        waveConfigs[0].spawnInterval = 1.6f;  // Spawn every 2 seconds
         waveConfigs[0].baseEnemyCount = 5;
         waveConfigs[0].speedMultiplier = 1.0f;
         waveConfigs[0].healthMultiplier = 1;
         waveConfigs[0].enemySize = Actor::EnemySize::SMALL;
         waveConfigs[0].enemyColor = 0xFF0000FF; // Red
-        waveConfigs[0].xpReward = 1;
+        waveConfigs[0].xpReward = 2;
         
         // Wave 2: Medium enemies with more health
         waveConfigs[1].waveNumber = 2;
-        waveConfigs[1].spawnInterval = 0.5f;
-        waveConfigs[1].baseEnemyCount = 50;
-        waveConfigs[1].speedMultiplier = 2.5f;
-        waveConfigs[1].healthMultiplier = 5;
-        waveConfigs[1].enemySize = Actor::EnemySize::MEDIUM;
+        waveConfigs[1].spawnInterval = 0.8f;
+        waveConfigs[1].baseEnemyCount = 35;
+        waveConfigs[1].speedMultiplier = 2.0f;
+        waveConfigs[1].healthMultiplier = 1;
+        waveConfigs[1].enemySize = Actor::EnemySize::SMALL;
         waveConfigs[1].enemyColor = 0xFFFF00FF; // Yellow
-        waveConfigs[1].xpReward = 2;
+        waveConfigs[1].xpReward = 1;
         
         // Wave 3: Large, fast enemies with high health
         waveConfigs[2].waveNumber = 3;
-        waveConfigs[2].spawnInterval = 1.0f;  // Spawn every 1 second
-        waveConfigs[2].baseEnemyCount = 20;
+        waveConfigs[2].spawnInterval = 1.2f;  // Spawn every 1 second
+        waveConfigs[2].baseEnemyCount = 15;
         waveConfigs[2].speedMultiplier = 1.5f;
         waveConfigs[2].healthMultiplier = 10;
         waveConfigs[2].enemySize = Actor::EnemySize::MEDIUM;
@@ -54,7 +54,7 @@ namespace SpawnManager {
         
         // Boss Wave: Single large boss enemy
         waveConfigs[3].waveNumber = 4;
-        waveConfigs[3].spawnInterval = 5.0f;  // Not used for boss
+        waveConfigs[3].spawnInterval = 60.0f;  // Not used for boss
         waveConfigs[3].baseEnemyCount = 1;
         waveConfigs[3].speedMultiplier = 1.0f;
         waveConfigs[3].healthMultiplier = 100;

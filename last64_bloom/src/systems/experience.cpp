@@ -16,7 +16,7 @@ namespace {
     int activePlayerCount = 0;
 
     // Exponential growth factor for XP required for next level
-    const float xpGrowthFactor = 1.5f;
+    const float xpGrowthFactor = 1.25f;
 }
 
 void Experience::initialize() {
