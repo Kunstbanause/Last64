@@ -50,7 +50,8 @@
 - [x] Fixed bug: Enemies targeting dead players
 
 ### 🛠️ Phase 10: Bug Fixes
-- [ ] Fix bug: Wave counter is not cleared after all players have died Deconstructor missing!
+- [x] Fix bug: Wave counter is not cleared after all players have died Deconstructor missing!
+- [x] Fix github auth
 
 ## 🛠️ Implemented Features
 
