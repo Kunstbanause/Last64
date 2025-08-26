@@ -59,6 +59,7 @@
 - **Projectile Weapon**: Basic weapon that fires projectiles in a straight line
 - **Homing Weapon**: Fires projectiles that home in on nearby enemies
 - **Circular Weapon**: Fires projectiles in a circular pattern around the player
+- **Spiral Weapon**: Spawns projectiles tha circle around the player
 
 ### Upgrades
 - **Weapon Upgrades**: Each weapon can be upgraded to increase its effectiveness
@@ -73,5 +74,5 @@
 ~~Weapon overview now shows all weapons for each player.~~
 ~~Debug button (L) added to level up players for testing.~~
 ~~Enemies now correctly target dead players again.~~
-- [ ] Bug: Wave counter is not cleared after all players have died
+~~Bug: Wave counter is not cleared after all players have died~~
 ~~Enemies now correctly target dead players again.~~

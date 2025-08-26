@@ -36,11 +36,11 @@ namespace Actor {
     
     WeaponSpiral::WeaponSpiral() : WeaponBase(WeaponType::SPIRAL) {
         // Set weapon-specific properties
-        fireRate = 3.0f;              // Rate at which new projectiles are added
+        fireRate = 5.0f;              // Rate at which new projectiles are added
         projectileSpeed = 0.0f;       // Not used for orbiting projectiles
         projectileSlowdown = 0.0f;    // No slowdown
-        projectileLifetime = 10.0f;   // Lifetime of orbiting projectiles
-        baseProjectileCount = 1;      // Start with 1 projectile
+        projectileLifetime = 5.0f;   // Lifetime of orbiting projectiles
+        baseProjectileCount = 2;      // Start with 1 projectile
         spiralTightness = 1.5f;       // How fast projectiles orbit
         rotationSpeed = 2.5f;         // Base rotation speed
         currentRotation = 0.0f;       // Current rotation
@@ -48,7 +48,7 @@ namespace Actor {
         // Default Parameters
         maxUpgradeLevel = 3;          // 3 upgrade levels
         spawnOffset = {0, 0, 0};
-        damage = 4;
+        damage = 8;
     }
     
     WeaponSpiral::~WeaponSpiral() {
@@ -184,7 +184,7 @@ namespace Actor {
             upgradeLevel++;
             // Decrease fire rate (more frequent spawning) and increase rotation speed
             fireRate *= 0.8f;
-            rotationSpeed *= 1.2f;
+            rotationSpeed *= 1.1f;
         }
     }
 }
