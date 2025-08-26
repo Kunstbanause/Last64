@@ -34,8 +34,8 @@ namespace SpawnManager {
         
         // Wave 2: Medium enemies with more health
         waveConfigs[1].waveNumber = 2;
-        waveConfigs[1].spawnInterval = 0.8f;
-        waveConfigs[1].baseEnemyCount = 35;
+        waveConfigs[1].spawnInterval = 0.5f;
+        waveConfigs[1].baseEnemyCount = 55;
         waveConfigs[1].speedMultiplier = 2.0f;
         waveConfigs[1].healthMultiplier = 1;
         waveConfigs[1].enemySize = Actor::EnemySize::SMALL;
