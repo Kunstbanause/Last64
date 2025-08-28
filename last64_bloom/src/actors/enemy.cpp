@@ -233,15 +233,7 @@ namespace Actor {
             return;
         }
         
-        // Update matrix // Scale init with 1.0f so it flickers? XXX
-        if (poolIndex < MAX_ENEMIES) {
-            t3d_mat4fp_from_srt_euler(
-                sharedMatrices[poolIndex],
-                (T3DVec3){{1.0f, 1.0f, 1.0f}},  // scale
-                (T3DVec3){{0.0f, 0.0f, 0.0f}},  // rotation
-                position                         // translation
-            );
-        }
+        // Matrix is now only updated in draw3D() to prevent flickering between sizes
     }
 
     void Enemy::draw3D(float deltaTime) {
