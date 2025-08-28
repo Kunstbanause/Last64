@@ -36,12 +36,13 @@ SceneLast64::SceneLast64()
     exposure = 30.0f; // Set exposure for HDR effect
     restartRequested = false; // Scene restart flag for game over
 
-    // Set up camera - match SceneBunker more closely
+    // Set up camera
     camera.fov = T3D_DEG_TO_RAD(80.0f);
     camera.near = 5.0f;
-    camera.far = 295.0f;
-    camera.pos = {140.0f, 100.0f, 160.0f};
-    camera.target = {140.0f, 100.0f, 0.0f};
+    camera.far = 500.0f; // Increased to accommodate larger scene
+    // Position camera to look at the center of the screen from a reasonable distance
+    camera.pos = {SCREEN_RIGHT/2.0f, SCREEN_BOTTOM/2.0f, 200.0f};
+    camera.target = {SCREEN_RIGHT/2.0f, SCREEN_BOTTOM/2.0f, 0.0f};
 
     // Initialize scene matrix
     sceneMatFP = (T3DMat4FP*)malloc_uncached(sizeof(T3DMat4FP));
@@ -102,19 +103,19 @@ void SceneLast64::updateScene(float deltaTime)
                         T3DVec3 startPos;
                         bool DEBUG_SPAWN_ALL = false; // Debug spawn all players
                         if (DEBUG_SPAWN_ALL) {
-                            startPos = {{120.0f, 100.0f, 0.0f}}; player1 = new Actor::Player(startPos, JOYPAD_PORT_1);
-                            startPos = {{140.0f, 100.0f, 0.0f}}; player2 = new Actor::Player(startPos, JOYPAD_PORT_2);
-                            startPos = {{160.0f, 100.0f, 0.0f}}; player3 = new Actor::Player(startPos, JOYPAD_PORT_3);
-                            startPos = {{180.0f, 100.0f, 0.0f}}; player4 = new Actor::Player(startPos, JOYPAD_PORT_4);
+                            startPos = {{SCREEN_RIGHT/2.0f - 20.0f, SCREEN_BOTTOM/2.0f, 0.0f}}; player1 = new Actor::Player(startPos, JOYPAD_PORT_1);
+                            startPos = {{SCREEN_RIGHT/2.0f, SCREEN_BOTTOM/2.0f, 0.0f}}; player2 = new Actor::Player(startPos, JOYPAD_PORT_2);
+                            startPos = {{SCREEN_RIGHT/2.0f + 20.0f, SCREEN_BOTTOM/2.0f, 0.0f}}; player3 = new Actor::Player(startPos, JOYPAD_PORT_3);
+                            startPos = {{SCREEN_RIGHT/2.0f + 40.0f, SCREEN_BOTTOM/2.0f, 0.0f}}; player4 = new Actor::Player(startPos, JOYPAD_PORT_4);
                             activePlayerCount = 4; // All players joined
                         }
                         else
                         {
                             switch (i) {
-                                case 0: startPos = {{120.0f, 100.0f, 0.0f}}; player1 = new Actor::Player(startPos, JOYPAD_PORT_1); break;
-                                case 1: startPos = {{140.0f, 100.0f, 0.0f}}; player2 = new Actor::Player(startPos, JOYPAD_PORT_2); break;
-                                case 2: startPos = {{160.0f, 100.0f, 0.0f}}; player3 = new Actor::Player(startPos, JOYPAD_PORT_3); break;
-                                case 3: startPos = {{180.0f, 100.0f, 0.0f}}; player4 = new Actor::Player(startPos, JOYPAD_PORT_4); break;
+                                case 0: startPos = {{SCREEN_RIGHT/2.0f - 20.0f, SCREEN_BOTTOM/2.0f, 0.0f}}; player1 = new Actor::Player(startPos, JOYPAD_PORT_1); break;
+                                case 1: startPos = {{SCREEN_RIGHT/2.0f, SCREEN_BOTTOM/2.0f, 0.0f}}; player2 = new Actor::Player(startPos, JOYPAD_PORT_2); break;
+                                case 2: startPos = {{SCREEN_RIGHT/2.0f + 20.0f, SCREEN_BOTTOM/2.0f, 0.0f}}; player3 = new Actor::Player(startPos, JOYPAD_PORT_3); break;
+                                case 3: startPos = {{SCREEN_RIGHT/2.0f + 40.0f, SCREEN_BOTTOM/2.0f, 0.0f}}; player4 = new Actor::Player(startPos, JOYPAD_PORT_4); break;
                             }
                             activePlayerCount++;
                         }
@@ -159,10 +160,10 @@ void SceneLast64::updateScene(float deltaTime)
                         T3DVec3 startPos;
                         Actor::Player* newPlayer = nullptr;
                         switch (i) {
-                            case 0: startPos = {{120.0f, 100.0f, 0.0f}}; player1 = new Actor::Player(startPos, JOYPAD_PORT_1); newPlayer = player1; break;
-                            case 1: startPos = {{140.0f, 100.0f, 0.0f}}; player2 = new Actor::Player(startPos, JOYPAD_PORT_2); newPlayer = player2; break;
-                            case 2: startPos = {{160.0f, 100.0f, 0.0f}}; player3 = new Actor::Player(startPos, JOYPAD_PORT_3); newPlayer = player3; break;
-                            case 3: startPos = {{180.0f, 100.0f, 0.0f}}; player4 = new Actor::Player(startPos, JOYPAD_PORT_4); newPlayer = player4; break;
+                            case 0: startPos = {{SCREEN_RIGHT/2.0f - 20.0f, SCREEN_BOTTOM/2.0f, 0.0f}}; player1 = new Actor::Player(startPos, JOYPAD_PORT_1); newPlayer = player1; break;
+                            case 1: startPos = {{SCREEN_RIGHT/2.0f, SCREEN_BOTTOM/2.0f, 0.0f}}; player2 = new Actor::Player(startPos, JOYPAD_PORT_2); newPlayer = player2; break;
+                            case 2: startPos = {{SCREEN_RIGHT/2.0f + 20.0f, SCREEN_BOTTOM/2.0f, 0.0f}}; player3 = new Actor::Player(startPos, JOYPAD_PORT_3); newPlayer = player3; break;
+                            case 3: startPos = {{SCREEN_RIGHT/2.0f + 40.0f, SCREEN_BOTTOM/2.0f, 0.0f}}; player4 = new Actor::Player(startPos, JOYPAD_PORT_4); newPlayer = player4; break;
                         }
                         activePlayerCount++;
                         gSFXManager.play(SFXManager::SFX_JOIN);
