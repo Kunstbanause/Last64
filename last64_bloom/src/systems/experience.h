@@ -9,6 +9,7 @@ namespace Experience {
     void removePlayer(Actor::Player* player);
     
     int getLevel();
+    int getXToNextLevel();
     float getXPPercentage();
     int getActivePlayerCount();
     

@@ -180,7 +180,7 @@ void SceneLast64::updateScene(float deltaTime)
                 joypad_buttons_t pressed = joypad_get_buttons_pressed((joypad_port_t)(JOYPAD_PORT_1 + i));
                 if (pressed.l) {
                     // Add XP to trigger level up
-                    Experience::addXP(100);
+                    Experience::addXP(Experience::getXToNextLevel());
                     break; // Only trigger once per frame
                 }
             // Debug input: Press R button to skip to next wave

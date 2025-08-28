@@ -96,6 +96,10 @@ float Experience::getXPPercentage() {
     return (float)currentXP / (float)xpToNextLevel;
 }
 
+int Experience::getXToNextLevel() {
+    return xpToNextLevel;
+}
+
 int Experience::getActivePlayerCount() {
     return activePlayerCount;
 }
