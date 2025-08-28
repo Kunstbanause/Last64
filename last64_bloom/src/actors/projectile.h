@@ -59,6 +59,7 @@ namespace Actor {
         T3DVec3 getPosition() const override { return position; }
         void setPosition(const T3DVec3& newPosition) { position = newPosition; }
         float getRadius() const override { return 2.0f; } // Projectiles are 2x2 quads
+        void getAABBSize(float& width, float& height) const override; // Projectiles are 4x4 quads
         int getDamage() const { return damage; }
         uint32_t getColor() const { return color; }
         void setColor(uint32_t newColor) { color = newColor; }

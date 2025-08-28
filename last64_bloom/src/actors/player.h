@@ -54,7 +54,7 @@ namespace Actor {
         void takeDamage(int amount);
         void kill() { isDead = true; playerColor = 0xFF0000FF; gSFXManager.play(SFXManager::SFX_DEATH);}
         bool getIsDead() const { return isDead; }
-        bool collidesWith(Base* other);
+        bool collidesWith(Base* other) override;
         
         // Weapon methods
         std::vector<WeaponBase*>& getWeapons() { return weapons; }
@@ -63,5 +63,9 @@ namespace Actor {
         
         static void initializePlayer() { initialize(); }
         static void cleanupPlayer() { cleanup(); }
+        
+        // AABB collision methods
+        float getRadius() const override;
+        void getAABBSize(float& width, float& height) const override;
     };
 }

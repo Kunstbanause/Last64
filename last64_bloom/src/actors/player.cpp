@@ -148,16 +148,19 @@ namespace Actor {
     }
     
     bool Player::collidesWith(Base* other) {
-        // Simple circle-circle collision for now
-        T3DVec3 otherPos = other->getPosition();
-        float otherRadius = other->getRadius();
-
-        float dx = position.x - otherPos.x;
-        float dy = position.y - otherPos.y;
-        float distance = sqrtf(dx * dx + dy * dy);
-
-        // Player radius is assumed to be 3.0f, same as enemy
-        return distance < (3.0f + otherRadius);
+        // Use AABB collision detection for better performance and accuracy
+        return collidesWithAABB(other);
+    }
+    
+    float Player::getRadius() const {
+        // Player is drawn as a triangle with a bounding radius of approximately 3.0f
+        return 2.0f;
+    }
+    
+    void Player::getAABBSize(float& width, float& height) const {
+        // Player is drawn as a triangle that fits within a 6x6 square
+        width = 5.0f;
+        height = 5.0f;
     }
     
     Player::~Player() {

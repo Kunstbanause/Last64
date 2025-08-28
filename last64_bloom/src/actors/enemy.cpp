@@ -325,19 +325,8 @@ namespace Actor {
     }
 
     bool Enemy::collidesWith(Base* other) {
-        if (!other || (other->flags & FLAG_DISABLED) || (flags & FLAG_DISABLED)) {
-            return false;
-        }
-
-        T3DVec3 otherPos = other->getPosition();
-        float otherRadius = other->getRadius();
-
-        float dx = position.x - otherPos.x;
-        float dy = position.y - otherPos.y;
-        float distanceSq = dx * dx + dy * dy;
-        float radii = getRadius() + otherRadius;
-
-        return distanceSq < (radii * radii);
+        // Use AABB collision detection for better performance and accuracy
+        return collidesWithAABB(other);
     }
     
     float Enemy::getRadius() const {
@@ -350,6 +339,29 @@ namespace Actor {
                 return 10.0f;
             default:
                 return 3.0f;
+        }
+    }
+    
+    void Enemy::getAABBSize(float& width, float& height) const {
+        // Return the actual dimensions of the enemy based on its size
+        // These values match the sizes used in the rendering code
+        switch (size) {
+            case EnemySize::SMALL:
+                width = 6.0f;   // 3 units in each direction
+                height = 6.0f;
+                break;
+            case EnemySize::MEDIUM:
+                width = 9.0f;   // 4.5 units in each direction
+                height = 9.0f;
+                break;
+            case EnemySize::LARGE:
+                width = 24.0f;  // 12 units in each direction
+                height = 24.0f;
+                break;
+            default:
+                width = 6.0f;
+                height = 6.0f;
+                break;
         }
     }
 }

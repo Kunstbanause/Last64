@@ -37,7 +37,17 @@ namespace Actor {
         flags |= FLAG_DISABLED;
     }
 
-    Projectile::~Projectile() {}
+    Projectile::~Projectile()
+    {
+        // We don't actually delete from the pool here
+        // The pool is managed statically
+    }
+    
+    void Projectile::getAABBSize(float& width, float& height) const {
+        // Projectiles are rendered as 4x4 quads (2 units in each direction)
+        width = 4.0f;
+        height = 4.0f;
+    }
 
     void Projectile::initialize() {
         if (!initialized) {

@@ -41,5 +41,18 @@ namespace Actor
 
       virtual T3DVec3 getPosition() const { return {0,0,0}; }
       virtual float getRadius() const { return 0.0f; }
+      
+      // Collision methods
+      virtual bool collidesWith(Base* other) { return false; } // Default implementation
+      
+      // AABB collision methods
+      virtual void getAABBSize(float& width, float& height) const {
+          // Default implementation using radius
+          float radius = getRadius();
+          width = radius * 2.0f;
+          height = radius * 2.0f;
+      }
+      
+      virtual bool collidesWithAABB(const Base* other) const;
   };
 }

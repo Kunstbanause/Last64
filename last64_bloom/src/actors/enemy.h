@@ -61,10 +61,11 @@ namespace Actor {
         bool isActive() const;
 
         void takeDamage(int amount);
-        bool collidesWith(Base* other);
+        bool collidesWith(Base* other) override;
 
         T3DVec3 getPosition() const override { return position; }
         float getRadius() const override;
+        void getAABBSize(float& width, float& height) const override;
         EnemySize getSize() const { return size; }
         int getXPReward() const { return xpReward; }
     };
