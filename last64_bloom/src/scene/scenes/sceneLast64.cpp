@@ -58,6 +58,9 @@ SceneLast64::SceneLast64()
     Actor::Enemy::initialize();
     Actor::Projectile::initialize();
     SpawnManager::initialize();
+    
+    // Play background music once when scene starts
+    gSFXManager.play(SFXManager::SFX_MUSIC1);
 }
 
 SceneLast64::~SceneLast64()
