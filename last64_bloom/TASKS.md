@@ -49,10 +49,6 @@
 - [x] Added first boss enemy
 - [x] Fixed bug: Enemies targeting dead players
 
-### 🛠️ Phase 10: Bug Fixes
-- [x] Fix bug: Wave counter is not cleared after all players have died Deconstructor missing!
-- [x] Fix github auth
-
 ## 🛠️ Implemented Features
 
 ### Weapons
@@ -76,3 +72,7 @@
 ~~Enemies now correctly target dead players again.~~
 ~~Bug: Wave counter is not cleared after all players have died~~
 ~~Enemies now correctly target dead players again.~~
+- [x] Fix bug: Wave counter is not cleared after all players have died Deconstructor missing!
+- [x] Fix github auth
+- [x] Fix: Boss now correctly only spawns once.
+- Spiral Weapon upgrades break old projectiles, stay in place detached from player

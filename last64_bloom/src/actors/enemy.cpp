@@ -233,7 +233,7 @@ namespace Actor {
             return;
         }
         
-        // Update matrix
+        // Update matrix // Scale init with 1.0f so it flickers? XXX
         if (poolIndex < MAX_ENEMIES) {
             t3d_mat4fp_from_srt_euler(
                 sharedMatrices[poolIndex],
@@ -353,9 +353,9 @@ namespace Actor {
             case EnemySize::SMALL:
                 return 3.0f;
             case EnemySize::MEDIUM:
-                return 4.5f;
+                return 5.0f;
             case EnemySize::LARGE:
-                return 8.0f;
+                return 10.0f;
             default:
                 return 3.0f;
         }

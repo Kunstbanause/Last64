@@ -10,7 +10,8 @@
 
 namespace SpawnManager {
     // Wave configurations
-    static WaveConfig waveConfigs[4]; // 3 waves + 1 boss wave
+    const int maxWaves = 4;
+    static WaveConfig waveConfigs[maxWaves]; // 3 waves + 1 boss wave
     static int currentWave = 0;
     static float waveTimer = 0.0f;
     static float spawnTimer = 0.0f;
@@ -24,7 +25,7 @@ namespace SpawnManager {
     void initializeWaves() {
         // Wave 1: Small, weak enemies
         waveConfigs[0].waveNumber = 1;
-        waveConfigs[0].spawnInterval = 1.6f;  // Spawn every 2 seconds
+        waveConfigs[0].spawnInterval = 1.6f;
         waveConfigs[0].baseEnemyCount = 5;
         waveConfigs[0].speedMultiplier = 1.0f;
         waveConfigs[0].healthMultiplier = 1;
@@ -32,9 +33,9 @@ namespace SpawnManager {
         waveConfigs[0].enemyColor = 0xFF0000FF; // Red
         waveConfigs[0].xpReward = 2;
         
-        // Wave 2: Medium enemies with more health
+        // Wave 2: Swarm
         waveConfigs[1].waveNumber = 2;
-        waveConfigs[1].spawnInterval = 0.5f;
+        waveConfigs[1].spawnInterval = 0.4f;
         waveConfigs[1].baseEnemyCount = 55;
         waveConfigs[1].speedMultiplier = 2.0f;
         waveConfigs[1].healthMultiplier = 1;
@@ -44,7 +45,7 @@ namespace SpawnManager {
         
         // Wave 3: Large, fast enemies with high health
         waveConfigs[2].waveNumber = 3;
-        waveConfigs[2].spawnInterval = 1.2f;  // Spawn every 1 second
+        waveConfigs[2].spawnInterval = 1.2f;
         waveConfigs[2].baseEnemyCount = 15;
         waveConfigs[2].speedMultiplier = 1.5f;
         waveConfigs[2].healthMultiplier = 10;
@@ -52,9 +53,9 @@ namespace SpawnManager {
         waveConfigs[2].enemyColor = 0x00FFFFFF; // Cyan
         waveConfigs[2].xpReward = 3;
         
-        // Boss Wave: Single large boss enemy
+        // Boss Wave: Single large boss enemy (Wave 4, but triggered at 3 minutes)
         waveConfigs[3].waveNumber = 4;
-        waveConfigs[3].spawnInterval = 60.0f;  // Not used for boss
+        waveConfigs[3].spawnInterval = 1.0f;  // Not used for boss
         waveConfigs[3].baseEnemyCount = 1;
         waveConfigs[3].speedMultiplier = 1.0f;
         waveConfigs[3].healthMultiplier = 100;
@@ -91,12 +92,8 @@ namespace SpawnManager {
     }
     
     const WaveConfig& getCurrentWaveConfig() {
-        // Return the boss wave config if boss is spawned
-        if (bossSpawned && currentWave >= 3) {
-            return waveConfigs[3];
-        }
         // Return current wave config, or last wave if we've gone beyond
-        return waveConfigs[std::min(currentWave, 2)];
+        return waveConfigs[std::min(currentWave, maxWaves-1)];
     }
     
     void update(float deltaTime, float roundTimer) {
@@ -114,11 +111,11 @@ namespace SpawnManager {
             currentWave = newWave;
             waveTimer = 0.0f;
             spawnTimer = 0.0f;
-            bossSpawned = false;
             
-            // For boss wave, we only spawn the boss once
-            if (currentWave >= 3) {
-                bossSpawned = false; // Reset boss spawn flag for the boss wave
+            // Only reset bossSpawned flag if we're not entering the boss wave
+            // or if we're moving between boss waves (which shouldn't happen with the current cap)
+            if (currentWave < 3) {
+                bossSpawned = false;
             }
         }
         
@@ -126,109 +123,113 @@ namespace SpawnManager {
         // Get current wave config
         const WaveConfig& config = getCurrentWaveConfig();
         
-        // Handle boss wave specially
-        if (currentWave >= 3 && !bossSpawned) {
-            // Spawn the boss
-            Actor::Player* targetPlayer = nullptr;
-            std::vector<Actor::Player*> alivePlayers;
-            for (int i = 0; i < 4; i++) {
-                if (players[i] && !players[i]->getIsDead()) {
-                    alivePlayers.push_back(players[i]);
+        // Handle boss wave specially (spawn at exactly 3 minutes)
+        if (roundTimer >= 180.0f) {
+            if (!bossSpawned) {
+                // Use boss wave config specifically for boss
+                const WaveConfig& bossConfig = waveConfigs[3];
+                
+                // Spawn the boss
+                Actor::Player* targetPlayer = nullptr;
+                std::vector<Actor::Player*> alivePlayers;
+                for (int i = 0; i < 4; i++) {
+                    if (players[i] && !players[i]->getIsDead()) {
+                        alivePlayers.push_back(players[i]);
+                    }
+                }
+                
+                if (!alivePlayers.empty()) {
+                    targetPlayer = alivePlayers[rand() % alivePlayers.size()];
+                    
+                    // Spawn boss at a random edge
+                    float spawnX, spawnY;
+                    int edge = rand() % 4; // 0=top, 1=right, 2=bottom, 3=left
+                    
+                    switch (edge) {
+                        case 0: // Top
+                            spawnX = SCREEN_LEFT + (rand() % (int)SCREEN_WIDTH);
+                            spawnY = SCREEN_TOP;
+                            break;
+                        case 1: // Right
+                            spawnX = SCREEN_RIGHT;
+                            spawnY = SCREEN_TOP + (rand() % (int)SCREEN_HEIGHT);
+                            break;
+                        case 2: // Bottom
+                            spawnX = SCREEN_LEFT + (rand() % (int)SCREEN_WIDTH);
+                            spawnY = SCREEN_BOTTOM;
+                            break;
+                        case 3: // Left
+                            spawnX = SCREEN_LEFT;
+                            spawnY = SCREEN_TOP + (rand() % (int)SCREEN_HEIGHT);
+                            break;
+                        default:
+                            spawnX = 0;
+                            spawnY = 0;
+                            break;
+                    }
+                    
+                    T3DVec3 pos = {{spawnX, spawnY, 0.0f}};
+                    float speed = 15.0f * bossConfig.speedMultiplier;
+                    
+                    // Spawn enemy with the selected target player and parameters
+                    Actor::Enemy::spawn(pos, speed, targetPlayer, bossConfig.enemySize, bossConfig.enemyColor, bossConfig.xpReward, 8 * bossConfig.healthMultiplier);
+                    
+                    bossSpawned = true;
                 }
             }
-            
-            if (!alivePlayers.empty()) {
-                targetPlayer = alivePlayers[rand() % alivePlayers.size()];
+            // Don't spawn regular enemies during boss wave
+            return;
+        } else {
+            // Regular enemy spawning for waves 1-3
+            spawnTimer += deltaTime;
+            if (spawnTimer > config.spawnInterval) {
+                spawnTimer = 0.0f;
                 
-                // Spawn boss at a random edge
-                float spawnX, spawnY;
-                int edge = rand() % 4; // 0=top, 1=right, 2=bottom, 3=left
-                
-                switch (edge) {
-                    case 0: // Top
-                        spawnX = SCREEN_LEFT + (rand() % (int)SCREEN_WIDTH);
-                        spawnY = SCREEN_TOP;
-                        break;
-                    case 1: // Right
-                        spawnX = SCREEN_RIGHT;
-                        spawnY = SCREEN_TOP + (rand() % (int)SCREEN_HEIGHT);
-                        break;
-                    case 2: // Bottom
-                        spawnX = SCREEN_LEFT + (rand() % (int)SCREEN_WIDTH);
-                        spawnY = SCREEN_BOTTOM;
-                        break;
-                    case 3: // Left
-                        spawnX = SCREEN_LEFT;
-                        spawnY = SCREEN_TOP + (rand() % (int)SCREEN_HEIGHT);
-                        break;
-                    default:
-                        spawnX = 0;
-                        spawnY = 0;
-                        break;
+                // Randomly select a target player from alive players
+                Actor::Player* targetPlayer = nullptr;
+                std::vector<Actor::Player*> alivePlayers;
+                for (int i = 0; i < 4; i++) {
+                    if (players[i] && !players[i]->getIsDead()) {
+                        alivePlayers.push_back(players[i]);
+                    }
                 }
                 
-                T3DVec3 pos = {{spawnX, spawnY, 0.0f}};
-                float speed = 15.0f * config.speedMultiplier;
-                
-                // Spawn enemy with the selected target player and parameters
-                // Spawn enemy with the selected target player and parameters
-                Actor::Enemy* boss = Actor::Enemy::spawn(pos, speed, targetPlayer, config.enemySize, config.enemyColor, config.xpReward, 8 * config.healthMultiplier);
-                
-                bossSpawned = true;
-            }
-            return; // Don't spawn regular enemies during boss wave
-        }
-        
-        // Regular enemy spawning for waves 1-3
-        spawnTimer += deltaTime;
-        if (spawnTimer > config.spawnInterval) {
-            spawnTimer = 0.0f;
-            
-            // Randomly select a target player from alive players
-            Actor::Player* targetPlayer = nullptr;
-            std::vector<Actor::Player*> alivePlayers;
-            for (int i = 0; i < 4; i++) {
-                if (players[i] && !players[i]->getIsDead()) {
-                    alivePlayers.push_back(players[i]);
+                if (!alivePlayers.empty()) {
+                    targetPlayer = alivePlayers[rand() % alivePlayers.size()];
+                    
+                    // Spawn a new enemy at a random edge of the screen
+                    float spawnX, spawnY;
+                    int edge = rand() % 4; // 0=top, 1=right, 2=bottom, 3=left
+                    
+                    switch (edge) {
+                        case 0: // Top
+                            spawnX = SCREEN_LEFT + (rand() % (int)SCREEN_WIDTH);
+                            spawnY = SCREEN_TOP;
+                            break;
+                        case 1: // Right
+                            spawnX = SCREEN_RIGHT;
+                            spawnY = SCREEN_TOP + (rand() % (int)SCREEN_HEIGHT);
+                            break;
+                        case 2: // Bottom
+                            spawnX = SCREEN_LEFT + (rand() % (int)SCREEN_WIDTH);
+                            spawnY = SCREEN_BOTTOM;
+                            break;
+                        case 3: // Left
+                            spawnX = SCREEN_LEFT;
+                            spawnY = SCREEN_TOP + (rand() % (int)SCREEN_HEIGHT);
+                            break;
+                        default:
+                            spawnX = 0;
+                            spawnY = 0;
+                            break;
+                    }
+                    
+                    T3DVec3 pos = {{spawnX, spawnY, 0.0f}};
+                    float speed = 20.0f * config.speedMultiplier;
+                    
+                    // Spawn enemy with the selected target player and parameters
+                    Actor::Enemy::spawn(pos, speed, targetPlayer, config.enemySize, config.enemyColor, config.xpReward, 8 * config.healthMultiplier);
                 }
-            }
-            
-            if (!alivePlayers.empty()) {
-                targetPlayer = alivePlayers[rand() % alivePlayers.size()];
-                
-                // Spawn a new enemy at a random edge of the screen
-                float spawnX, spawnY;
-                int edge = rand() % 4; // 0=top, 1=right, 2=bottom, 3=left
-                
-                switch (edge) {
-                    case 0: // Top
-                        spawnX = SCREEN_LEFT + (rand() % (int)SCREEN_WIDTH);
-                        spawnY = SCREEN_TOP;
-                        break;
-                    case 1: // Right
-                        spawnX = SCREEN_RIGHT;
-                        spawnY = SCREEN_TOP + (rand() % (int)SCREEN_HEIGHT);
-                        break;
-                    case 2: // Bottom
-                        spawnX = SCREEN_LEFT + (rand() % (int)SCREEN_WIDTH);
-                        spawnY = SCREEN_BOTTOM;
-                        break;
-                    case 3: // Left
-                        spawnX = SCREEN_LEFT;
-                        spawnY = SCREEN_TOP + (rand() % (int)SCREEN_HEIGHT);
-                        break;
-                    default:
-                        spawnX = 0;
-                        spawnY = 0;
-                        break;
-                }
-                
-                T3DVec3 pos = {{spawnX, spawnY, 0.0f}};
-                float speed = 20.0f * config.speedMultiplier;
-                
-                // Spawn enemy with the selected target player and parameters
-                Actor::Enemy* enemy =
-                        Actor::Enemy::spawn(pos, speed, targetPlayer, config.enemySize, config.enemyColor, config.xpReward, 8 * config.healthMultiplier);
             }
         }
     }
