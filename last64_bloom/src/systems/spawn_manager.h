@@ -8,6 +8,15 @@
 #include "../actors/enemy.h"
 
 namespace SpawnManager {
+    // Enum for allowed spawn edges
+    enum SpawnEdges {
+        SPAWN_EDGE_TOP    = 1 << 0,  // 1
+        SPAWN_EDGE_RIGHT  = 1 << 1,  // 2
+        SPAWN_EDGE_BOTTOM = 1 << 2,  // 4
+        SPAWN_EDGE_LEFT   = 1 << 3,  // 8
+        SPAWN_EDGE_ALL    = SPAWN_EDGE_TOP | SPAWN_EDGE_RIGHT | SPAWN_EDGE_BOTTOM | SPAWN_EDGE_LEFT  // 15
+    };
+
     // Wave configuration structure
     struct WaveConfig {
         int waveNumber;
@@ -18,6 +27,7 @@ namespace SpawnManager {
         Actor::EnemySize enemySize; // Size of enemies in this wave
         uint32_t enemyColor;        // Color of enemies in this wave
         int xpReward;              // XP reward for killing enemies in this wave
+        int allowedSpawnEdges;     // Bitmask of allowed spawn edges
     };
 
     // Initialize the spawn manager

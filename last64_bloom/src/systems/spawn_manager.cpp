@@ -21,9 +21,25 @@ namespace SpawnManager {
     // Player references for targeting
     static Actor::Player* players[4] = {nullptr, nullptr, nullptr, nullptr};
     
-    // Helper function to get a random spawn position at screen edge
-    static void getRandomEdgeSpawnPosition(float& spawnX, float& spawnY) {
-        int edge = rand() % 4; // 0=top, 1=right, 2=bottom, 3=left
+    // Helper function to get a random spawn position at screen edge based on allowed edges
+    static void getRandomEdgeSpawnPosition(float& spawnX, float& spawnY, int allowedEdges) {
+        // Build a list of allowed edges
+        std::vector<int> edges;
+        if (allowedEdges & SPAWN_EDGE_TOP) edges.push_back(0);
+        if (allowedEdges & SPAWN_EDGE_RIGHT) edges.push_back(1);
+        if (allowedEdges & SPAWN_EDGE_BOTTOM) edges.push_back(2);
+        if (allowedEdges & SPAWN_EDGE_LEFT) edges.push_back(3);
+        
+        // If no edges are allowed, default to all
+        if (edges.empty()) {
+            edges.push_back(0); // top
+            edges.push_back(1); // right
+            edges.push_back(2); // bottom
+            edges.push_back(3); // left
+        }
+        
+        // Select a random edge from allowed edges
+        int edge = edges[rand() % edges.size()];
         
         switch (edge) {
             case 0: // Top
@@ -75,8 +91,9 @@ namespace SpawnManager {
         waveConfigs[0].enemySize = Actor::EnemySize::SMALL;
         waveConfigs[0].enemyColor = 0xFF0000FF; // Red
         waveConfigs[0].xpReward = 2;
+        waveConfigs[0].allowedSpawnEdges = SPAWN_EDGE_ALL;
         
-        // Wave 2: Swarm
+        // Wave 2: Swarm - Only spawn from left and right edges
         waveConfigs[1].waveNumber = 2;
         waveConfigs[1].spawnInterval = 0.4f;
         waveConfigs[1].baseEnemyCount = 55;
@@ -85,6 +102,7 @@ namespace SpawnManager {
         waveConfigs[1].enemySize = Actor::EnemySize::SMALL;
         waveConfigs[1].enemyColor = 0xFFFF00FF; // Yellow
         waveConfigs[1].xpReward = 1;
+        waveConfigs[1].allowedSpawnEdges = SPAWN_EDGE_LEFT | SPAWN_EDGE_RIGHT;
         
         // Wave 3: Large, fast enemies with high health
         waveConfigs[2].waveNumber = 3;
@@ -95,6 +113,7 @@ namespace SpawnManager {
         waveConfigs[2].enemySize = Actor::EnemySize::MEDIUM;
         waveConfigs[2].enemyColor = 0x00FFFFFF; // Cyan
         waveConfigs[2].xpReward = 3;
+        waveConfigs[2].allowedSpawnEdges = SPAWN_EDGE_ALL;
         
         // Boss Wave: Single large boss enemy (Wave 4, but triggered at 3 minutes)
         waveConfigs[3].waveNumber = 4;
@@ -105,6 +124,7 @@ namespace SpawnManager {
         waveConfigs[3].enemySize = Actor::EnemySize::LARGE;
         waveConfigs[3].enemyColor = 0xFF0000FF; // Red (Boss color)
         waveConfigs[3].xpReward = 10;
+        waveConfigs[3].allowedSpawnEdges = SPAWN_EDGE_ALL;
     }
     
     void initialize() {
@@ -178,7 +198,7 @@ namespace SpawnManager {
                 if (targetPlayer) {
                     // Spawn boss at a random edge
                     float spawnX, spawnY;
-                    getRandomEdgeSpawnPosition(spawnX, spawnY);
+                    getRandomEdgeSpawnPosition(spawnX, spawnY, bossConfig.allowedSpawnEdges);
                     
                     T3DVec3 pos = {{spawnX, spawnY, 0.0f}};
                     float speed = 15.0f * bossConfig.speedMultiplier;
@@ -203,7 +223,7 @@ namespace SpawnManager {
                 if (targetPlayer) {
                     // Spawn a new enemy at a random edge of the screen
                     float spawnX, spawnY;
-                    getRandomEdgeSpawnPosition(spawnX, spawnY);
+                    getRandomEdgeSpawnPosition(spawnX, spawnY, config.allowedSpawnEdges);
                     
                     T3DVec3 pos = {{spawnX, spawnY, 0.0f}};
                     float speed = 20.0f * config.speedMultiplier;
