@@ -10,8 +10,8 @@
 
 namespace SpawnManager {
     // Wave configurations
-    const int maxWaves = 4;
-    static WaveConfig waveConfigs[maxWaves]; // 3 waves + 1 boss wave
+    const int maxWaves = 4; // 3 waves + 1 boss wave
+    static WaveConfig waveConfigs[maxWaves];
     static int currentWave = 0;
     static float waveTimer = 0.0f;
     static float spawnTimer = 0.0f;
@@ -20,6 +20,49 @@ namespace SpawnManager {
     
     // Player references for targeting
     static Actor::Player* players[4] = {nullptr, nullptr, nullptr, nullptr};
+    
+    // Helper function to get a random spawn position at screen edge
+    static void getRandomEdgeSpawnPosition(float& spawnX, float& spawnY) {
+        int edge = rand() % 4; // 0=top, 1=right, 2=bottom, 3=left
+        
+        switch (edge) {
+            case 0: // Top
+                spawnX = SCREEN_LEFT + (rand() % (int)SCREEN_WIDTH);
+                spawnY = SCREEN_TOP;
+                break;
+            case 1: // Right
+                spawnX = SCREEN_RIGHT;
+                spawnY = SCREEN_TOP + (rand() % (int)SCREEN_HEIGHT);
+                break;
+            case 2: // Bottom
+                spawnX = SCREEN_LEFT + (rand() % (int)SCREEN_WIDTH);
+                spawnY = SCREEN_BOTTOM;
+                break;
+            case 3: // Left
+                spawnX = SCREEN_LEFT;
+                spawnY = SCREEN_TOP + (rand() % (int)SCREEN_HEIGHT);
+                break;
+            default:
+                spawnX = 0;
+                spawnY = 0;
+                break;
+        }
+    }
+    
+    // Helper function to get a random alive player
+    static Actor::Player* getRandomAlivePlayer() {
+        std::vector<Actor::Player*> alivePlayers;
+        for (int i = 0; i < 4; i++) {
+            if (players[i] && !players[i]->getIsDead()) {
+                alivePlayers.push_back(players[i]);
+            }
+        }
+        
+        if (!alivePlayers.empty()) {
+            return alivePlayers[rand() % alivePlayers.size()];
+        }
+        return nullptr;
+    }
     
     // Initialize wave configurations
     void initializeWaves() {
@@ -130,43 +173,12 @@ namespace SpawnManager {
                 const WaveConfig& bossConfig = waveConfigs[3];
                 
                 // Spawn the boss
-                Actor::Player* targetPlayer = nullptr;
-                std::vector<Actor::Player*> alivePlayers;
-                for (int i = 0; i < 4; i++) {
-                    if (players[i] && !players[i]->getIsDead()) {
-                        alivePlayers.push_back(players[i]);
-                    }
-                }
+                Actor::Player* targetPlayer = getRandomAlivePlayer();
                 
-                if (!alivePlayers.empty()) {
-                    targetPlayer = alivePlayers[rand() % alivePlayers.size()];
-                    
+                if (targetPlayer) {
                     // Spawn boss at a random edge
                     float spawnX, spawnY;
-                    int edge = rand() % 4; // 0=top, 1=right, 2=bottom, 3=left
-                    
-                    switch (edge) {
-                        case 0: // Top
-                            spawnX = SCREEN_LEFT + (rand() % (int)SCREEN_WIDTH);
-                            spawnY = SCREEN_TOP;
-                            break;
-                        case 1: // Right
-                            spawnX = SCREEN_RIGHT;
-                            spawnY = SCREEN_TOP + (rand() % (int)SCREEN_HEIGHT);
-                            break;
-                        case 2: // Bottom
-                            spawnX = SCREEN_LEFT + (rand() % (int)SCREEN_WIDTH);
-                            spawnY = SCREEN_BOTTOM;
-                            break;
-                        case 3: // Left
-                            spawnX = SCREEN_LEFT;
-                            spawnY = SCREEN_TOP + (rand() % (int)SCREEN_HEIGHT);
-                            break;
-                        default:
-                            spawnX = 0;
-                            spawnY = 0;
-                            break;
-                    }
+                    getRandomEdgeSpawnPosition(spawnX, spawnY);
                     
                     T3DVec3 pos = {{spawnX, spawnY, 0.0f}};
                     float speed = 15.0f * bossConfig.speedMultiplier;
@@ -186,43 +198,12 @@ namespace SpawnManager {
                 spawnTimer = 0.0f;
                 
                 // Randomly select a target player from alive players
-                Actor::Player* targetPlayer = nullptr;
-                std::vector<Actor::Player*> alivePlayers;
-                for (int i = 0; i < 4; i++) {
-                    if (players[i] && !players[i]->getIsDead()) {
-                        alivePlayers.push_back(players[i]);
-                    }
-                }
+                Actor::Player* targetPlayer = getRandomAlivePlayer();
                 
-                if (!alivePlayers.empty()) {
-                    targetPlayer = alivePlayers[rand() % alivePlayers.size()];
-                    
+                if (targetPlayer) {
                     // Spawn a new enemy at a random edge of the screen
                     float spawnX, spawnY;
-                    int edge = rand() % 4; // 0=top, 1=right, 2=bottom, 3=left
-                    
-                    switch (edge) {
-                        case 0: // Top
-                            spawnX = SCREEN_LEFT + (rand() % (int)SCREEN_WIDTH);
-                            spawnY = SCREEN_TOP;
-                            break;
-                        case 1: // Right
-                            spawnX = SCREEN_RIGHT;
-                            spawnY = SCREEN_TOP + (rand() % (int)SCREEN_HEIGHT);
-                            break;
-                        case 2: // Bottom
-                            spawnX = SCREEN_LEFT + (rand() % (int)SCREEN_WIDTH);
-                            spawnY = SCREEN_BOTTOM;
-                            break;
-                        case 3: // Left
-                            spawnX = SCREEN_LEFT;
-                            spawnY = SCREEN_TOP + (rand() % (int)SCREEN_HEIGHT);
-                            break;
-                        default:
-                            spawnX = 0;
-                            spawnY = 0;
-                            break;
-                    }
+                    getRandomEdgeSpawnPosition(spawnX, spawnY);
                     
                     T3DVec3 pos = {{spawnX, spawnY, 0.0f}};
                     float speed = 20.0f * config.speedMultiplier;
