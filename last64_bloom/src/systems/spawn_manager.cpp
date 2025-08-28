@@ -90,8 +90,8 @@ namespace SpawnManager {
     void initialize() {
         if (initialized) return;
         
-        // Get the number of waves from the Waves module
-        maxWaves = Waves::getMaxWaves();
+        // Get the number of waves from the Waves module (statically known)
+        maxWaves = Waves::getWaveCount();
         
         // Allocate memory for wave configs
         waveConfigs = new WaveConfig[maxWaves];
