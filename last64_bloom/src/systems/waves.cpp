@@ -25,7 +25,8 @@ namespace Waves {
         {1.2f, -1, 1.8f, 4, Actor::EnemySize::MEDIUM, 0xFF00FFFF, 2, SpawnManager::SPAWN_EDGE_ALL, false, 0}, // More intense version of wave 1 - infinite
         {1.0f, 1, 1.0f, 100, Actor::EnemySize::LARGE, 0xFF0000FF, 10, SpawnManager::SPAWN_EDGE_ALL, true, 1},  // Single large boss enemy
         {0.3f, -1, 2.0f, 2, Actor::EnemySize::SMALL, 0x00FF00FF, 1, SpawnManager::SPAWN_EDGE_TOP | SpawnManager::SPAWN_EDGE_BOTTOM, false, 0}, // More intense version of wave 2 - infinite
-        {1.0f, 2, 1.2f, 150, Actor::EnemySize::LARGE, 0x800080FF, 15, SpawnManager::SPAWN_EDGE_TOP | SpawnManager::SPAWN_EDGE_BOTTOM, true, 2} // Two large boss enemies - spawn from top and bottom
+        {1.0f, 2, 1.2f, 150, Actor::EnemySize::LARGE, 0x800080FF, 15, SpawnManager::SPAWN_EDGE_TOP | SpawnManager::SPAWN_EDGE_BOTTOM, true, 2}, // Two large boss enemies - spawn from top and bottom
+        {0.12f, -1, 2.2f, 3, Actor::EnemySize::SMALL, 0x00FF00FF, 1, SpawnManager::SPAWN_EDGE_ALL, false, 0} // Ender
     };
     
     // Get the number of waves (statically known)
