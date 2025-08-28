@@ -6,7 +6,16 @@
 #include "../main.h"
 
 namespace Waves {
-    void initializeWaveConfigs(SpawnManager::WaveConfig* waveConfigs, int maxWaves) {
+    // Define the wave configurations array
+    static const int WAVE_COUNT = 6;
+    
+    // Get the number of waves
+    int getMaxWaves() {
+        return WAVE_COUNT;
+    }
+    
+    // Initialize all wave configurations
+    void initializeWaveConfigs(SpawnManager::WaveConfig* waveConfigs) {
         // Wave 1: Small, weak enemies - infinite
         waveConfigs[0].waveNumber = 1;
         waveConfigs[0].spawnInterval = 1.6f;

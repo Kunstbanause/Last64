@@ -11,8 +11,8 @@
 
 namespace SpawnManager {
     // Wave configurations
-    const int maxWaves = 6;  // Increased to accommodate new waves
-    static WaveConfig waveConfigs[maxWaves]; // 5 waves + 1 final boss wave
+    static WaveConfig* waveConfigs = nullptr; // Dynamic array for wave configs
+    static int maxWaves = 0; // Will be set from Waves::getMaxWaves()
     static int currentWave = 0;
     static float waveTimer = 0.0f;
     static float spawnTimer = 0.0f;
@@ -84,11 +84,17 @@ namespace SpawnManager {
     
     // Initialize wave configurations
     void initializeWaves() {
-        Waves::initializeWaveConfigs(waveConfigs, maxWaves);
+        Waves::initializeWaveConfigs(waveConfigs);
     }
     
     void initialize() {
         if (initialized) return;
+        
+        // Get the number of waves from the Waves module
+        maxWaves = Waves::getMaxWaves();
+        
+        // Allocate memory for wave configs
+        waveConfigs = new WaveConfig[maxWaves];
         
         initializeWaves();
         currentWave = 0;
@@ -116,7 +122,12 @@ namespace SpawnManager {
     
     const WaveConfig& getCurrentWaveConfig() {
         // Return current wave config, or last wave if we've gone beyond
-        return waveConfigs[std::min(currentWave, maxWaves-1)];
+        if (waveConfigs && maxWaves > 0) {
+            return waveConfigs[std::min(currentWave, maxWaves-1)];
+        }
+        // This should never happen if properly initialized, but provide a safe fallback
+        static WaveConfig defaultConfig = {};
+        return defaultConfig;
     }
     
     void update(float deltaTime, float roundTimer) {
@@ -127,7 +138,7 @@ namespace SpawnManager {
         
         // Determine current wave based on total time (1 minute per wave)
         int newWave = (int)(roundTimer / 60.0f);
-        if (newWave > maxWaves - 1) newWave = maxWaves - 1; // Cap at final wave
+        if (maxWaves > 0 && newWave > maxWaves - 1) newWave = maxWaves - 1; // Cap at final wave
         
         // If we've moved to a new wave, reset wave timer and counters
         if (newWave > currentWave) {
@@ -207,6 +218,13 @@ namespace SpawnManager {
         initialized = false;
         bossSpawned = false;
         enemiesSpawned = 0;
+        maxWaves = 0;
+
+        // Clean up allocated wave configs
+        if (waveConfigs) {
+            delete[] waveConfigs;
+            waveConfigs = nullptr;
+        }
 
         // Clear player references
         for (int i = 0; i < 4; ++i) {
