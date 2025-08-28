@@ -21,13 +21,15 @@ namespace SpawnManager {
     struct WaveConfig {
         int waveNumber;
         float spawnInterval;        // Time between enemy spawns
-        int baseEnemyCount;         // Base number of enemies to spawn
+        int spawnMaximum;           // Maximum number of enemies to spawn (-1 for unlimited/infinite)
         float speedMultiplier;      // Multiplier for enemy speed
         int healthMultiplier;       // Multiplier for enemy health
         Actor::EnemySize enemySize; // Size of enemies in this wave
         uint32_t enemyColor;        // Color of enemies in this wave
         int xpReward;              // XP reward for killing enemies in this wave
         int allowedSpawnEdges;     // Bitmask of allowed spawn edges
+        bool isBossWave;           // Whether this is a boss wave
+        int bossCount;             // Number of bosses to spawn (for boss waves)
     };
 
     // Initialize the spawn manager
