@@ -83,10 +83,10 @@ namespace SpawnManager {
     
     // Initialize wave configurations
     void initializeWaves() {
-        // Wave 1: Small, weak enemies
+        // Wave 1: Small, weak enemies - infinite
         waveConfigs[0].waveNumber = 1;
         waveConfigs[0].spawnInterval = 1.6f;
-        waveConfigs[0].spawnMaximum = 100;
+        waveConfigs[0].spawnMaximum = -1;  // Infinite enemies
         waveConfigs[0].speedMultiplier = 1.0f;
         waveConfigs[0].healthMultiplier = 1;
         waveConfigs[0].enemySize = Actor::EnemySize::SMALL;
@@ -96,10 +96,10 @@ namespace SpawnManager {
         waveConfigs[0].isBossWave = false;
         waveConfigs[0].bossCount = 0;
         
-        // Wave 2: Swarm - Only spawn from left and right edges
+        // Wave 2: Swarm - Only spawn from left and right edges - infinite
         waveConfigs[1].waveNumber = 2;
-        waveConfigs[1].spawnInterval = 0.4f;
-        waveConfigs[1].spawnMaximum = 100;
+        waveConfigs[1].spawnInterval = 0.2f;
+        waveConfigs[1].spawnMaximum = -1;  // Infinite enemies
         waveConfigs[1].speedMultiplier = 2.0f;
         waveConfigs[1].healthMultiplier = 1;
         waveConfigs[1].enemySize = Actor::EnemySize::SMALL;
@@ -109,10 +109,10 @@ namespace SpawnManager {
         waveConfigs[1].isBossWave = false;
         waveConfigs[1].bossCount = 0;
         
-        // Wave 3: More intense version of wave 1
+        // Wave 3: More intense version of wave 1 - infinite
         waveConfigs[2].waveNumber = 3;
         waveConfigs[2].spawnInterval = 1.2f;
-        waveConfigs[2].spawnMaximum = 100;
+        waveConfigs[2].spawnMaximum = -1;  // Infinite enemies
         waveConfigs[2].speedMultiplier = 1.8f;
         waveConfigs[2].healthMultiplier = 3;
         waveConfigs[2].enemySize = Actor::EnemySize::MEDIUM;
@@ -121,32 +121,32 @@ namespace SpawnManager {
         waveConfigs[2].allowedSpawnEdges = SPAWN_EDGE_ALL;
         waveConfigs[2].isBossWave = false;
         waveConfigs[2].bossCount = 0;
-
-        // Boss Wave 1: Single large boss enemy
-        waveConfigs[3].waveNumber = 5;
-        waveConfigs[3].spawnInterval = 1.0f;  // Not used for boss
-        waveConfigs[3].spawnMaximum = 1;
-        waveConfigs[3].speedMultiplier = 1.0f;
-        waveConfigs[3].healthMultiplier = 100;
-        waveConfigs[3].enemySize = Actor::EnemySize::LARGE;
-        waveConfigs[3].enemyColor = 0xFF0000FF; // Red (Boss color)
-        waveConfigs[3].xpReward = 10;
-        waveConfigs[3].allowedSpawnEdges = SPAWN_EDGE_ALL;
-        waveConfigs[3].isBossWave = true;
-        waveConfigs[3].bossCount = 1;
         
-        // Wave 4: More intense version of wave 2
-        waveConfigs[4].waveNumber = 4;
-        waveConfigs[4].spawnInterval = 0.3f;
-        waveConfigs[4].spawnMaximum = 100;
-        waveConfigs[4].speedMultiplier = 2.5f;
-        waveConfigs[4].healthMultiplier = 2;
-        waveConfigs[4].enemySize = Actor::EnemySize::SMALL;
-        waveConfigs[4].enemyColor = 0x00FF00FF; // Green
-        waveConfigs[4].xpReward = 1;
-        waveConfigs[4].allowedSpawnEdges = SPAWN_EDGE_TOP | SPAWN_EDGE_BOTTOM;
-        waveConfigs[4].isBossWave = false;
-        waveConfigs[4].bossCount = 0;
+        // Wave 4: More intense version of wave 2 - infinite
+        waveConfigs[3].waveNumber = 4;
+        waveConfigs[3].spawnInterval = 0.3f;
+        waveConfigs[3].spawnMaximum = -1;  // Infinite enemies
+        waveConfigs[3].speedMultiplier = 2.5f;
+        waveConfigs[3].healthMultiplier = 2;
+        waveConfigs[3].enemySize = Actor::EnemySize::SMALL;
+        waveConfigs[3].enemyColor = 0x00FF00FF; // Green
+        waveConfigs[3].xpReward = 1;
+        waveConfigs[3].allowedSpawnEdges = SPAWN_EDGE_TOP | SPAWN_EDGE_BOTTOM;
+        waveConfigs[3].isBossWave = false;
+        waveConfigs[3].bossCount = 0;
+        
+        // Boss Wave 1: Single large boss enemy
+        waveConfigs[4].waveNumber = 5;
+        waveConfigs[4].spawnInterval = 1.0f;  // Not used for boss
+        waveConfigs[4].spawnMaximum = 1;
+        waveConfigs[4].speedMultiplier = 1.0f;
+        waveConfigs[4].healthMultiplier = 100;
+        waveConfigs[4].enemySize = Actor::EnemySize::LARGE;
+        waveConfigs[4].enemyColor = 0xFF0000FF; // Red (Boss color)
+        waveConfigs[4].xpReward = 10;
+        waveConfigs[4].allowedSpawnEdges = SPAWN_EDGE_ALL;
+        waveConfigs[4].isBossWave = true;
+        waveConfigs[4].bossCount = 1;
         
         // Boss Wave 2: Two large boss enemies - spawn from top and bottom
         waveConfigs[5].waveNumber = 6;
@@ -244,6 +244,7 @@ namespace SpawnManager {
         } else {
             // Regular enemy spawning for normal waves
             // Check if we've reached the maximum number of enemies for this wave
+            // If spawnMaximum is -1, there's no limit (infinite enemies)
             if (config.spawnMaximum >= 0 && enemiesSpawned >= config.spawnMaximum) {
                 return; // Don't spawn more enemies
             }
