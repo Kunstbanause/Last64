@@ -14,6 +14,7 @@ public:
 
     void init();
     void play(SfxId id);
+    void stop(SfxId id);
 
 private:
     static const int HIT_CHANNELS = 11; // We have 16 channels #0-15

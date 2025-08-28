@@ -48,3 +48,31 @@ void SFXManager::play(SfxId id)
             break;
     }
 }
+
+void SFXManager::stop(SfxId id)
+{
+    switch (id)
+    {
+        case SFX_LEVEL_UP:
+            mixer_ch_stop(0);
+            break;
+        case SFX_START:
+            mixer_ch_stop(0);
+            break;
+        case SFX_JOIN:
+            mixer_ch_stop(1);
+            break;
+        case SFX_DEATH:
+            mixer_ch_stop(1);
+            break;
+        case SFX_MUSIC1:
+            mixer_ch_stop(2);
+            break;
+        case SFX_HIT:
+            // Stop all hit channels
+            for (int i = 0; i < HIT_CHANNELS; i++) {
+                mixer_ch_stop(3 + i);
+            }
+            break;
+    }
+}
