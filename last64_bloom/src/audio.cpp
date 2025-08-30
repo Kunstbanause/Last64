@@ -40,7 +40,7 @@ void SFXManager::play(SfxId id)
             mixer_ch_play(1, &sfx_death.wave);
             break;
         case SFX_MUSIC1:
-            mixer_ch_play(2, &sfx_music1.wave);
+            //mixer_ch_play(2, &sfx_music1.wave);
             break;
         case SFX_HIT:
             mixer_ch_play(3 + next_hit_channel, &sfx_hits[rand() % sfx_hits_count].wave);

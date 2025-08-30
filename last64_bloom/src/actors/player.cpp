@@ -32,9 +32,9 @@ namespace Actor {
         
         // First structure: vertices 0 and 1
         sharedVertices[0] = (T3DVertPacked){};
-        sharedVertices[0].posA[0] = 0; sharedVertices[0].posA[1] = 3; sharedVertices[0].posA[2] = 0; // Top vertex (smaller to match enemies)
+        sharedVertices[0].posA[0] = 0; sharedVertices[0].posA[1] = 6; sharedVertices[0].posA[2] = 0; // Top vertex (smaller to match enemies)
         sharedVertices[0].normA = norm;
-        sharedVertices[0].posB[0] = -3; sharedVertices[0].posB[1] = -3; sharedVertices[0].posB[2] = 0; // Bottom left
+        sharedVertices[0].posB[0] = -6; sharedVertices[0].posB[1] = -6; sharedVertices[0].posB[2] = 0; // Bottom left
         sharedVertices[0].normB = norm;
         sharedVertices[0].rgbaA = 0xFFFF0000; // Will be set per player
         sharedVertices[0].rgbaB = 0xFFFF0000; // Will be set per player
@@ -43,7 +43,7 @@ namespace Actor {
         
         // Second structure: vertex 2 and unused
         sharedVertices[1] = (T3DVertPacked){};
-        sharedVertices[1].posA[0] = 3; sharedVertices[1].posA[1] = -3; sharedVertices[1].posA[2] = 0; // Bottom right
+        sharedVertices[1].posA[0] = 6; sharedVertices[1].posA[1] = -6; sharedVertices[1].posA[2] = 0; // Bottom right
         sharedVertices[1].normA = norm;
         sharedVertices[1].posB[0] = 0; sharedVertices[1].posB[1] = 0; sharedVertices[1].posB[2] = 0; // Unused
         sharedVertices[1].normB = norm;
@@ -154,13 +154,13 @@ namespace Actor {
     
     float Player::getRadius() const {
         // Player is drawn as a triangle with a bounding radius of approximately 3.0f
-        return 2.0f;
+        return 4.0f;
     }
     
     void Player::getAABBSize(float& width, float& height) const {
-        // Player is drawn as a triangle that fits within a 6x6 square
-        width = 5.0f;
-        height = 5.0f;
+        // Player is drawn as a triangle that fits within a square
+        width = 10.0f;
+        height = 10.0f;
     }
     
     Player::~Player() {
