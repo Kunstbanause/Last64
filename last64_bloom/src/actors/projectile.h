@@ -32,6 +32,7 @@ namespace Actor {
         uint32_t poolIndex;
         int damage; // Damage dealt by this projectile
         uint32_t color; // Color of this projectile
+        float size; // Size of this projectile (scale factor)
 
         static void initializePool();
 
@@ -42,7 +43,7 @@ namespace Actor {
         // Static methods for managing the pool
         static void initialize();
         static void cleanup();
-        static Projectile* spawn(const T3DVec3& position, const T3DVec3& velocity, float speed, float slowdown, float maxLifetime, int damage, uint32_t color = DEFAULT_PROJECTILE_COLOR);
+        static Projectile* spawn(const T3DVec3& position, const T3DVec3& velocity, float speed, float slowdown, float maxLifetime, int damage, uint32_t color = DEFAULT_PROJECTILE_COLOR, float size = 1.0f);
         static void updateAll(float deltaTime);
         static void drawAll(float deltaTime);
         static uint32_t getActiveCount() { return activeCount; }

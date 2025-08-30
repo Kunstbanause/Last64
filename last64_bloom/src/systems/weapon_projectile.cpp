@@ -88,12 +88,12 @@ namespace Actor {
                 direction.z
             }};
             
-            // Spawn projectile with spread direction, use player color instead of default color
+            // Spawn projectile with spread direction, use player color instead of default color, slightly smaller size
             uint32_t projectileColor = DEFAULT_PROJECTILE_COLOR;
             if (player) {
                 projectileColor = player->getColor();
             }
-            Projectile::spawn(spawnPos, spreadDirection, projectileSpeed, projectileSlowdown, projectileLifetime, damage, projectileColor);
+            Projectile::spawn(spawnPos, spreadDirection, projectileSpeed, projectileSlowdown, projectileLifetime, damage, projectileColor, 0.7f);
         }
     }
 

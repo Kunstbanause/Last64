@@ -34,6 +34,7 @@ namespace Actor {
         maxLifetime = 1.0f;
         damage = 4; // Default damage so it can be divived by 4 players
         color = DEFAULT_PROJECTILE_COLOR; // Default color
+        size = 1.0f; // Default size
         flags |= FLAG_DISABLED;
     }
 
@@ -113,7 +114,7 @@ namespace Actor {
         initialized = true;
     }
 
-    Projectile* Projectile::spawn(const T3DVec3& pos, const T3DVec3& vel, float spd, float slowdown, float maxLifetime, int damage, uint32_t color) {
+    Projectile* Projectile::spawn(const T3DVec3& pos, const T3DVec3& vel, float spd, float slowdown, float maxLifetime, int damage, uint32_t color, float size) {
         if (!initialized) initializePool();
 
         for (uint32_t i = 0; i < MAX_PROJECTILES; i++) {
@@ -130,6 +131,7 @@ namespace Actor {
                 p->maxLifetime = maxLifetime; // Use the provided max lifetime
                 p->damage = damage; // Set the damage value
                 p->color = color; // Set the color
+                p->size = size; // Set the size
                 p->flags &= ~FLAG_DISABLED;
                 return p;
             }
@@ -198,12 +200,11 @@ namespace Actor {
         }
 
         // Check for collisions with players (for enemy projectiles)
-        // This would be implemented if we had enemy projectiles
 
         if (poolIndex < MAX_PROJECTILES) {
             t3d_mat4fp_from_srt_euler(
                 sharedMatrices[poolIndex],
-                (T3DVec3){{1.0f, 1.0f, 1.0f}},
+                (T3DVec3){{size, size, size}},
                 (T3DVec3){{0.0f, 0.0f, 0.0f}},
                 position
             );

@@ -120,12 +120,12 @@ namespace Actor {
             }
         }
         
-        // Spawn a projectile with double damage, use player color instead of special color
+        // Spawn a projectile with double damage, use player color instead of special color, double size
         uint32_t projectileColor = HOMING_PROJECTILE_COLOR;
         if (player) {
             projectileColor = player->getColor();
         }
-        Projectile::spawn(spawnPos, fireDirection, projectileSpeed, projectileSlowdown, projectileLifetime, damage, projectileColor);
+        Projectile::spawn(spawnPos, fireDirection, projectileSpeed, projectileSlowdown, projectileLifetime, damage, projectileColor, 2.0f);
     }
 
     void WeaponHoming::fireManual() {

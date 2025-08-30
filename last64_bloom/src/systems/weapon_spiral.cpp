@@ -145,7 +145,7 @@ namespace Actor {
                 position.z
             }};
             
-            // Spawn a stationary projectile (velocity = 0), use player color instead of special color
+            // Spawn a stationary projectile (velocity = 0), use player color instead of special color, slightly larger size
             uint32_t projectileColor = SPIRAL_PROJECTILE_COLOR;
             if (player) {
                 projectileColor = player->getColor();
@@ -157,7 +157,8 @@ namespace Actor {
                 0.0f, 
                 projectileLifetime, 
                 damage, 
-                projectileColor
+                projectileColor,
+                1.3f
             );
             
             // Store projectile for orbiting
