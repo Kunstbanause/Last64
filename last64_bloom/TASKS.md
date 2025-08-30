@@ -49,6 +49,16 @@
 - [x] Added first boss enemy
 - [x] Fixed bug: Enemies targeting dead players
 
+- [ ] Player outline for better readaibility?
+- [ ] Player vertex color to better identify the direction?
+
+- [ ] New Weapon defensive shield, weapon only in upgrades
+
+- [ ] Upgrade decisions, a/b, slowdown, inworld or UI?
+
+- [ ] projectiles in different sizes
+- [x] Proectiles in player color
+
 ## 🛠️ Implemented Features
 
 ### Weapons

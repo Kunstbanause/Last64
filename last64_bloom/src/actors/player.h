@@ -67,5 +67,8 @@ namespace Actor {
         // AABB collision methods
         float getRadius() const override;
         void getAABBSize(float& width, float& height) const override;
+        
+        // Color getter
+        uint32_t getColor() const { return playerColor; }
     };
 }

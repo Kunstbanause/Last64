@@ -83,8 +83,12 @@ namespace Actor {
                 0.0f
             }};
             
-            // Spawn projectile with circular direction and special color
-            Projectile::spawn(spawnPos, fireDirection, projectileSpeed, projectileSlowdown, projectileLifetime, damage, CIRCULAR_PROJECTILE_COLOR);
+            // Spawn projectile with circular direction, use player color instead of special color
+            uint32_t projectileColor = CIRCULAR_PROJECTILE_COLOR;
+            if (player) {
+                projectileColor = player->getColor();
+            }
+            Projectile::spawn(spawnPos, fireDirection, projectileSpeed, projectileSlowdown, projectileLifetime, damage, projectileColor);
         }
     }
 
