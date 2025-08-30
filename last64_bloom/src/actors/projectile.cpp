@@ -45,9 +45,9 @@ namespace Actor {
     }
     
     void Projectile::getAABBSize(float& width, float& height) const {
-        // Projectiles are rendered as 4x4 quads (2 units in each direction)
-        width = 4.0f;
-        height = 4.0f;
+        // Projectiles are rendered as 4x4 quads (2 units in each direction), scaled by size
+        width = 4.0f * size;
+        height = 4.0f * size;
     }
 
     void Projectile::initialize() {
