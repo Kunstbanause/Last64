@@ -16,7 +16,8 @@ namespace Actor {
         PROJECTILE,
         HOMING,
         CIRCULAR,
-        SPIRAL
+        SPIRAL,
+        SHIELD
     };
     
     class WeaponBase : public Base {

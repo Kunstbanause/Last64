@@ -6,6 +6,9 @@
 #include "main.h"
 #include <functional>
 
+// Global variable for debug weapon selection
+extern int debugWeaponSelection;
+
 namespace DebugMenu
 {
   enum class EntryType : uint32_t {

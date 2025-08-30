@@ -7,7 +7,14 @@
 #include "../systems/weapon_homing.h"
 #include "../systems/weapon_circular.h"
 #include "../systems/weapon_spiral.h"
+#include "../systems/weapon_shield.h"
 #include "../main.h"
+#include "../debugMenu.h" // Include debug menu for debugWeaponSelection
+#include <t3d/t3d.h>
+#include <t3d/tpx.h>
+#include <libdragon.h>
+#include <malloc.h>
+#include <algorithm>
 #include <t3d/t3d.h>
 #include <t3d/tpx.h>
 #include <libdragon.h>
@@ -114,8 +121,16 @@ namespace Actor {
                 break;
         }
         
-        // Initialize a single random weapon
-        int weaponType = rand() % 4;
+        // Initialize weapon based on debug selection or random
+        int weaponType = 0;
+        if (debugWeaponSelection > 0) {
+            // Use specific weapon based on debug selection (1-5)
+            weaponType = debugWeaponSelection - 1;
+        } else {
+            // Random weapon selection (0-4)
+            weaponType = rand() % 5;
+        }
+        
         WeaponBase* initialWeapon = nullptr;
         switch (weaponType) {
             case 0:
@@ -129,6 +144,9 @@ namespace Actor {
                 break;
             case 3:
                 initialWeapon = new WeaponSpiral();
+                break;
+            case 4:
+                initialWeapon = new WeaponShield();
                 break;
         }
         if (initialWeapon) {

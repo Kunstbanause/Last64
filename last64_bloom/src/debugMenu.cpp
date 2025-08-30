@@ -29,6 +29,9 @@ namespace
   std::vector<bool*> changedFlags{};
 }
 
+// Global variable for debug weapon selection
+int debugWeaponSelection = 0; // 0 = Random, 1-5 = Specific weapons
+
 static inline joypad_buttons_t joypad_get_all_pressed() {
     joypad_buttons_t combined = {0};
     for (int i = JOYPAD_PORT_1; i <= JOYPAD_PORT_4; i++) {
@@ -89,6 +92,7 @@ void DebugMenu::reset()
   entries.push_back({"Thres", EntryType::FLOAT, &state.ppConf.bloomThreshold, 0.0f, 1.0f, 1.0f/256.0f});
   entries.push_back({"RDP-S", EntryType::BOOL, &state.ppConf.scalingUseRDP});
   entries.push_back({"Auto ", EntryType::BOOL, &state.autoExposure});
+  entries.push_back({"WpnSel", EntryType::INT, &debugWeaponSelection, 0, 5}); // 0 = Random, 1-5 = Specific weapons
 
   changedFlags.resize(entries.size());
   changedFlags[0] = &needsSceneLoad;
@@ -183,6 +187,15 @@ void DebugMenu::draw()
             Debug::printf(posX + 8, posY, "%s: %d (%s)", entry.name, sceneIdx, sceneNames[sceneIdx]);
           } else {
             Debug::printf(posX + 8, posY, "%s: %d", entry.name, sceneIdx);
+          }
+        } else if (entry.value == &debugWeaponSelection) {
+          // Special handling for weapon selection
+          const char* weaponNames[] = {"Random", "Projectile", "Homing", "Circular", "Spiral", "Shield"};
+          int weaponIdx = *(int*)entry.value;
+          if (weaponIdx >= 0 && weaponIdx <= 5) {
+            Debug::printf(posX + 8, posY, "%s: %d (%s)", entry.name, weaponIdx, weaponNames[weaponIdx]);
+          } else {
+            Debug::printf(posX + 8, posY, "%s: %d", entry.name, weaponIdx);
           }
         } else {
           Debug::printf(posX + 8, posY, "%s: %d", entry.name, *(int*)entry.value);

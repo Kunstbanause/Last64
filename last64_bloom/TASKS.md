@@ -56,7 +56,7 @@
 
 - [ ] Upgrade decisions, a/b, slowdown, inworld or UI?
 
-- [ ] projectiles in different sizes
+- [x] projectiles in different sizes
 - [x] Proectiles in player color
 
 ## 🛠️ Implemented Features
