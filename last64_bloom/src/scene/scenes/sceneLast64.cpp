@@ -386,6 +386,9 @@ void SceneLast64::draw2D(float deltaTime)
                                     case Actor::WeaponType::SPIRAL:
                                         weaponChar = 'S';
                                         break;
+                                    case Actor::WeaponType::SHIELD:
+                                        weaponChar = 'D';
+                                        break;
                                     default:
                                         weaponChar = 'X';
                                         break;
