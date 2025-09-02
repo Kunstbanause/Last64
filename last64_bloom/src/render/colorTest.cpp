@@ -3,6 +3,7 @@
 * @license MIT
 */
 #include "colorTest.h"
+#include "colors.h"
 #include <t3d/t3d.h>
 #include <libdragon.h>
 #include <malloc.h>
@@ -12,27 +13,7 @@ static T3DVertPacked* testVertices = nullptr;
 static T3DMat4FP* testMatrix = nullptr;
 static bool initialized = false;
 
-// Define test colors (RGBA8 format)
-static uint32_t testColors[] = {
-    0xFFFFFFFF, // White
-    0xFF0000FF, // Red
-    0x00FF00FF, // Green
-    0x0000FFFF, // Blue
-    0xFFFF00FF, // Yellow
-    0xFF00FFFF, // Magenta
-    0x00FFFFFF, // Cyan
-    0xFFA500FF, // Orange
-    0x800080FF, // Purple
-    0xFFC0CBFF, // Pink
-    0xA52A2AFF, // Brown
-    0x808080FF, // Gray
-    0x000000FF, // Black
-    0x800000FF, // Maroon
-    0x008000FF, // Dark Green
-    0x000080FF  // Navy
-};
-
-static const int NUM_COLORS = sizeof(testColors) / sizeof(testColors[0]);
+static const int NUM_COLORS = sizeof(Colors::testColors) / sizeof(Colors::testColors[0]);
 
 // Initialize the color test utility
 static void initialize() {
@@ -45,9 +26,8 @@ static void initialize() {
     // Create a matrix for positioning the color test strip
     testMatrix = (T3DMat4FP*)malloc_uncached(sizeof(T3DMat4FP));
     
-    // Position the color test strip in the top-left corner of the screen
-    // The N64 screen is 320x240
-    T3DVec3 position = {{0.0f, 100.0f, 0.0f}}; // Center horizontally at the top
+    // Position the color test strip in the top
+    T3DVec3 position = {{0.0f, 200.0f, 0.0f}}; // Center horizontally at the top
     t3d_mat4fp_from_srt_euler(
         testMatrix,
         (T3DVec3){{1.0f, 1.0f, 1.0f}},  // scale
@@ -78,7 +58,7 @@ static void initialize() {
         testVertices[structIndex].posA[1] = 0;
         testVertices[structIndex].posA[2] = 0;
         testVertices[structIndex].normA = 0;
-        testVertices[structIndex].rgbaA = testColors[i];
+        testVertices[structIndex].rgbaA = Colors::testColors[i];
         testVertices[structIndex].stA[0] = 0;
         testVertices[structIndex].stA[1] = 0;
         
@@ -87,7 +67,7 @@ static void initialize() {
         testVertices[structIndex].posB[1] = (int16_t)quadHeight;
         testVertices[structIndex].posB[2] = 0;
         testVertices[structIndex].normB = 0;
-        testVertices[structIndex].rgbaB = testColors[i];
+        testVertices[structIndex].rgbaB = Colors::testColors[i];
         testVertices[structIndex].stB[0] = 0;
         testVertices[structIndex].stB[1] = 0;
         
@@ -99,7 +79,7 @@ static void initialize() {
         testVertices[structIndex + 1].posA[1] = (int16_t)quadHeight;
         testVertices[structIndex + 1].posA[2] = 0;
         testVertices[structIndex + 1].normA = 0;
-        testVertices[structIndex + 1].rgbaA = testColors[i];
+        testVertices[structIndex + 1].rgbaA = Colors::testColors[i];
         testVertices[structIndex + 1].stA[0] = 0;
         testVertices[structIndex + 1].stA[1] = 0;
         
@@ -108,7 +88,7 @@ static void initialize() {
         testVertices[structIndex + 1].posB[1] = 0;
         testVertices[structIndex + 1].posB[2] = 0;
         testVertices[structIndex + 1].normB = 0;
-        testVertices[structIndex + 1].rgbaB = testColors[i];
+        testVertices[structIndex + 1].rgbaB = Colors::testColors[i];
         testVertices[structIndex + 1].stB[0] = 0;
         testVertices[structIndex + 1].stB[1] = 0;
     }

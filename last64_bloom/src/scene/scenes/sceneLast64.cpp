@@ -330,7 +330,7 @@ void SceneLast64::draw3D(float deltaTime)
     if (player4) player4->draw3D(deltaTime);
 
     // Draw color test strip
-    // color_test_draw();
+    color_test_draw();
 
     // Pop scene matrix
     t3d_matrix_pop(1);

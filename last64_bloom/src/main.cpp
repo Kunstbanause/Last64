@@ -17,17 +17,20 @@
 
 #include <t3d/t3d.h>
 #include <t3d/tpx.h>
+#include "render/colors.h"
+#include "render/colorTest.h"
 
 #include "main.h"
 #include "debugMenu.h"
 #include "postProcess.h"
 #include "render/debugDraw.h"
+#include "render/colorTest.h"
 #include "rsp/rspFX.h"
 
 #include "scene/scene.h"
 #include "scene/sceneManager.h"
 #include "scene/scenes/sceneBunker.h"
-#include "scene/scenes/sceneLast64.h" // Include SceneLast64 header
+#include "scene/scenes/sceneLast64.h"
 #include "systems/experience.h"
 #include "audio.h"
 
@@ -219,45 +222,21 @@ int main()
     #endif
 
     state.activeScene->draw2D(deltaTime);
-    bool showColorTestStrip = false;
-    if (showColorTestStrip) {
-      // Color test strip for your game
-      uint32_t testColors[] = { 
-          0xFF0000FF, // Red
-          0xFF6000FF, // Orange-ish
-          0xFFBF00FF, // Yellow-orange
-          0xDFFF00FF, // Yellow-green
-          0x80FF00FF, // Bright green
-          0x20FF00FF, // Green
-          0x00FF40FF, // Green-cyan
-          0x00FF9FFF, // Cyan-green
-          0x00FFFFFF, // Cyan
-          0x009FFFFF, // Blue-cyan
-          0x0040FFFF, // Light blue
-          0x2000FFFF, // Indigo
-          0x8000FFFF, // Violet
-          0xDF00FFFF, // Pink-violet
-          0xFF00BFFF, // Magenta
-          0xFF0060FF  // Red-magenta
-
-      }; 
-      // Draw color test strip using RGBA32 macro
-      for (int i = 0; i < 16; i++) {
-          float x = (float)i * (SCREEN_WIDTH / 16.0f);
-          float width = SCREEN_WIDTH / 16.0f;
+    
+    if (showMenu) {
+      // Draw color test strip RGBA32
+      static float screenAdjustedWidth = SCREEN_WIDTH-90;
+      constexpr int colorCount = sizeof(Colors::testColors) / sizeof(Colors::testColors[0]);
+      for (int i = 0; i < colorCount; i++) {
+          float x = (float)i * (screenAdjustedWidth / colorCount);
+          float width = screenAdjustedWidth / colorCount;
           //Extract color components from testColors array
-          uint8_t r = (testColors[i] >> 24) & 0xFF;
-          uint8_t g = (testColors[i] >> 16) & 0xFF;
-          uint8_t b = (testColors[i] >> 8) & 0xFF;
-          uint8_t a = testColors[i] & 0xFF;
-          // Set fill mode and color using RGBA32 macro
-          // uint32_t color = 0xFF8000FF;
-          // uint8_t r = (color >> 24) & 0xFF;
-          // uint8_t g = (color >> 16) & 0xFF;
-          // uint8_t b = (color >> 8)  & 0xFF;
-          // uint8_t a = (color >> 0)  & 0xFF;
+          uint8_t r = (Colors::testColors[i] >> 24) & 0xFF;
+          uint8_t g = (Colors::testColors[i] >> 16) & 0xFF;
+          uint8_t b = (Colors::testColors[i] >> 8) & 0xFF;
+          uint8_t a = Colors::testColors[i] & 0xFF;
           rdpq_set_mode_fill(RGBA32(r, g, b, a));
-          rdpq_fill_rectangle(x, 50, x + width, 50 + 40);
+          rdpq_fill_rectangle(x+45, 50, x+45 + width, 50 + 4);
       }
     }
 
