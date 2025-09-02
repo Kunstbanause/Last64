@@ -1,43 +1,51 @@
 {
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "make",
-            "type": "shell",
-            "command": "cd ${workspaceFolder}/last64_bloom && make",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": [
-                "$gcc"
-            ]
-        },
-        {
-            "label": "make-run",
-            "type": "shell",
-            "command": "cd ${workspaceFolder}/last64_bloom && make run",
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            },
-            "problemMatcher": {
-                "base": "$gcc",
-                "background": {
-                    "activeOnStart": true,
-                    "beginsPattern": ".*Loaded Last64_Bloom.*",
-                    "endsPattern": ".*Loading scene.*"
-                }
-            },
-            "isBackground": true
-        },
-        {
-            "label": "kill-ares",
-            "type": "shell",
-            "command": "pkill -f ares",
-            "presentation": {
-                "reveal": "never"
-            }
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "make",
+      "type": "shell",
+      "command": "make",
+      "options": {
+        "cwd": "${workspaceFolder}/last64_bloom"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": {
+        "base": "$gcc",
+        "fileLocation": ["relative", "${workspaceFolder}/last64_bloom"]
+      }
+    },
+    {
+      "label": "make-run",
+      "type": "shell",
+      "command": "make run",
+      "options": {
+        "cwd": "${workspaceFolder}/last64_bloom"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "problemMatcher": {
+        "base": "$gcc",
+        "fileLocation": ["relative", "${workspaceFolder}/last64_bloom"],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*Loaded Last64_Bloom.*",
+          "endsPattern": ".*Loading scene.*"
         }
-    ]
+      },
+      "isBackground": true
+    },
+    {
+      "label": "kill-ares",
+      "type": "shell",
+      "command": "pkill -f ares",
+      "presentation": {
+        "reveal": "never"
+      }
+    }
+  ]
 }
