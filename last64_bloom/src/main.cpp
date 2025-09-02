@@ -49,11 +49,17 @@ State state{
 
 namespace {
   constexpr int BUFF_COUNT = 3;
+  bool showMenu = false; // Moved here so it's accessible to isMenuVisible
 
   rspq_profile_data_t profileData{};
   #if RSPQ_PROFILE
     uint64_t lastUcodeTime = 0;
   #endif
+}
+
+// Implementation of debug menu visibility check
+bool Debug::isMenuVisible() { 
+    return showMenu; 
 }
 
 surface_t* fb = NULL;
@@ -95,8 +101,6 @@ int main()
   SceneManager::loadScene(0);
 
   uint32_t frameIdx = 0;
-  bool showMenu = false;
-
   int lastBrightnessIdx = 0;
   std::array<float, 8> lastBrightness{};
 

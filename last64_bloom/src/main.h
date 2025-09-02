@@ -26,3 +26,7 @@ struct State
 };
 
 extern State state;
+
+namespace Debug {
+    bool isMenuVisible();
+}

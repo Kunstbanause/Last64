@@ -329,8 +329,10 @@ void SceneLast64::draw3D(float deltaTime)
     if (player3) player3->draw3D(deltaTime);
     if (player4) player4->draw3D(deltaTime);
 
-    // Draw color test strip
-    color_test_draw();
+    // Draw color test strip only when debug menu is visible
+    if (Debug::isMenuVisible()) {
+        color_test_draw();
+    }
 
     // Pop scene matrix
     t3d_matrix_pop(1);
