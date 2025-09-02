@@ -108,7 +108,7 @@ namespace Actor {
         // Set player color based on port // RGBA8 (0xRRGGBBAA
         switch (playerPort) {
             case JOYPAD_PORT_1:
-                playerColor = 0xFFFFFFFF; // White
+                playerColor = 0x080400FF; // Orange
                 break;
             case JOYPAD_PORT_2:
                 playerColor = 0x00FF00FF; // Green
@@ -278,7 +278,11 @@ namespace Actor {
     if (playerMatrix && playerVertices) {
         // Update vertex colors for this specific player
         // Tip of the triangle (vertex 0) is white, other vertices keep player color
-        playerVertices[0].rgbaA = 0xFFFFFFFF; // White for tip
+        if (isDead) {
+            playerVertices[0].rgbaA = 0xFF0000FF; // Red for tip
+        } else {
+            playerVertices[0].rgbaA = 0xFFFFFFFF; // White for tip
+        }
         playerVertices[0].rgbaB = playerColor; // Player color for second vertex
         playerVertices[1].rgbaA = playerColor; // Player color for third vertex
         playerVertices[1].rgbaB = playerColor; // Player color for fourth vertex (unused)
