@@ -9,7 +9,7 @@
 #include <cmath>
 
 // Define a new color for shield projectiles (bright blue)
-#define SHIELD_PROJECTILE_COLOR 0xFF4080FF
+#define SHIELD_PROJECTILE_COLOR 0x040404FF
 
 namespace Actor {
     WeaponShield::WeaponShield() : WeaponBase(WeaponType::SHIELD) {
@@ -50,7 +50,11 @@ namespace Actor {
         if (!shieldActive && fireCooldown <= 0 && player) {
             T3DVec3 playerPos = player->getPosition();
             playerPos.z += 1.0f; // Slightly in front of player
-            
+            uint32_t projectileColor = SHIELD_PROJECTILE_COLOR;
+            if (player) {
+                projectileColor = player->getColor();
+            }
+
             // Create a new shield projectile
             shieldProjectile = Projectile::spawn(
                 playerPos,
@@ -59,7 +63,7 @@ namespace Actor {
                 0.0f, // No slowdown
                 shieldLifetime,
                 damage,
-                SHIELD_PROJECTILE_COLOR,
+                projectileColor,
                 shieldSize
             );
             
