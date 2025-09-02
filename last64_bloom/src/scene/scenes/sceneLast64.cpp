@@ -312,20 +312,22 @@ void SceneLast64::draw3D(float deltaTime)
     // Set up rendering state
     //t3d_state_set_drawflags((enum T3DDrawFlags)(T3D_FLAG_SHADED | T3D_FLAG_DEPTH));
     
+    
     // Set combiner mode to use vertex colors (SHADE) instead of textures
     rdpq_mode_combiner(RDPQ_COMBINER_SHADE);
-
-    // Draw players using the Player class (this will also draw their weapons)
-    if (player1) player1->draw3D(deltaTime);
-    if (player2) player2->draw3D(deltaTime);
-    if (player3) player3->draw3D(deltaTime);
-    if (player4) player4->draw3D(deltaTime);
     
     // Draw all enemies
     Actor::Enemy::drawAll(deltaTime);
 
     // Draw all projectiles
     Actor::Projectile::drawAll(deltaTime);
+    
+    // Draw all players
+    t3d_screen_clear_depth(); // Clear so the players are on top.
+    if (player1) player1->draw3D(deltaTime);
+    if (player2) player2->draw3D(deltaTime);
+    if (player3) player3->draw3D(deltaTime);
+    if (player4) player4->draw3D(deltaTime);
 
     // Draw color test strip
     // color_test_draw();

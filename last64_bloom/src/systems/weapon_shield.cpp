@@ -8,8 +8,8 @@
 #include <libdragon.h>
 #include <cmath>
 
-// Define a new color for shield projectiles (bright blue)
-#define SHIELD_PROJECTILE_COLOR 0x040404FF
+// Define a new color for shield projectiles
+#define SHIELD_PROJECTILE_COLOR 0x0508051A
 
 namespace Actor {
     WeaponShield::WeaponShield() : WeaponBase(WeaponType::SHIELD) {
