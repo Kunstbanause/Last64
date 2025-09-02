@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HDR Color Test Strip</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a1a;
+            color: #ffffff;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #2a2a2a;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,255,255,0.3);
+        }
+        h1 {
+            text-align: center;
+            color: #00ffff;
+            text-shadow: 0 0 10px rgba(0,255,255,0.5);
+        }
+        .rainbow-strip {
+            height: 60px;
+            margin: 20px 0;
+            border: 2px solid #555;
+            border-radius: 5px;
+            display: flex;
+            overflow: hidden;
+        }
+        .color-segment {
+            flex: 1;
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: rgba(0,0,0,0.7);
+            text-shadow: 1px 1px 1px rgba(255,255,255,0.5);
+        }
+        .strip-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #cccccc;
+        }
+        .code-output {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #555;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 20px 0;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        .controls label {
+            display: block;
+            margin: 10px 0 5px 0;
+            color: #cccccc;
+        }
+        .controls input, .controls select {
+            width: 200px;
+            padding: 8px;
+            background: #3a3a3a;
+            border: 1px solid #555;
+            color: #ffffff;
+            border-radius: 3px;
+        }
+        .generate-btn {
+            background: #00ffff;
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .generate-btn:hover {
+            background: #00cccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌈 HDR Color Test Strip Generator</h1>
+        
+        <div class="controls">
+            <label for="segments">Number of Color Segments:</label>
+            <input type="number" id="segments" value="16" min="8" max="32">
+            
+            <label for="testType">Test Type:</label>
+            <select id="testType">
+                <option value="rainbow">Full Rainbow</option>
+                <option value="red-gradient">Red Gradient</option>
+                <option value="blue-gradient">Blue Gradient</option>
+                <option value="brightness">Brightness Levels</option>
+            </select>
+            
+            <button class="generate-btn" onclick="generateStrip()">Generate Color Strip</button>
+        </div>
+
+        <div class="strip-label">Normal RGB Colors (Reference):</div>
+        <div class="rainbow-strip" id="normalStrip"></div>
+        
+        <div class="strip-label">HDR Safe Colors (Your Game):</div>
+        <div class="rainbow-strip" id="hdrStrip"></div>
+        
+        <div class="strip-label">Bright Colors (Players/Projectiles):</div>
+        <div class="rainbow-strip" id="brightStrip"></div>
+
+        <div class="strip-label">C++ Code for Your Game:</div>
+        <div class="code-output" id="codeOutput"></div>
+    </div>
+
+    <script>
+        function hslToRgb(h, s, l) {
+            const c = (1 - Math.abs(2 * l - 1)) * s;
+            const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+            const m = l - c / 2;
+            let r, g, b;
+
+            if (0 <= h && h < 60) {
+                r = c; g = x; b = 0;
+            } else if (60 <= h && h < 120) {
+                r = x; g = c; b = 0;
+            } else if (120 <= h && h < 180) {
+                r = 0; g = c; b = x;
+            } else if (180 <= h && h < 240) {
+                r = 0; g = x; b = c;
+            } else if (240 <= h && h < 300) {
+                r = x; g = 0; b = c;
+            } else if (300 <= h && h < 360) {
+                r = c; g = 0; b = x;
+            }
+
+            return [
+                Math.round((r + m) * 255),
+                Math.round((g + m) * 255),
+                Math.round((b + m) * 255)
+            ];
+        }
+
+        function generateRainbowColors(segments) {
+            const colors = [];
+            for (let i = 0; i < segments; i++) {
+                const hue = (i / segments) * 360;
+                const rgb = hslToRgb(hue, 1, 0.5);
+                colors.push(rgb);
+            }
+            return colors;
+        }
+
+        function generateGradient(segments, startColor, endColor) {
+            const colors = [];
+            for (let i = 0; i < segments; i++) {
+                const t = i / (segments - 1);
+                const r = Math.round(startColor[0] + (endColor[0] - startColor[0]) * t);
+                const g = Math.round(startColor[1] + (endColor[1] - startColor[1]) * t);
+                const b = Math.round(startColor[2] + (endColor[2] - startColor[2]) * t);
+                colors.push([r, g, b]);
+            }
+            return colors;
+        }
+
+        function generateBrightnessLevels(segments) {
+            const colors = [];
+            for (let i = 0; i < segments; i++) {
+                const brightness = (i / (segments - 1)) * 255;
+                colors.push([brightness, brightness, brightness]);
+            }
+            return colors;
+        }
+
+        function convertToHDRSafe(r, g, b) {
+            return [
+                Math.max(0, Math.round(r / 36)),
+                Math.max(0, Math.round(g / 36)),
+                Math.max(0, Math.round(b / 36))
+            ];
+        }
+
+        function convertToBright(r, g, b) {
+            return [
+                r > 127 ? 255 : 0,
+                g > 127 ? 255 : 0,
+                b > 127 ? 255 : 0
+            ];
+        }
+
+        function generateStrip() {
+            const segments = parseInt(document.getElementById('segments').value);
+            const testType = document.getElementById('testType').value;
+            
+            let normalColors = [];
+            
+            switch (testType) {
+                case 'rainbow':
+                    normalColors = generateRainbowColors(segments);
+                    break;
+                case 'red-gradient':
+                    normalColors = generateGradient(segments, [0, 0, 0], [255, 0, 0]);
+                    break;
+                case 'blue-gradient':
+                    normalColors = generateGradient(segments, [0, 0, 0], [0, 0, 255]);
+                    break;
+                case 'brightness':
+                    normalColors = generateBrightnessLevels(segments);
+                    break;
+            }
+
+            // Generate strips
+            generateColorStrip('normalStrip', normalColors, 'normal');
+            
+            const hdrColors = normalColors.map(([r, g, b]) => convertToHDRSafe(r, g, b));
+            generateColorStrip('hdrStrip', hdrColors, 'hdr');
+            
+            const brightColors = normalColors.map(([r, g, b]) => convertToBright(r, g, b));
+            generateColorStrip('brightStrip', brightColors, 'bright');
+            
+            // Generate C++ code
+            generateCppCode(normalColors, hdrColors, brightColors);
+        }
+
+        function generateColorStrip(elementId, colors, type) {
+            const strip = document.getElementById(elementId);
+            strip.innerHTML = '';
+            
+            colors.forEach(([r, g, b], index) => {
+                const segment = document.createElement('div');
+                segment.className = 'color-segment';
+                segment.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+                
+                // Add color values as text
+                if (type === 'normal') {
+                    segment.textContent = `${r},${g},${b}`;
+                } else {
+                    const hex = `${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+                    segment.textContent = hex.toUpperCase();
+                }
+                
+                strip.appendChild(segment);
+            });
+        }
+
+        function generateCppCode(normalColors, hdrColors, brightColors) {
+            const codeOutput = document.getElementById('codeOutput');
+            let code = '// Color test strip for your game\n';
+            code += '// Add this to your rendering code to display the test strip\n\n';
+            
+            code += 'uint32_t testColors[] = {\n';
+            hdrColors.forEach(([r, g, b], index) => {
+                const hex = `0x${r.toString(16).padStart(2, '0').toUpperCase()}${g.toString(16).padStart(2, '0').toUpperCase()}${b.toString(16).padStart(2, '0').toUpperCase()}FF`;
+                const normalRgb = normalColors[index];
+                code += `    ${hex}, // HDR safe version of RGB(${normalRgb[0]}, ${normalRgb[1]}, ${normalRgb[2]})\n`;
+            });
+            code += '};\n\n';
+            
+            code += '// Render the test strip (example code)\n';
+            code += 'for (int i = 0; i < ' + hdrColors.length + '; i++) {\n';
+            code += '    float x = (float)i * (SCREEN_WIDTH / ' + hdrColors.length + '.0f);\n';
+            code += '    float width = SCREEN_WIDTH / ' + hdrColors.length + '.0f;\n';
+            code += '    \n';
+            code += '    // Set color and draw a rectangle\n';
+            code += '    // Use testColors[i] for your color\n';
+            code += '    // Draw rectangle at (x, 50, width, 40)\n';
+            code += '}\n';
+            
+            codeOutput.textContent = code;
+        }
+
+        // Initialize with rainbow
+        generateStrip();
+    </script>
+</body>
+</html>

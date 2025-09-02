@@ -213,14 +213,53 @@ int main()
     if ( display_get_fps() < 30.0f ) {
       Debug::printf(SCREEN_WIDTH-80, SCREEN_HEIGHT-30, "LowFPS:%.0f", display_get_fps());
     }
-    
-    
 
     #if RSPQ_PROFILE
       Debug::printf(20, 220, "%.2fms", lastUcodeTime / 1000.0f);
     #endif
 
     state.activeScene->draw2D(deltaTime);
+    bool showColorTestStrip = false;
+    if (showColorTestStrip) {
+      // Color test strip for your game
+      uint32_t testColors[] = { 
+          0xFF0000FF, // Red
+          0xFF6000FF, // Orange-ish
+          0xFFBF00FF, // Yellow-orange
+          0xDFFF00FF, // Yellow-green
+          0x80FF00FF, // Bright green
+          0x20FF00FF, // Green
+          0x00FF40FF, // Green-cyan
+          0x00FF9FFF, // Cyan-green
+          0x00FFFFFF, // Cyan
+          0x009FFFFF, // Blue-cyan
+          0x0040FFFF, // Light blue
+          0x2000FFFF, // Indigo
+          0x8000FFFF, // Violet
+          0xDF00FFFF, // Pink-violet
+          0xFF00BFFF, // Magenta
+          0xFF0060FF  // Red-magenta
+
+      }; 
+      // Draw color test strip using RGBA32 macro
+      for (int i = 0; i < 16; i++) {
+          float x = (float)i * (SCREEN_WIDTH / 16.0f);
+          float width = SCREEN_WIDTH / 16.0f;
+          //Extract color components from testColors array
+          uint8_t r = (testColors[i] >> 24) & 0xFF;
+          uint8_t g = (testColors[i] >> 16) & 0xFF;
+          uint8_t b = (testColors[i] >> 8) & 0xFF;
+          uint8_t a = testColors[i] & 0xFF;
+          // Set fill mode and color using RGBA32 macro
+          // uint32_t color = 0xFF8000FF;
+          // uint8_t r = (color >> 24) & 0xFF;
+          // uint8_t g = (color >> 16) & 0xFF;
+          // uint8_t b = (color >> 8)  & 0xFF;
+          // uint8_t a = (color >> 0)  & 0xFF;
+          rdpq_set_mode_fill(RGBA32(r, g, b, a));
+          rdpq_fill_rectangle(x, 50, x + width, 50 + 40);
+      }
+    }
 
     // Draw XP Bar
     const int barHeight = 10;
