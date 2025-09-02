@@ -53,6 +53,8 @@
 - [x] Player with white vertex color to better identify the direction?
 - [ ] Color debug text?
 
+- [x] Color test strip
+
 - [ ] New Weapon defensive shield, weapon only in upgrades
 
 - [ ] Upgrade decisions, a/b, slowdown, inworld or UI?

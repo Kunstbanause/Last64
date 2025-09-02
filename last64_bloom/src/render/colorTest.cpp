@@ -12,19 +12,42 @@ static T3DVertPacked* testVertices = nullptr;
 static T3DMat4FP* testMatrix = nullptr;
 static bool initialized = false;
 
+// Define test colors (RGBA8 format)
+static uint32_t testColors[] = {
+    0xFFFFFFFF, // White
+    0xFF0000FF, // Red
+    0x00FF00FF, // Green
+    0x0000FFFF, // Blue
+    0xFFFF00FF, // Yellow
+    0xFF00FFFF, // Magenta
+    0x00FFFFFF, // Cyan
+    0xFFA500FF, // Orange
+    0x800080FF, // Purple
+    0xFFC0CBFF, // Pink
+    0xA52A2AFF, // Brown
+    0x808080FF, // Gray
+    0x000000FF, // Black
+    0x800000FF, // Maroon
+    0x008000FF, // Dark Green
+    0x000080FF  // Navy
+};
+
+static const int NUM_COLORS = sizeof(testColors) / sizeof(testColors[0]);
+
 // Initialize the color test utility
 static void initialize() {
     if (initialized) return;
     
-    // Allocate vertices for color testing (16 quads = 32 triangles = 64 vertices)
-    // We're using 32 T3DVertPacked structures to hold 64 vertices
-    testVertices = (T3DVertPacked*)malloc_uncached(sizeof(T3DVertPacked) * 32);
+    // Allocate vertices for color testing (NUM_COLORS quads = NUM_COLORS*2 triangles = NUM_COLORS*4 vertices)
+    // We're using NUM_COLORS*2 T3DVertPacked structures to hold NUM_COLORS*4 vertices
+    testVertices = (T3DVertPacked*)malloc_uncached(sizeof(T3DVertPacked) * NUM_COLORS * 2);
     
     // Create a matrix for positioning the color test strip
     testMatrix = (T3DMat4FP*)malloc_uncached(sizeof(T3DMat4FP));
     
     // Position the color test strip in the top-left corner of the screen
-    T3DVec3 position = {{-100.0f, 80.0f, 0.0f}};
+    // The N64 screen is 320x240
+    T3DVec3 position = {{0.0f, 100.0f, 0.0f}}; // Center horizontally at the top
     t3d_mat4fp_from_srt_euler(
         testMatrix,
         (T3DVec3){{1.0f, 1.0f, 1.0f}},  // scale
@@ -32,30 +55,15 @@ static void initialize() {
         position                         // translation
     );
     
-    // Define test colors (RGBA8 format)
-    uint32_t testColors[] = {
-        0xFFFFFFFF, // White
-        0xFF0000FF, // Red
-        0x00FF00FF, // Green
-        0x0000FFFF, // Blue
-        0xFFFF00FF, // Yellow
-        0xFF00FFFF, // Magenta
-        0x00FFFFFF, // Cyan
-        0xFFA500FF, // Orange
-        0x800080FF, // Purple
-        0xFFC0CBFF, // Pink
-        0xA52A2AFF, // Brown
-        0x808080FF, // Gray
-        0x000000FF, // Black
-        0x800000FF, // Maroon
-        0x008000FF, // Dark Green
-        0x000080FF  // Navy
-    };
+    // Calculate quad width to span the screen width
+    float screenWidth = 320.0f; // Actual N64 screen width
+    float quadWidth = screenWidth / NUM_COLORS;
+    float quadHeight = 10.0f;
     
     // Create quads with different colors
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < NUM_COLORS; i++) {
         // Calculate position for this quad
-        float x_offset = i * 12.0f; // 12 units between quads
+        float x_offset = i * quadWidth;
         
         // Each quad needs 4 vertices, but we store them in T3DVertPacked structures (2 vertices each)
         // So we need 2 T3DVertPacked structures per quad
@@ -70,16 +78,16 @@ static void initialize() {
         testVertices[structIndex].posA[1] = 0;
         testVertices[structIndex].posA[2] = 0;
         testVertices[structIndex].normA = 0;
-        testVertices[structIndex].rgbaA = testColors[i % 16];
+        testVertices[structIndex].rgbaA = testColors[i];
         testVertices[structIndex].stA[0] = 0;
         testVertices[structIndex].stA[1] = 0;
         
         // Vertex 1 (bottom-left)
         testVertices[structIndex].posB[0] = (int16_t)(0 + x_offset);
-        testVertices[structIndex].posB[1] = 10;
+        testVertices[structIndex].posB[1] = (int16_t)quadHeight;
         testVertices[structIndex].posB[2] = 0;
         testVertices[structIndex].normB = 0;
-        testVertices[structIndex].rgbaB = testColors[i % 16];
+        testVertices[structIndex].rgbaB = testColors[i];
         testVertices[structIndex].stB[0] = 0;
         testVertices[structIndex].stB[1] = 0;
         
@@ -87,20 +95,20 @@ static void initialize() {
         testVertices[structIndex + 1] = (T3DVertPacked){};
         
         // Vertex 2 (bottom-right)
-        testVertices[structIndex + 1].posA[0] = (int16_t)(10 + x_offset);
-        testVertices[structIndex + 1].posA[1] = 10;
+        testVertices[structIndex + 1].posA[0] = (int16_t)(quadWidth + x_offset);
+        testVertices[structIndex + 1].posA[1] = (int16_t)quadHeight;
         testVertices[structIndex + 1].posA[2] = 0;
         testVertices[structIndex + 1].normA = 0;
-        testVertices[structIndex + 1].rgbaA = testColors[i % 16];
+        testVertices[structIndex + 1].rgbaA = testColors[i];
         testVertices[structIndex + 1].stA[0] = 0;
         testVertices[structIndex + 1].stA[1] = 0;
         
         // Vertex 3 (top-right)
-        testVertices[structIndex + 1].posB[0] = (int16_t)(10 + x_offset);
+        testVertices[structIndex + 1].posB[0] = (int16_t)(quadWidth + x_offset);
         testVertices[structIndex + 1].posB[1] = 0;
         testVertices[structIndex + 1].posB[2] = 0;
         testVertices[structIndex + 1].normB = 0;
-        testVertices[structIndex + 1].rgbaB = testColors[i % 16];
+        testVertices[structIndex + 1].rgbaB = testColors[i];
         testVertices[structIndex + 1].stB[0] = 0;
         testVertices[structIndex + 1].stB[1] = 0;
     }
@@ -137,10 +145,10 @@ void color_test_draw() {
     t3d_matrix_push(testMatrix);
     
     // Load vertices
-    t3d_vert_load(testVertices, 0, 64); // Load 64 vertices
+    t3d_vert_load(testVertices, 0, NUM_COLORS * 4); // Load all vertices
     
-    // Draw 16 quads using triangle strips
-    for (int i = 0; i < 16; i++) {
+    // Draw quads using triangle pairs
+    for (int i = 0; i < NUM_COLORS; i++) {
         // Each quad is made of 4 vertices, indexed as 0,1,2,3
         // We draw two triangles: (0,1,2) and (0,2,3)
         int baseVertex = i * 4;
