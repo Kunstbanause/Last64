@@ -6,6 +6,7 @@
 #include "../../main.h"
 #include "../../debugMenu.h"
 #include "../../render/debugDraw.h"
+#include "../../render/colorTest.h"
 #include "../../systems/experience.h"
 #include "../../systems/upgrade_system.h"
 #include "../../systems/spawn_manager.h"
@@ -325,6 +326,9 @@ void SceneLast64::draw3D(float deltaTime)
 
     // Draw all projectiles
     Actor::Projectile::drawAll(deltaTime);
+
+    // Draw color test strip
+    // color_test_draw();
 
     // Pop scene matrix
     t3d_matrix_pop(1);
