@@ -22,7 +22,7 @@ namespace Actor {
         void upgrade() override;
 
     private:
-        float shieldRadius;           // Radius of the shield
+        float shieldSize;             // Size of the shield
         float shieldLifetime;         // How long the shield lasts
         float shieldCooldown;         // Cooldown between shield uses
         bool shieldActive;            // Whether the shield is currently active
