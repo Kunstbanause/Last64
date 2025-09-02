@@ -277,10 +277,11 @@ namespace Actor {
     // Draw the player using the player-specific vertices and matrix
     if (playerMatrix && playerVertices) {
         // Update vertex colors for this specific player
-        playerVertices[0].rgbaA = playerColor;
-        playerVertices[0].rgbaB = playerColor;
-        playerVertices[1].rgbaA = playerColor;
-        playerVertices[1].rgbaB = playerColor;
+        // Tip of the triangle (vertex 0) is white, other vertices keep player color
+        playerVertices[0].rgbaA = 0xFFFFFFFF; // White for tip
+        playerVertices[0].rgbaB = playerColor; // Player color for second vertex
+        playerVertices[1].rgbaA = playerColor; // Player color for third vertex
+        playerVertices[1].rgbaB = playerColor; // Player color for fourth vertex (unused)
         
         t3d_matrix_push(playerMatrix);
         t3d_vert_load(playerVertices, 0, 4); // Load 4 vertices (2 structures)

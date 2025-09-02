@@ -50,7 +50,8 @@
 - [x] Fixed bug: Enemies targeting dead players
 
 - [ ] Player outline for better readaibility?
-- [ ] Player vertex color to better identify the direction?
+- [x] Player with white vertex color to better identify the direction?
+- [ ] Color debug text?
 
 - [ ] New Weapon defensive shield, weapon only in upgrades
 
