@@ -53,7 +53,10 @@ namespace Actor {
             uint32_t projectileColor = SHIELD_PROJECTILE_COLOR;
             if (player) {
                 projectileColor = player->getColor();
-            }
+                // Reduce in color intensity for shield effect:
+                int scale = 3;
+                auto max = [](uint32_t a, uint32_t b) { return a > b ? a : b; };
+                projectileColor = (max(1u, ((projectileColor >> 24) * scale) / 100) << 24) | (max(1u, ((projectileColor >> 16 & 0xFF) * scale) / 100) << 16) | (max(1u, ((projectileColor >> 8 & 0xFF) * scale) / 100) << 8) | (projectileColor & 0xFF);            }
 
             // Create a new shield projectile
             shieldProjectile = Projectile::spawn(

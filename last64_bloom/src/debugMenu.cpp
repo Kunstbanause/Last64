@@ -30,7 +30,7 @@ namespace
 }
 
 // Global variable for debug weapon selection
-int debugWeaponSelection = 5; // 0 = Random, 1-5 = Specific weapons
+int debugWeaponSelection = 0; // 0 = Random, 1-5 = Specific weapons
 
 static inline joypad_buttons_t joypad_get_all_pressed() {
     joypad_buttons_t combined = {0};
