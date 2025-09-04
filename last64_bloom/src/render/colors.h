@@ -5,22 +5,22 @@
 
 namespace Colors {
     // Define test colors (RGBA8 format)
-    const uint32_t testColors[] = {
-        0xFFFFFFFF, // White
-        0xFF0000FF, // Red
-        0x00FF00FF, // Green
-        0x0000FFFF, // Blue
-        0xFFFF00FF, // Yellow
-        0xFF00FFFF, // Magenta
-        0x00FFFFFF, // Cyan
-        0xFFA500FF, // Orange
-        0x800080FF, // Purple
-        0xFFC0CBFF, // Pink
-        0xA52A2AFF, // Brown
-        0x808080FF, // Gray
-        0x000000FF, // Black
-        0x800000FF, // Maroon
-    };
+const uint32_t testColors[] = {
+    0x050909FF,
+    0x040809FF,
+    0x040609FF,
+    0x040409FF,
+    0x030407FF,
+    0x030305FF,
+    0x020202FF,
+    0x030204FF,
+    0x040305FF,
+    0x050306FF,
+    0x070407FF,
+    0x080407FF,
+    0x0A0705FF,
+    0x0A0907FF
+};
 
     const uint32_t moreColors[] = {
         0x85DAEBFF, // #85daeb

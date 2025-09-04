@@ -77,7 +77,7 @@ function updateColors() {
     }).filter(c => c !== null);
 
     // C array
-    const cArray = `const uint32_t palette[] = {\n    ${convertedColors.map(c => c.rgba8).join(',\n    ')}\n};`;
+    const cArray = `const uint32_t testColors[] = {\n    ${convertedColors.map(c => c.rgba8).join(',\n    ')}\n};`;
     document.getElementById('cArrayOutput').textContent = cArray;
     document.getElementById('cArrayOutput').dataset.array = cArray; // store for clipboard
 
@@ -116,7 +116,7 @@ function updateInspector() {
     });
     tableHtml += '</table>';
     document.getElementById('inspectorOutput').innerHTML = tableHtml;
-    document.getElementById('inspectorOutput').dataset.array = `const uint32_t inspector[] = {\n    ${arrayValues.join(',\n    ')}\n};`;
+    document.getElementById('inspectorOutput').dataset.array = `const uint32_t testColors[] = {\n    ${arrayValues.join(',\n    ')}\n};`;
 }
 
 // Copy to clipboard

@@ -37,9 +37,9 @@
 State state{
   .ppConf = {
     .blurSteps = 3,
-    .blurBrightness = 2.1f, // BLOOM
-    .hdrFactor = 1.1f, // EXPOS
-    .bloomThreshold = 0.2f,
+    .blurBrightness = 1.1f, // BLOOM (2.1 was too extreme)
+    .hdrFactor = 0.8f, // EXPOS (1.1 was too extreme)
+    .bloomThreshold = 0.5f,
     .scalingUseRDP = true,
    },
   .showOffscreen = false,
