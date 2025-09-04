@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>tiny3d HDR Color Converter - Live Update & Inspector</title>
+<title>tiny3d HDR Color Converter - Clipboard & Inspector</title>
 <style>
     body { font-family: sans-serif; margin: 40px; }
     textarea { width: 100%; height: 150px; }
@@ -11,12 +11,13 @@
     .container { display: flex; gap: 20px; margin-top: 20px; }
     .column { flex: 1; }
     ul { list-style: none; padding-left: 0; margin-top: 0; }
-    table { border-collapse: collapse; margin-top: 10px; }
+    table { border-collapse: collapse; margin-top: 10px; width: 100%; }
     td, th { border: 1px solid #ccc; padding: 5px 10px; text-align: center; }
+    button { margin-top: 10px; padding: 5px 10px; }
 </style>
 </head>
 <body>
-<h1>tiny3d HDR Color Converter - Live Update & Inspector</h1>
+<h1>tiny3d HDR Color Converter - Clipboard & Inspector</h1>
 
 <h2>Palette Conversion</h2>
 <p>Paste hex colors (#RRGGBB or RRGGBB) separated by newlines or commas:</p>
@@ -29,6 +30,7 @@
 <div class="container">
     <div class="column">
         <h3>C Array</h3>
+        <button id="copyPalette">Copy Palette C Array</button>
         <pre id="cArrayOutput"></pre>
     </div>
     <div class="column">
@@ -42,6 +44,8 @@
 <h2>Single Hex Inspector</h2>
 <label>Enter a hex color (#RRGGBB or RRGGBB): </label>
 <input type="text" id="inspectHex" placeholder="85DAEB">
+<br>
+<button id="copyInspector">Copy Inspector C Array</button>
 <div id="inspectorOutput"></div>
 
 <script>
@@ -76,6 +80,7 @@ function updateColors() {
     // C array
     const cArray = `const uint32_t palette[] = {\n    ${convertedColors.map(c => c.rgba8).join(',\n    ')}\n};`;
     document.getElementById('cArrayOutput').textContent = cArray;
+    document.getElementById('cArrayOutput').dataset.array = cArray; // store for clipboard
 
     // Preview
     const previewHtml = convertedColors.map(c => 
@@ -97,27 +102,45 @@ function updateInspector() {
         document.getElementById('inspectorOutput').innerHTML = "<p>Enter a valid hex color.</p>";
         return;
     }
-    const scales = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
+    const scales = [];
+    for(let i=1; i<=10; i++) scales.push(i*0.1); // 0.1 to 1.0
     let tableHtml = '<table><tr><th>Scale</th><th>RGBA8</th><th>Preview</th></tr>';
+    const arrayValues = [];
     scales.forEach(s => {
         const c = hexToRGBA8(hex, s);
         tableHtml += `<tr>
-            <td>${s.toFixed(2)}</td>
+            <td>${s.toFixed(1)}</td>
             <td>${c.rgba8}</td>
             <td><span class="color-preview" style="background-color: rgb(${c.r},${c.g},${c.b});"></span></td>
         </tr>`;
+        arrayValues.push(c.rgba8);
     });
     tableHtml += '</table>';
     document.getElementById('inspectorOutput').innerHTML = tableHtml;
+    document.getElementById('inspectorOutput').dataset.array = `const uint32_t inspector[] = {\n    ${arrayValues.join(',\n    ')}\n};`;
 }
 
-// Live update
+// Copy to clipboard
+function copyToClipboard(id) {
+    const element = document.getElementById(id);
+    const text = element.dataset.array;
+    if(!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+        alert("Copied to clipboard!");
+    });
+}
+
+// Event listeners
 document.getElementById('inputColors').addEventListener('input', updateColors);
 document.getElementById('scaleSlider').addEventListener('input', e => updateScaleValue(e.target.value));
 document.getElementById('inspectHex').addEventListener('input', updateInspector);
 
-// Initialize on page load
+document.getElementById('copyPalette').addEventListener('click', () => copyToClipboard('cArrayOutput'));
+document.getElementById('copyInspector').addEventListener('click', () => copyToClipboard('inspectorOutput'));
+
+// Initialize
 updateColors();
 </script>
 </body>
 </html>
+
