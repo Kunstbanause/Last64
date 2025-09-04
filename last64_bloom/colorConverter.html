@@ -2,16 +2,17 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>tiny3d HDR Color Converter - C Array</title>
+<title>tiny3d HDR Color Converter - C Array with Preview</title>
 <style>
     body { font-family: sans-serif; margin: 40px; }
     textarea { width: 100%; height: 150px; }
     input, button { margin: 10px 0; }
     pre { background: #f0f0f0; padding: 10px; white-space: pre-wrap; }
+    .color-preview { display: inline-block; width: 20px; height: 20px; margin-right: 8px; vertical-align: middle; border: 1px solid #000; }
 </style>
 </head>
 <body>
-<h1>tiny3d HDR Color Converter - C Array</h1>
+<h1>tiny3d HDR Color Converter - C Array with Preview</h1>
 <p>Paste hex colors (#RRGGBB or RRGGBB) separated by newlines or commas:</p>
 <textarea id="inputColors"></textarea>
 <br>
@@ -19,8 +20,8 @@
 <br>
 <button onclick="convertColors()">Convert</button>
 
-<h2>Generated C Array</h2>
-<pre id="outputColors"></pre>
+<h2>Generated C Array & Preview</h2>
+<div id="outputColors"></div>
 
 <script>
 function clamp(value) {
@@ -34,7 +35,10 @@ function hexToRGBA8(hex, scale) {
     let g = clamp(Math.round(parseInt(hex.substring(2,4),16) * scale));
     let b = clamp(Math.round(parseInt(hex.substring(4,6),16) * scale));
     let a = 255;
-    return `0x${r.toString(16).padStart(2,'0').toUpperCase()}${g.toString(16).padStart(2,'0').toUpperCase()}${b.toString(16).padStart(2,'0').toUpperCase()}${a.toString(16).padStart(2,'0').toUpperCase()}`;
+    return {
+        rgba8: `0x${r.toString(16).padStart(2,'0').toUpperCase()}${g.toString(16).padStart(2,'0').toUpperCase()}${b.toString(16).padStart(2,'0').toUpperCase()}${a.toString(16).padStart(2,'0').toUpperCase()}`,
+        r, g, b, a
+    };
 }
 
 function convertColors() {
@@ -42,13 +46,23 @@ function convertColors() {
     const scale = parseFloat(document.getElementById('scale').value);
     const separators = /[\n,]+/;
     const colors = input.split(separators).map(s => s.trim()).filter(s => s);
+    
     const convertedColors = colors.map(c => {
         const converted = hexToRGBA8(c, scale);
         return converted ? converted : null;
     }).filter(c => c !== null);
 
-    const cArray = `const uint32_t palette[] = {\n    ${convertedColors.join(',\n    ')}\n};`;
-    document.getElementById('outputColors').textContent = cArray;
+    // Generate C array
+    const cArray = `const uint32_t palette[] = {\n    ${convertedColors.map(c => c.rgba8).join(',\n    ')}\n};`;
+
+    // Generate preview list
+    let previewHtml = `<pre>${cArray}</pre><ul style="list-style:none;padding-left:0;">`;
+    convertedColors.forEach(c => {
+        previewHtml += `<li><span class="color-preview" style="background-color: rgb(${c.r},${c.g},${c.b});"></span> ${c.rgba8}</li>`;
+    });
+    previewHtml += `</ul>`;
+    
+    document.getElementById('outputColors').innerHTML = previewHtml;
 }
 </script>
 </body>
