@@ -125,7 +125,7 @@ function copyToClipboard(id) {
     const text = element.dataset.array;
     if(!text) return;
     navigator.clipboard.writeText(text).then(() => {
-        alert("Copied to clipboard!");
+        // alert("Copied to clipboard!");
     });
 }
 
