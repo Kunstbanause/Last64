@@ -29,24 +29,24 @@
 
 <div class="container">
     <div class="column">
-        <h3>C Array</h3>
         <button id="copyPalette">Copy Palette C Array</button>
-        <pre id="cArrayOutput"></pre>
-    </div>
-    <div class="column">
+        <pre id="cArrayOutput" style="display: none;"></pre>
         <h3>Preview</h3>
         <ul id="previewOutput"></ul>
+    </div>
+    <div class="column">
+        <button id="copyInspector">Copy Inspector C Array</button>
+        <h3>Single Hex Inspector</h3>
+        <!-- <label>Enter a hex color (#RRGGBB or RRGGBB): </label> -->
+        <input type="text" id="inspectHex" placeholder="85DAEB">
+        <br>
+        <div id="inspectorOutput"></div>
     </div>
 </div>
 
 <hr>
 
-<h2>Single Hex Inspector</h2>
-<label>Enter a hex color (#RRGGBB or RRGGBB): </label>
-<input type="text" id="inspectHex" placeholder="85DAEB">
-<br>
-<button id="copyInspector">Copy Inspector C Array</button>
-<div id="inspectorOutput"></div>
+
 
 <script>
 function clamp(value) {
