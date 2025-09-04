@@ -9,7 +9,8 @@
 #include "../systems/weapon_spiral.h"
 #include "../systems/weapon_shield.h"
 #include "../main.h"
-#include "../debugMenu.h" // Include debug menu for debugWeaponSelection
+#include "../debugMenu.h"
+#include "../render/colors.h"
 #include <t3d/t3d.h>
 #include <t3d/tpx.h>
 #include <libdragon.h>
@@ -20,8 +21,6 @@
 #include <libdragon.h>
 #include <malloc.h>
 #include <algorithm>
-
-
 
 namespace Actor {
     // Static members for player mesh
@@ -108,16 +107,16 @@ namespace Actor {
         // Set player color based on port // RGBA8 (0xRRGGBBAA
         switch (playerPort) {
             case JOYPAD_PORT_1:
-                playerColor = 0x080400FF; // Orange
+                playerColor = Colors::player[0]; // Orange
                 break;
             case JOYPAD_PORT_2:
-                playerColor = 0x00FF00FF; // Green
+                playerColor = Colors::player[1]; // Green
                 break;
             case JOYPAD_PORT_3:
-                playerColor = 0x00FFFFFF; // Cyan
+                playerColor = Colors::player[2]; // Cyan
                 break;
             case JOYPAD_PORT_4:
-                playerColor = 0xFFFF00FF; // Yellow
+                playerColor = Colors::player[3]; // Yellow
                 break;
         }
         

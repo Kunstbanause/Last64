@@ -24,7 +24,6 @@
 #include "debugMenu.h"
 #include "postProcess.h"
 #include "render/debugDraw.h"
-#include "render/colorTest.h"
 #include "rsp/rspFX.h"
 
 #include "scene/scene.h"
