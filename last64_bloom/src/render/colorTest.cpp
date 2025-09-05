@@ -126,21 +126,13 @@ void color_test_draw() {
     t3d_state_set_drawflags(T3D_FLAG_SHADED);
     t3d_matrix_push(testMatrix);
     
-    const int MAX_COLORS_PER_BATCH = 20; // Safe limit
-    int totalBatches = (NUM_COLORS + MAX_COLORS_PER_BATCH - 1) / MAX_COLORS_PER_BATCH;
-    
-    for (int batch = 0; batch < totalBatches; batch++) {
-        int startColor = batch * MAX_COLORS_PER_BATCH;
-        int endColor = MIN(startColor + MAX_COLORS_PER_BATCH, NUM_COLORS);
-        int colorsInBatch = endColor - startColor;
+    // Check if we need batching
+    if (NUM_COLORS <= 20) {
+        // Simple case: draw all colors in one batch
+        t3d_vert_load(testVertices, 0, NUM_COLORS * 4);
         
-        // Load vertices for this batch
-        // Since we have 2 T3DVertPacked structures per color, the offset is startColor * 2
-        t3d_vert_load(&testVertices[startColor * 2], 0, colorsInBatch * 4);
-        
-        // Draw quads in this batch
-        for (int i = 0; i < colorsInBatch; i++) {
-            int baseVertex = i * 4; // Local to this batch
+        for (int i = 0; i < NUM_COLORS; i++) {
+            int baseVertex = i * 4;
             
             // Draw first triangle (0,1,2)
             t3d_tri_draw(baseVertex, baseVertex + 1, baseVertex + 2);
@@ -148,8 +140,33 @@ void color_test_draw() {
             t3d_tri_draw(baseVertex, baseVertex + 2, baseVertex + 3);
         }
         
-        // Sync after each batch
         t3d_tri_sync();
+    } else {
+        // Batched rendering for large color counts
+        const int MAX_COLORS_PER_BATCH = 20; // Safe limit
+        int totalBatches = (NUM_COLORS + MAX_COLORS_PER_BATCH - 1) / MAX_COLORS_PER_BATCH;
+        
+        for (int batch = 0; batch < totalBatches; batch++) {
+            int startColor = batch * MAX_COLORS_PER_BATCH;
+            int endColor = MIN(startColor + MAX_COLORS_PER_BATCH, NUM_COLORS);
+            int colorsInBatch = endColor - startColor;
+            
+            // Load vertices for this batch starting from the correct offset
+            t3d_vert_load(&testVertices[startColor * 2], 0, colorsInBatch * 4);
+            
+            // Draw quads in this batch - vertices are indexed from 0 within this batch
+            for (int i = 0; i < colorsInBatch; i++) {
+                int baseVertex = i * 4; // Local to this batch (starts from 0)
+                
+                // Draw first triangle (0,1,2)
+                t3d_tri_draw(baseVertex, baseVertex + 1, baseVertex + 2);
+                // Draw second triangle (0,2,3)  
+                t3d_tri_draw(baseVertex, baseVertex + 2, baseVertex + 3);
+            }
+            
+            // Sync after each batch
+            t3d_tri_sync();
+        }
     }
     
     t3d_matrix_pop(1);

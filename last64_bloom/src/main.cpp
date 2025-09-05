@@ -229,15 +229,15 @@ int main()
     if (showMenu) {
       // Draw color test strip RGBA32
       static float screenAdjustedWidth = SCREEN_WIDTH-90;
-      constexpr int colorCount = sizeof(Colors::testColors) / sizeof(Colors::testColors[0]);
+      constexpr int colorCount = sizeof(Colors::testColors2D) / sizeof(Colors::testColors2D[0]);
       for (int i = 0; i < colorCount; i++) {
           float x = (float)i * (screenAdjustedWidth / colorCount);
           float width = screenAdjustedWidth / colorCount;
-          //Extract color components from testColors array
-          uint8_t r = (Colors::testColors[i] >> 24) & 0xFF;
-          uint8_t g = (Colors::testColors[i] >> 16) & 0xFF;
-          uint8_t b = (Colors::testColors[i] >> 8) & 0xFF;
-          uint8_t a = Colors::testColors[i] & 0xFF;
+          //Extract color components from testColors2D array
+          uint8_t r = (Colors::testColors2D[i] >> 24) & 0xFF;
+          uint8_t g = (Colors::testColors2D[i] >> 16) & 0xFF;
+          uint8_t b = (Colors::testColors2D[i] >> 8) & 0xFF;
+          uint8_t a = Colors::testColors2D[i] & 0xFF;
           rdpq_set_mode_fill(RGBA32(r, g, b, a));
           rdpq_fill_rectangle(x+45, 170, x+45 + width, 170 + 4);
       }
