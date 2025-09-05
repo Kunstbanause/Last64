@@ -48,21 +48,29 @@
         max-width: 100%; /* Keep within column width */
     }
     li { margin: 0px 0; }
-    button { 
-        margin-top: 10px; 
-        padding: 5px 10px;
-        width: 100%;
-        box-sizing: border-box;
+    .control-group {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 10px;
     }
-    label { 
-        display: block; 
-        margin: 10px 0;
+    .slider-group {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 5px;
         font-size: 14px;
     }
+    .slider-group span {
+        min-width: 40px;
+    }
+    button { 
+        padding: 5px 10px;
+        white-space: nowrap;
+    }
     input[type="range"] { 
-        width: 100%; 
-        margin: 5px 0;
-        box-sizing: border-box;
+        flex: 1;
+        min-width: 0;
     }
     h1 {
         text-align: center;
@@ -82,17 +90,23 @@
 <div class="container">
     <div class="column">
         <pre id="cArrayOutput" style="display: none;"></pre>
-        <!-- <h3>RGBA8 </h3> -->
-        <button id="copyPalette">Copy Palette</button>
-        <label>Scale: <span id="scaleValue">0.50</span> <input type="range" id="scaleSlider" min="0" max="1" step="0.01" value="0.5">
-</label>
+        <div class="control-group">
+            <button id="copyPalette">Copy Palette</button>
+        </div>
+        <div class="slider-group">
+            <input type="range" id="scaleSlider" min="0" max="1" step="0.01" value="0.5">
+            <span id="scaleValue">0.50</span>
+            </div>
         <ul id="previewOutput"></ul>
     </div>
     <div class="column">
-        <button id="copyInspector">Copy Shades</button>
-        <label>Color: <span id="colorIndex">1</span> / <span id="colorTotal">0</span>
+        <div class="control-group">
+            <button id="copyInspector">Copy Shades</button>
+        </div>
+        <div class="slider-group">
             <input type="range" id="colorSlider" min="0" max="0" step="1" value="0">
-        </label>
+                <span><span id="colorIndex">1</span>/<span id="colorTotal">0</span></span>
+            </div>
         <div id="inspectorOutput"></div>
     </div>
 </div>
