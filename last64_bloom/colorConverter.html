@@ -17,21 +17,22 @@
 </style>
 </head>
 <body>
-<h1>tiny3d HDR Color Converter</h1>
+<h1>HDR Color Converter</h1>
 
-<p>Palette Conversion: hex colors (#RRGGBB or no#), separated by: newlines, comma, space:</p>
+<p>Palette and Shade: hex colors (#RRGGBB to RGBA8)</p>
 <textarea id="inputColors">85daeb 5fc9e7 5fa1e7 5f6ee7 4c60aa 444774 32313b 463c5e 5d4776 855395 ab58a8 ca60ae f3a787 f5daa7 8dd894 5dc190 4ab9a3 4593a5 5efdf7 ff5dcc fdfe89 ffffff</textarea>
 <div class="container">
     <div class="column">
         <pre id="cArrayOutput" style="display: none;"></pre>
-        <h3>RGBA8 <button id="copyPalette">Copy Palette</button></h3>
+        <!-- <h3>RGBA8 </h3> -->
+        <button id="copyPalette">Copy Palette</button>
         <label>Scale: <span id="scaleValue">0.50</span> <input type="range" id="scaleSlider" min="0" max="1" step="0.01" value="0.5">
 </label>
         <ul id="previewOutput"></ul>
     </div>
     <div class="column">
         <button id="copyInspector">Copy Shades</button>
-        <h3>Single Hex Inspector</h3>
+        <!-- <h3>Single Hex Inspector</h3> -->
         <!-- <label>Enter a hex color (#RRGGBB or RRGGBB): </label> -->
         <input type="text" id="inspectHex" value="85DAEB">
         <br>
