@@ -5,7 +5,7 @@
 <title>tiny3d HDR Color Converter</title>
 <style>
     body { font-family: sans-serif; margin: 40px; }
-    textarea { width: 50%; height: 80px; }
+    textarea { width: 100%; height: 80px; }
     pre { background: #f0f0f0; padding: 10px; white-space: pre-wrap; overflow-x: auto; }
     .color-preview { display: inline-block; width: 20px; height: 20px; margin-right: 8px; vertical-align: middle; border: 1px solid #000; }
     .color-preview:first-of-type { border: 1px solid #44444456; } /* Original color */
@@ -15,6 +15,8 @@
     ul { list-style: none; padding-left: 0; margin-top: 0; }
     li { margin: 0px 0; }
     button { margin-top: 10px; padding: 5px 10px; }
+    label { display: block; margin: 10px 0; }
+    input[type="range"] { width: 100%; margin: 5px 0; }
 </style>
 </head>
 <body>
@@ -33,10 +35,9 @@
     </div>
     <div class="column">
         <button id="copyInspector">Copy Shades</button>
-        <!-- <h3>Single Hex Inspector</h3> -->
-        <!-- <label>Enter a hex color (#RRGGBB or RRGGBB): </label> -->
-        <input type="text" id="inspectHex" value="85DAEB">
-        <br>
+        <label>Color: <span id="colorIndex">1</span> / <span id="colorTotal">0</span>
+            <input type="range" id="colorSlider" min="0" max="0" step="1" value="0">
+        </label>
         <div id="inspectorOutput"></div>
     </div>
 </div>
@@ -63,11 +64,21 @@ function hexToRGBA8(hex, scale) {
     };
 }
 
+function updateColorSlider(colors) {
+    const slider = document.getElementById('colorSlider');
+    slider.max = colors.length - 1;
+    document.getElementById('colorTotal').textContent = colors.length;
+    document.getElementById('colorIndex').textContent = (parseInt(slider.value) + 1);
+}
+
 function updateColors() {
     const input = document.getElementById('inputColors').value;
     const scale = parseFloat(document.getElementById('scaleSlider').value);
     const separators = /[\n, ]+/;
     const colors = input.split(separators).map(s => s.trim()).filter(s => s);
+    
+    // Update color slider range
+    updateColorSlider(colors);
 
     const convertedColors = colors.map(c => {
         const converted = hexToRGBA8(c, scale);
@@ -100,9 +111,15 @@ function updateScaleValue(val) {
 }
 
 function updateInspector() {
-    const hex = document.getElementById('inspectHex').value.trim();
-    if(!/^#?[0-9a-fA-F]{6}$/.test(hex)) {
-        document.getElementById('inspectorOutput').innerHTML = "<p>Enter a valid hex color.</p>";
+    // Get the current color from the palette based on slider
+    const input = document.getElementById('inputColors').value;
+    const separators = /[\n, ]+/;
+    const colors = input.split(separators).map(s => s.trim()).filter(s => s);
+    const selectedIndex = parseInt(document.getElementById('colorSlider').value);
+    const hex = colors[selectedIndex];
+    
+    if (!hex || !/^#?[0-9a-fA-F]{6}$/.test(hex)) {
+        document.getElementById('inspectorOutput').innerHTML = "<p>No valid color selected.</p>";
         return;
     }
     const scales = [];
@@ -137,7 +154,10 @@ function copyToClipboard(id) {
 // Event listeners
 document.getElementById('inputColors').addEventListener('input', updateColors);
 document.getElementById('scaleSlider').addEventListener('input', e => updateScaleValue(e.target.value));
-document.getElementById('inspectHex').addEventListener('input', updateInspector);
+document.getElementById('colorSlider').addEventListener('input', e => {
+    document.getElementById('colorIndex').textContent = (parseInt(e.target.value) + 1);
+    updateInspector();
+});
 
 document.getElementById('copyPalette').addEventListener('click', () => copyToClipboard('cArrayOutput'));
 document.getElementById('copyInspector').addEventListener('click', () => copyToClipboard('inspectorOutput'));
