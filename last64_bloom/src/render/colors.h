@@ -4,22 +4,30 @@
 #include <cstdint>
 
 namespace Colors {
-// Define test colors (RGBA8 format)
+// Define test colors (RGBA8 format) 10% intensity 
 const uint32_t testColors[] = {
-    0x050909FF,
-    0x040809FF,
-    0x040609FF,
-    0x040409FF,
-    0x030407FF,
-    0x030305FF,
-    0x020202FF,
-    0x030204FF,
-    0x040305FF,
-    0x050306FF,
-    0x070407FF,
-    0x080407FF,
-    0x0A0705FF,
-    0x0A0907FF
+    0x19292DFF,
+    0x12262CFF,
+    0x121F2CFF,
+    0x12152CFF,
+    0x0E1220FF,
+    0x0D0D16FF,
+    0x0A090BFF,
+    0x0D0B12FF,
+    0x120D16FF,
+    0x19101CFF,
+    0x201120FF,
+    0x261221FF,
+    0x2E201AFF,
+    0x2F2920FF,
+    0x1B291CFF,
+    0x12251BFF,
+    0x0E231FFF,
+    0x0D1C1FFF,
+    0x12302FFF,
+    0x301227FF,
+    0x30301AFF,
+    0x303030FF
 };
 
 const uint32_t player[] = {
@@ -36,30 +44,30 @@ const uint32_t oldplayer[] = {
     0xFFFF00FF // Yellow
 };
 
-const uint32_t moreColors[] = {
-    0x85DAEBFF, // #85daeb
-    0x5FC9E7FF, // #5fc9e7
-    0x5FA1E7FF, // #5fa1e7
-    0x5F6EE7FF, // #5f6ee7
-    0x4C60AAFF, // #4c60aa
-    0x444774FF, // #444774
-    0x32313BFF, // #32313b
-    0x463C5EFF, // #463c5e
-    0x5D4776FF, // #5d4776
-    0x855395FF, // #855395
-    0xAB58A8FF, // #ab58a8
-    0xCA60AEFF, // #ca60ae
-    0xF3A787FF, // #f3a787
-    0xF5DAA7FF, // #f5daa7
-    0x8DD894FF, // #8dd894
-    0x5DC190FF, // #5dc190
-    0x4AB9A3FF, // #4ab9a3
-    0x4593A5FF, // #4593a5
-    0x5EFDF7FF, // #5efdf7
-    0xFF5DCCFF, // #ff5dcc
-    0xFDFE89FF, // #fdfe89
-    0xFFFFFFFF, // #ffffff
-};
+// const uint32_t chasmColors[] = {
+//     0x85DAEBFF, // #85daeb
+//     0x5FC9E7FF, // #5fc9e7
+//     0x5FA1E7FF, // #5fa1e7
+//     0x5F6EE7FF, // #5f6ee7
+//     0x4C60AAFF, // #4c60aa
+//     0x444774FF, // #444774
+//     0x32313BFF, // #32313b
+//     0x463C5EFF, // #463c5e
+//     0x5D4776FF, // #5d4776
+//     0x855395FF, // #855395
+//     0xAB58A8FF, // #ab58a8
+//     0xCA60AEFF, // #ca60ae
+//     0xF3A787FF, // #f3a787
+//     0xF5DAA7FF, // #f5daa7
+//     0x8DD894FF, // #8dd894
+//     0x5DC190FF, // #5dc190
+//     0x4AB9A3FF, // #4ab9a3
+//     0x4593A5FF, // #4593a5
+//     0x5EFDF7FF, // #5efdf7
+//     0xFF5DCCFF, // #ff5dcc
+//     0xFDFE89FF, // #fdfe89
+//     0xFFFFFFFF, // #ffffff
+// };
 
 }
 

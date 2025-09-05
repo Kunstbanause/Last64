@@ -111,38 +111,42 @@ static void cleanup() {
     initialized = false;
 }
 
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+
 // Draw the color test strip
 void color_test_draw() {
-    // Initialize if not already done
     if (!initialized) {
         initialize();
     }
     
-    // Set up rendering state for untextured, shaded polygons
-    t3d_state_set_drawflags((enum T3DDrawFlags)(T3D_FLAG_SHADED));
-    
-    // Push our test matrix
+    t3d_state_set_drawflags(T3D_FLAG_SHADED);
     t3d_matrix_push(testMatrix);
     
-    // Load vertices
-    t3d_vert_load(testVertices, 0, NUM_COLORS * 4); // Load all vertices
+    const int MAX_COLORS_PER_BATCH = 20; // Safe limit
+    int totalBatches = (NUM_COLORS + MAX_COLORS_PER_BATCH - 1) / MAX_COLORS_PER_BATCH;
     
-    // Draw quads using triangle pairs
-    for (int i = 0; i < NUM_COLORS; i++) {
-        // Each quad is made of 4 vertices, indexed as 0,1,2,3
-        // We draw two triangles: (0,1,2) and (0,2,3)
-        int baseVertex = i * 4;
+    for (int batch = 0; batch < totalBatches; batch++) {
+        int startColor = batch * MAX_COLORS_PER_BATCH;
+        int endColor = MIN(startColor + MAX_COLORS_PER_BATCH, NUM_COLORS);
+        int colorsInBatch = endColor - startColor;
         
-        // Draw first triangle (0,1,2)
-        t3d_tri_draw(baseVertex, baseVertex + 1, baseVertex + 2);
+        // Load vertices for this batch
+        t3d_vert_load(&testVertices[startColor * 4], 0, colorsInBatch * 4);
         
-        // Draw second triangle (0,2,3)
-        t3d_tri_draw(baseVertex, baseVertex + 2, baseVertex + 3);
+        // Draw quads in this batch
+        for (int i = 0; i < colorsInBatch; i++) {
+            int baseVertex = i * 4; // Local to this batch
+            
+            // Draw first triangle (0,1,2)
+            t3d_tri_draw(baseVertex, baseVertex + 1, baseVertex + 2);
+            // Draw second triangle (0,2,3)  
+            t3d_tri_draw(baseVertex, baseVertex + 2, baseVertex + 3);
+        }
+        
+        // Sync after each batch
+        t3d_tri_sync();
     }
     
-    // Sync triangles
-    t3d_tri_sync();
-    
-    // Pop matrix
     t3d_matrix_pop(1);
 }
