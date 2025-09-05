@@ -4,70 +4,69 @@
 #include <cstdint>
 
 namespace Colors {
+
+const uint32_t player[] = {
+    0x180404FF, // Red
+    0x1C190BFF, // Yellow
+    0x001118FF, // Blue
+    0x071506FF  // Green
+};
+
 // Define test colors (RGBA8 format) 10% intensity 
 const uint32_t testColors[] = {
-    0x0C1415FF,
-    0x091215FF,
-    0x090E15FF,
-    0x090A15FF,
-    0x07090FFF,
-    0x06060AFF,
-    0x050405FF,
-    0x060508FF,
-    0x08060BFF,
-    0x0C070DFF,
-    0x0F080FFF,
-    0x120910FF,
-    0x160F0CFF,
-    0x16140FFF,
-    0x0D130DFF,
-    0x08110DFF,
-    0x07110FFF,
-    0x060D0FFF,
-    0x081716FF,
-    0x170812FF,
-    0x17170CFF,
-    0x171717FF
+    0x030205FF,
+    0x070106FF,
+    0x0F0209FF,
+    0x180404FF,
+    0x1B0D04FF,
+    0x1A1302FF,
+    0x1C190BFF,
+    0x1C1A19FF,
+    0x011912FF,
+    0x001118FF,
+    0x02090FFF,
+    0x07080CFF,
+    0x0A0C0FFF,
+    0x071506FF
 };
 
 const uint32_t testColors2D[] = {
-    0x85DAEBFF,
-    0x5FC9E7FF,
-    0x5FA1E7FF,
-    0x5F6EE7FF,
-    0x4C60AAFF,
-    0x444774FF,
-    0x32313BFF,
-    0x463C5EFF,
-    0x5D4776FF,
-    0x855395FF,
-    0xAB58A8FF,
-    0xCA60AEFF,
-    0xF3A787FF,
-    0xF5DAA7FF,
-    0x8DD894FF,
-    0x5DC190FF,
-    0x4AB9A3FF,
-    0x4593A5FF,
-    0x5EFDF7FF,
-    0xFF5DCCFF,
-    0xFDFE89FF,
-    0xFFFFFFFF
+    0x1C162DFF,
+    0x3D083BFF,
+    0x841252FF,
+    0xDA2424FF,
+    0xF77622FF,
+    0xECAB11FF,
+    0xFEE761FF,
+    0xFFEEE5FF,
+    0x07E5A0FF,
+    0x0099DBFF,
+    0x124E89FF,
+    0x3E4A6DFF,
+    0x5A7088FF,
+    0x43BD35FF
 };
 
-const uint32_t player[] = {
-    0x050909FF,
-    0x040809FF,
-    0x040609FF,
-    0x040409FF
-};
+// const int32_t playerCHASM[] = {
+//     0x090E15FF, // Green
+//     0x120910FF, // Orange
+//     0x080400FF, // Red
+//     0xFFFF00FF  // Yellow
+// };
 
-const uint32_t oldplayer[] = {
-    0x080400FF, // Orange
-    0x00FF00FF, // Green
-    0x00FFFFFF, // Cyan
-    0xFFFF00FF // Yellow
-};
+// const uint32_t goldfire[] = {
+//     0x14121AFF, // #46425e
+//     0x192127FF, // #5b768d
+//     0x3B2323FF, // #d17c7c
+//     0x45372FFF  // #f6c6a8
+// };
+
+// const uint32_t oldplayer[] = {
+//     0x080400FF, // Orange
+//     0x00FF00FF, // Green
+//     0x00FFFFFF, // Cyan
+//     0xFFFF00FF  // Yellow
+// };
 
 }
 
