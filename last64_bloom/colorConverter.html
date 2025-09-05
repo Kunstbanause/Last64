@@ -8,13 +8,12 @@
     textarea { width: 50%; height: 80px; }
     pre { background: #f0f0f0; padding: 10px; white-space: pre-wrap; overflow-x: auto; }
     .color-preview { display: inline-block; width: 20px; height: 20px; margin-right: 8px; vertical-align: middle; border: 1px solid #000; }
-    .color-preview:first-of-type { border: 2px solid #444; } /* Original color */
-    .color-preview:nth-of-type(2) { border: 2px solid #666; } /* Scaled color */
+    .color-preview:first-of-type { border: 1px solid #44444456; } /* Original color */
+    .color-preview:nth-of-type(2) { border: 1px solid #44444456; } /* Scaled color */
     .container { display: flex; gap: 20px; margin-top: 20px; }
     .column { flex: 1; }
     ul { list-style: none; padding-left: 0; margin-top: 0; }
-    table { border-collapse: collapse; margin-top: 10px; width: 100%; }
-    td, th { border: 1px solid #ccc; padding: 5px 10px; text-align: center; }
+    li { margin: 0px 0; }
     button { margin-top: 10px; padding: 5px 10px; }
 </style>
 </head>
@@ -107,20 +106,21 @@ function updateInspector() {
         return;
     }
     const scales = [];
-    for(let i=1; i<=10; i++) scales.push(i*0.1); // 0.1 to 1.0
-    let tableHtml = '<table><tr><th>Scale</th><th>RGBA8</th><th>Preview</th></tr>';
+    for(let i=1; i<=20; i++) scales.push(i*0.05); // 0.1 to 1
+    
     const arrayValues = [];
-    scales.forEach(s => {
-        const c = hexToRGBA8(hex, s);
-        tableHtml += `<tr>
-            <td>${s.toFixed(1)}</td>
-            <td>${c.rgba8}</td>
-            <td><span class="color-preview" style="background-color: rgb(${c.r},${c.g},${c.b});"></span></td>
-        </tr>`;
-        arrayValues.push(c.rgba8);
-    });
-    tableHtml += '</table>';
-    document.getElementById('inspectorOutput').innerHTML = tableHtml;
+    const listHtml = '<ul>' + scales.map(s => {
+        const original = hexToRGBA8(hex, 1.0); // Original color
+        const scaled = hexToRGBA8(hex, s);     // Scaled color
+        arrayValues.push(scaled.rgba8);
+        return `<li>
+            ${s.toFixed(2)}x
+            <span class="color-preview" style="background-color: rgb(${scaled.r},${scaled.g},${scaled.b});"></span>
+            ${scaled.rgba8}
+        </li>`;
+    }).join('') + '</ul>';
+    
+    document.getElementById('inspectorOutput').innerHTML = listHtml;
     document.getElementById('inspectorOutput').dataset.array = `const uint32_t testColors[] = {\n    ${arrayValues.join(',\n    ')}\n};`;
 }
 
