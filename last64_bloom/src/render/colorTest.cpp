@@ -26,8 +26,8 @@ static void initialize() {
     // Create a matrix for positioning the color test strip
     testMatrix = (T3DMat4FP*)malloc_uncached(sizeof(T3DMat4FP));
     
-    // Position the color test strip in the top
-    T3DVec3 position = {{0.0f, 200.0f, 0.0f}}; // Center horizontally at the top
+    // Position the color test strip - use a more reasonable Y position
+    T3DVec3 position = {{0.0f, 50.0f, 0.0f}}; // Center horizontally, reasonable Y position
     t3d_mat4fp_from_srt_euler(
         testMatrix,
         (T3DVec3){{1.0f, 1.0f, 1.0f}},  // scale
@@ -35,15 +35,18 @@ static void initialize() {
         position                         // translation
     );
     
-    // Calculate quad width to span the screen width
-    float screenWidth = 320.0f; // Actual N64 screen width
+    // Calculate quad positioning to span from left to right of screen
+    // Assuming T3D uses centered coordinates: -160 to +160 (320 pixels total)
+    float screenLeft = 0.0f;
+    float screenWidth = 320.0f;
     float quadWidth = screenWidth / NUM_COLORS;
     float quadHeight = 10.0f;
     
     // Create quads with different colors
     for (int i = 0; i < NUM_COLORS; i++) {
-        // Calculate position for this quad
-        float x_offset = i * quadWidth;
+        // Calculate position for this quad (starting from left edge)
+        float leftX = screenLeft + (i * quadWidth);
+        float rightX = screenLeft + ((i + 1) * quadWidth);
         
         // Each quad needs 4 vertices, but we store them in T3DVertPacked structures (2 vertices each)
         // So we need 2 T3DVertPacked structures per quad
@@ -54,7 +57,7 @@ static void initialize() {
         testVertices[structIndex] = (T3DVertPacked){};
         
         // Vertex 0 (top-left)
-        testVertices[structIndex].posA[0] = (int16_t)(0 + x_offset);
+        testVertices[structIndex].posA[0] = (int16_t)leftX;
         testVertices[structIndex].posA[1] = 0;
         testVertices[structIndex].posA[2] = 0;
         testVertices[structIndex].normA = 0;
@@ -63,7 +66,7 @@ static void initialize() {
         testVertices[structIndex].stA[1] = 0;
         
         // Vertex 1 (bottom-left)
-        testVertices[structIndex].posB[0] = (int16_t)(0 + x_offset);
+        testVertices[structIndex].posB[0] = (int16_t)leftX;
         testVertices[structIndex].posB[1] = (int16_t)quadHeight;
         testVertices[structIndex].posB[2] = 0;
         testVertices[structIndex].normB = 0;
@@ -75,7 +78,7 @@ static void initialize() {
         testVertices[structIndex + 1] = (T3DVertPacked){};
         
         // Vertex 2 (bottom-right)
-        testVertices[structIndex + 1].posA[0] = (int16_t)(quadWidth + x_offset);
+        testVertices[structIndex + 1].posA[0] = (int16_t)rightX;
         testVertices[structIndex + 1].posA[1] = (int16_t)quadHeight;
         testVertices[structIndex + 1].posA[2] = 0;
         testVertices[structIndex + 1].normA = 0;
@@ -84,7 +87,7 @@ static void initialize() {
         testVertices[structIndex + 1].stA[1] = 0;
         
         // Vertex 3 (top-right)
-        testVertices[structIndex + 1].posB[0] = (int16_t)(quadWidth + x_offset);
+        testVertices[structIndex + 1].posB[0] = (int16_t)rightX;
         testVertices[structIndex + 1].posB[1] = 0;
         testVertices[structIndex + 1].posB[2] = 0;
         testVertices[structIndex + 1].normB = 0;
@@ -132,7 +135,8 @@ void color_test_draw() {
         int colorsInBatch = endColor - startColor;
         
         // Load vertices for this batch
-        t3d_vert_load(&testVertices[startColor * 4], 0, colorsInBatch * 4);
+        // Since we have 2 T3DVertPacked structures per color, the offset is startColor * 2
+        t3d_vert_load(&testVertices[startColor * 2], 0, colorsInBatch * 4);
         
         // Draw quads in this batch
         for (int i = 0; i < colorsInBatch; i++) {

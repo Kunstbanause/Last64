@@ -239,7 +239,7 @@ int main()
           uint8_t b = (Colors::testColors[i] >> 8) & 0xFF;
           uint8_t a = Colors::testColors[i] & 0xFF;
           rdpq_set_mode_fill(RGBA32(r, g, b, a));
-          rdpq_fill_rectangle(x+45, 50, x+45 + width, 50 + 4);
+          rdpq_fill_rectangle(x+45, 170, x+45 + width, 170 + 4);
       }
     }
 
