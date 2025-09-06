@@ -8,12 +8,12 @@
 #include <libdragon.h>
 
 namespace Actor {
-    WeaponShape::WeaponShape() : WeaponBase(WeaponType::PROJECTILE) {
-        fireRate = 0.5f;        // Time between shots
+    WeaponShape::WeaponShape() : WeaponBase(WeaponType::SHAPE) {
+        fireRate = 5.0f;        // Time between shots
+        weaponCooldown = 0.0f;  // Current cooldown
         shapeLifetime = 5.0f;   // Shapes last 5 seconds
         attackFrequency = 0.5f; // Attack every 0.5 seconds
-        weaponCooldown = 0.0f;  // Current cooldown
-        shapeSize = 1.0f;       // Default size
+        shapeSize = 4.0f;       // Default size
         shapeDamage = 4;        // Default damage
         currentShape = nullptr; // No active shape initially
         maxUpgradeLevel = 5;    // Max upgrade level
@@ -25,11 +25,6 @@ namespace Actor {
 
     void WeaponShape::update(float deltaTime) {
         // Update weapon cooldown
-        if (fireCooldown > 0.0f) {
-            fireCooldown -= deltaTime;
-        }
-        
-        // Update weapon cooldown
         if (weaponCooldown > 0.0f) {
             weaponCooldown -= deltaTime;
         }
@@ -37,6 +32,12 @@ namespace Actor {
         // Update the current shape if it exists
         if (currentShape && !currentShape->isActive()) {
             currentShape = nullptr;
+        }
+        
+        // Auto-fire if we're off cooldown and don't already have an active shape
+        if (weaponCooldown <= 0.0f && !currentShape && player) {
+            fire();
+            weaponCooldown = fireRate; // Reset weapon cooldown
         }
     }
 
@@ -48,27 +49,18 @@ namespace Actor {
         // No particle effects for this weapon
     }
 
-    void WeaponShape::fire(const T3DVec3& position, const T3DVec3& direction) {
-        // This weapon doesn't fire in a direction, it places a shape at the player's position
-        // Only fire if we're off cooldown and don't already have an active shape
-        if (fireCooldown <= 0.0f && weaponCooldown <= 0.0f && !currentShape) {
-            // Spawn a shape at the player's position
-            currentShape = Shape::spawn(position, shapeLifetime, attackFrequency, shapeDamage, player->getColor(), shapeSize);
-            
-            // Set cooldowns
-            fireCooldown = fireRate;
-            weaponCooldown = 2.0f; // 2 second cooldown before we can place another
-            
-            // Play fire sound
-            gSFXManager.play(SFXManager::SFX_HIT);
-        }
+    void WeaponShape::fire() {
+        // Spawn a shape attached to the player
+        currentShape = Shape::spawnAttached(player, {0, 0, 0}, shapeLifetime, attackFrequency, shapeDamage, player->getColor(), shapeSize);
+        
+        // Play fire sound
+        // gSFXManager.play(SFXManager::SFX_HIT);
     }
 
     void WeaponShape::fireManual() {
         // Manual fire uses the player's position
         if (player) {
-            T3DVec3 playerPos = player->getPosition();
-            fire(playerPos, {0, 0, 0}); // Direction doesn't matter for this weapon
+            fire();
         }
     }
 

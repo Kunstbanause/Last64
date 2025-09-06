@@ -22,6 +22,8 @@ namespace Actor {
 
         // Per-shape data
         T3DVec3 position;
+        T3DVec3 offset; // Offset from the attached object
+        Base* attachedTo; // Object this shape is attached to (nullptr if not attached)
         float lifetime;
         float maxLifetime;
         float attackFrequency; // Time between attacks on the same enemy
@@ -41,6 +43,7 @@ namespace Actor {
         static void initialize();
         static void cleanup();
         static Shape* spawn(const T3DVec3& position, float maxLifetime, float attackFrequency, int damage, uint32_t color = 0xFF00FFFF, float size = 1.0f);
+        static Shape* spawnAttached(Base* attachTo, const T3DVec3& offset, float maxLifetime, float attackFrequency, int damage, uint32_t color = 0xFF00FFFF, float size = 1.0f);
         static void updateAll(float deltaTime);
         static void drawAll(float deltaTime);
         static uint32_t getActiveCount() { return activeCount; }
@@ -54,7 +57,13 @@ namespace Actor {
         void deactivate();
         bool isActive() const;
 
-        T3DVec3 getPosition() const override { return position; }
+        T3DVec3 getPosition() const override { 
+            if (attachedTo) {
+                T3DVec3 attachPos = attachedTo->getPosition();
+                return {attachPos.x + offset.x, attachPos.y + offset.y, attachPos.z + offset.z};
+            }
+            return position; 
+        }
         void setPosition(const T3DVec3& newPosition) { position = newPosition; }
         float getRadius() const override { return 2.0f * size; } // Shapes are 2x2 quads, scaled by size
         void getAABBSize(float& width, float& height) const override; // Shapes are 4x4 quads
@@ -65,5 +74,9 @@ namespace Actor {
         // Shape-specific methods
         bool canDamageEnemy(uint32_t enemyId) const;
         void registerEnemyHit(uint32_t enemyId);
+        void setAttachedTo(Base* attachTo, const T3DVec3& attachOffset) { 
+            attachedTo = attachTo; 
+            offset = attachOffset;
+        }
     };
 }

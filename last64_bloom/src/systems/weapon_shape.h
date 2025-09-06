@@ -17,14 +17,15 @@ namespace Actor {
         void draw3D(float deltaTime) override;
         void drawPTX(float deltaTime) override;
         
-        void fire(const T3DVec3& position, const T3DVec3& direction) override;
+        void fire();
         void fireManual() override;
         void upgrade() override;
 
     private:
+        float fireRate;              // Time between shots
+        float weaponCooldown;        // Cooldown between placing shapes
         float shapeLifetime;         // How long shapes last
         float attackFrequency;       // Time between attacks on the same enemy
-        float weaponCooldown;        // Cooldown between placing shapes
         float shapeSize;             // Size of the shapes
         int shapeDamage;             // Damage per attack
         Shape* currentShape;         // Currently active shape

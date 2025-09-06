@@ -25,6 +25,8 @@ namespace Actor {
         }
         poolIndex = MAX_SHAPES;
         position = {0, 0, 0};
+        offset = {0, 0, 0};
+        attachedTo = nullptr;
         lifetime = 0.0f;
         maxLifetime = 1.0f;
         attackFrequency = 1.0f;
@@ -120,6 +122,33 @@ namespace Actor {
                 Shape* s = &shapePool[i];
                 s->poolIndex = i;
                 s->position = pos;
+                s->attachedTo = nullptr; // Not attached
+                s->lifetime = 0.0f;
+                s->maxLifetime = maxLifetime;
+                s->attackFrequency = attackFrequency;
+                s->damage = damage;
+                s->color = color;
+                s->size = size;
+                s->enemyAttackTimers.clear(); // Reset enemy attack timers
+                s->flags &= ~FLAG_DISABLED;
+                return s;
+            }
+        }
+        return nullptr;
+    }
+    
+    Shape* Shape::spawnAttached(Base* attachTo, const T3DVec3& offset, float maxLifetime, float attackFrequency, int damage, uint32_t color, float size) {
+        if (!initialized) initializePool();
+
+        for (uint32_t i = 0; i < MAX_SHAPES; i++) {
+            if (!activeFlags[i]) {
+                activeFlags[i] = true;
+                activeCount++;
+                Shape* s = &shapePool[i];
+                s->poolIndex = i;
+                s->position = {0, 0, 0}; // Position will be calculated from attachment
+                s->attachedTo = attachTo;
+                s->offset = offset;
                 s->lifetime = 0.0f;
                 s->maxLifetime = maxLifetime;
                 s->attackFrequency = attackFrequency;
@@ -192,12 +221,14 @@ namespace Actor {
             }
         }
 
+        // Update matrix position
+        T3DVec3 currentPosition = getPosition(); // This will use attachment if applicable
         if (poolIndex < MAX_SHAPES) {
             t3d_mat4fp_from_srt_euler(
                 sharedMatrices[poolIndex],
                 (T3DVec3){{size, size, size}},
                 (T3DVec3){{0.0f, 0.0f, 0.0f}},
-                position
+                currentPosition
             );
         }
     }
