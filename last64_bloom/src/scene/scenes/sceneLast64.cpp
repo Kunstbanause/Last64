@@ -105,8 +105,7 @@ void SceneLast64::updateScene(float deltaTime)
                         playerJoined[i] = true;
                         // Create player instance
                         T3DVec3 startPos;
-                        bool DEBUG_SPAWN_ALL = true; // Debug spawn all players
-                        if (DEBUG_SPAWN_ALL) {
+                        if (isForceAllPlayers) { // Debug spawn all players
                             startPos = {{SCREEN_RIGHT/2.0f - 20.0f, SCREEN_BOTTOM/2.0f, 0.0f}}; player1 = new Actor::Player(startPos, JOYPAD_PORT_1);
                             startPos = {{SCREEN_RIGHT/2.0f, SCREEN_BOTTOM/2.0f, 0.0f}}; player2 = new Actor::Player(startPos, JOYPAD_PORT_2);
                             startPos = {{SCREEN_RIGHT/2.0f + 20.0f, SCREEN_BOTTOM/2.0f, 0.0f}}; player3 = new Actor::Player(startPos, JOYPAD_PORT_3);

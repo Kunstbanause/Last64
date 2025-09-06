@@ -8,6 +8,7 @@
 
 // Global variable for debug weapon selection
 extern int debugWeaponSelection;
+extern int isForceAllPlayers;
 
 namespace DebugMenu
 {
