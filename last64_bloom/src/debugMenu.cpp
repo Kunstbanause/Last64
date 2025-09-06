@@ -27,6 +27,16 @@ namespace
 
   std::vector<DebugMenu::Entry> entries{};
   std::vector<bool*> changedFlags{};
+
+  // Helper function to find the index of the scene entry
+  int findSceneEntryIndex() {
+    for (size_t i = 0; i < entries.size(); i++) {
+      if (entries[i].value == &sceneId) {
+        return static_cast<int>(i);
+      }
+    }
+    return -1; // Not found
+  }
 }
 
 // Global variable for debug weapon selection
@@ -85,11 +95,11 @@ void DebugMenu::reset()
   entries.clear();
   changedFlags.clear();
 
-  entries.push_back({"Scene   ", EntryType::INT, &sceneId, 0, 4});
-  entries.push_back({"        ", EntryType::NONE, nullptr}); // Separator
+  // entries.push_back({"        ", EntryType::NONE, nullptr}); // Separator
   entries.push_back({"Weapon  ", EntryType::INT, &debugWeaponSelection, 0, 5}); // 0 = Random, 1-5 = Specific weapons
   entries.push_back({"Force MP", EntryType::BOOL, &isForceAllPlayers});
   entries.push_back({"        ", EntryType::NONE, nullptr}); // Separator
+  entries.push_back({"Scene   ", EntryType::INT, &sceneId, 0, 4});
   entries.push_back({"Debug   ", EntryType::BOOL, &state.showOffscreen});
   entries.push_back({"Blurs   ", EntryType::INT, &state.ppConf.blurSteps, 0, 50});
   entries.push_back({"Bloom   ", EntryType::FLOAT, &state.ppConf.blurBrightness, 0.0f, 8.0f, 0.01f});
@@ -99,7 +109,12 @@ void DebugMenu::reset()
   entries.push_back({"Auto    ", EntryType::BOOL, &state.autoExposure});
 
   changedFlags.resize(entries.size());
-  changedFlags[0] = &needsSceneLoad;
+  
+  // Set the needsSceneLoad flag for the scene entry
+  int sceneEntryIndex = findSceneEntryIndex();
+  if (sceneEntryIndex >= 0) {
+    changedFlags[sceneEntryIndex] = &needsSceneLoad;
+  }
 
   menuSel = 0;
   idxCustom = entries.size();
@@ -117,11 +132,15 @@ void DebugMenu::draw()
   auto btn  = joypad_get_all_pressed();
   auto held = joypad_get_all_held();
 
-  if(btn.l && sceneId > entries[0].min) {
-    sceneId--; needsSceneLoad = true;
-  }
-  if(btn.r && sceneId < entries[0].max) {
-    sceneId++; needsSceneLoad = true;
+  // Handle L/R buttons for scene selection
+  int sceneEntryIndex = findSceneEntryIndex();
+  if (sceneEntryIndex >= 0) {
+    if(btn.l && sceneId > entries[sceneEntryIndex].min) {
+      sceneId--; needsSceneLoad = true;
+    }
+    if(btn.r && sceneId < entries[sceneEntryIndex].max) {
+      sceneId++; needsSceneLoad = true;
+    }
   }
 
   if(needsSceneLoad) {
@@ -143,6 +162,7 @@ void DebugMenu::draw()
   if(held.d_right || held.c_right)heldDir = 1;
   if(held.d_left || held.c_left)heldDir = -1;
 
+  // Modify current entry value
   Entry &curr = entries[menuSel];
   switch(curr.type) {
     case EntryType::INT:
@@ -184,6 +204,7 @@ void DebugMenu::draw()
       posY += 12+8;
     }
 
+    // Draw entry
     switch(entry.type) {
       case EntryType::INT:
         if (entry.value == &sceneId) {
