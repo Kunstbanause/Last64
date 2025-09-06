@@ -49,18 +49,20 @@
 - [x] Added first boss enemy
 - [x] Fixed bug: Enemies targeting dead players
 
-- [ ] Player outline for better readaibility? (failed)
+~~- [ ] Player outline for better readaibility? (failed)~~
 - [x] Player with white vertex color to better identify the direction?
-- [ ] Color debug text? (failed)
+- [ ] Colored debug text? (failed)
 
 - [x] Color test strip
+- [x] Color Conversion tool from hex to hdr 8bRGBA8it
 
-- [ ] New Weapon defensive shield, weapon only in upgrades
+- [x] New Weapon defensive shield
 
 - [ ] Upgrade decisions, a/b, slowdown, in-world or UI?
 
 - [x] Player drawn below projectiles (especially shield weapon)
-- [ ] Shield with alpha / transparency
+- [ ] Shield with alpha / transparency / Dithering
+- [x] Shield with reduced color
 
 - [x] projectiles in different sizes
 - [x] Proectiles in player color

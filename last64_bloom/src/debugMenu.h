@@ -12,7 +12,7 @@ extern int debugWeaponSelection;
 namespace DebugMenu
 {
   enum class EntryType : uint32_t {
-    INT=0, FLOAT, BOOL
+    INT=0, FLOAT, BOOL, NONE
   };
 
   struct Entry

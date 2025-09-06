@@ -31,6 +31,7 @@ namespace
 
 // Global variable for debug weapon selection
 int debugWeaponSelection = 0; // 0 = Random, 1-5 = Specific weapons
+bool isForceAllPlayers = false; 
 
 static inline joypad_buttons_t joypad_get_all_pressed() {
     joypad_buttons_t combined = {0};
@@ -84,15 +85,18 @@ void DebugMenu::reset()
   entries.clear();
   changedFlags.clear();
 
-  entries.push_back({"Scene", EntryType::INT, &sceneId, 0, 4});
-  entries.push_back({"Debug", EntryType::BOOL, &state.showOffscreen});
-  entries.push_back({"Blurs", EntryType::INT, &state.ppConf.blurSteps, 0, 50});
-  entries.push_back({"Bloom", EntryType::FLOAT, &state.ppConf.blurBrightness, 0.0f, 8.0f, 0.01f});
-  entries.push_back({"Expos", EntryType::FLOAT, &state.ppConf.hdrFactor, 0.0f, 8.0f, 0.03f});
-  entries.push_back({"Thres", EntryType::FLOAT, &state.ppConf.bloomThreshold, 0.0f, 1.0f, 1.0f/256.0f});
-  entries.push_back({"RDP-S", EntryType::BOOL, &state.ppConf.scalingUseRDP});
-  entries.push_back({"Auto ", EntryType::BOOL, &state.autoExposure});
-  entries.push_back({"WpnSel", EntryType::INT, &debugWeaponSelection, 0, 5}); // 0 = Random, 1-5 = Specific weapons
+  entries.push_back({"Scene   ", EntryType::INT, &sceneId, 0, 4});
+  entries.push_back({"        ", EntryType::NONE, nullptr}); // Separator
+  entries.push_back({"Weapon  ", EntryType::INT, &debugWeaponSelection, 0, 5}); // 0 = Random, 1-5 = Specific weapons
+  entries.push_back({"Force MP", EntryType::BOOL, &isForceAllPlayers});
+  entries.push_back({"        ", EntryType::NONE, nullptr}); // Separator
+  entries.push_back({"Debug   ", EntryType::BOOL, &state.showOffscreen});
+  entries.push_back({"Blurs   ", EntryType::INT, &state.ppConf.blurSteps, 0, 50});
+  entries.push_back({"Bloom   ", EntryType::FLOAT, &state.ppConf.blurBrightness, 0.0f, 8.0f, 0.01f});
+  entries.push_back({"Expos   ", EntryType::FLOAT, &state.ppConf.hdrFactor, 0.0f, 8.0f, 0.03f});
+  entries.push_back({"Thres   ", EntryType::FLOAT, &state.ppConf.bloomThreshold, 0.0f, 1.0f, 1.0f/256.0f});
+  entries.push_back({"RDP-S   ", EntryType::BOOL, &state.ppConf.scalingUseRDP});
+  entries.push_back({"Auto    ", EntryType::BOOL, &state.autoExposure});
 
   changedFlags.resize(entries.size());
   changedFlags[0] = &needsSceneLoad;
@@ -162,10 +166,13 @@ void DebugMenu::draw()
         if(changedFlags[menuSel])*changedFlags[menuSel] = true;
       }
       break;
+      default:
+        // NONE
+        break;
   }
 
   float posX = 20;
-  float posY = 70;
+  float posY = 50;
   Debug::print(posX, posY, "[START] Menu");
   Debug::print(display_get_width() - 100, posY, "[L/R] Scene");
   posY += 12;
@@ -205,7 +212,14 @@ void DebugMenu::draw()
         Debug::printf(posX + 8, posY, "%s: %.2f", entry.name, *(float*)entry.value);
         break;
       case EntryType::BOOL:
-        Debug::printf(posX + 8, posY, *((bool*)entry.value) ? "%s: ON" : "%s: OFF", entry.name);
+        if (entry.value == &isForceAllPlayers) {
+          Debug::printf(posX + 8, posY, "%s: %s", entry.name, isForceAllPlayers ? "ON" : "OFF");
+        } else {
+          Debug::printf(posX + 8, posY, *((bool*)entry.value) ? "%s: ON" : "%s: OFF", entry.name);
+          break;
+        }
+      default:
+        // NONE
         break;
     }
 
