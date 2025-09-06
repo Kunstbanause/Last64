@@ -29,5 +29,6 @@ namespace Actor {
         float shapeHeight;           // Height of the shapes
         int shapeDamage;             // Damage per attack
         Shape* currentShape;         // Currently active shape
+        bool spawnOnRight;           // Track which side to spawn on next
     };
 }

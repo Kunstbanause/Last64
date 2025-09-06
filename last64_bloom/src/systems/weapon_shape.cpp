@@ -9,15 +9,16 @@
 
 namespace Actor {
     WeaponShape::WeaponShape() : WeaponBase(WeaponType::SHAPE) {
-        fireRate = 5.0f;        // Time between shots
+        fireRate = 3.0f;        // Time between shots
         weaponCooldown = 0.0f;  // Current cooldown
         shapeLifetime = 1.0f;   // Shapes last 1 second
         attackFrequency = 0.3f; // Attack every 0.3 seconds (faster for a melee-like weapon)
-        shapeWidth = 14.0f;      // Default width
-        shapeHeight = 5.0f;      // Default height (long rectangle)
-        shapeDamage = 6;        // Default damage
+        shapeWidth = 14.0f;     // Default width
+        shapeHeight = 5.0f;     // Default height (long rectangle)
+        shapeDamage = 4;        // Default damage
         currentShape = nullptr; // No active shape initially
         maxUpgradeLevel = 5;    // Max upgrade level
+        spawnOnRight = true;    // Start by spawning on the right
     }
 
     WeaponShape::~WeaponShape() {
@@ -51,7 +52,13 @@ namespace Actor {
 
     void WeaponShape::fire() {
         if (!player || currentShape) return;
-        currentShape = Shape::spawnAttached(player, {20, 0, 0}, shapeWidth, shapeHeight, shapeLifetime, attackFrequency, shapeDamage, player->getColor());
+        
+        // Alternate between left and right spawn positions
+        T3DVec3 spawnOffset = spawnOnRight ? T3DVec3{20, 0, 0} : T3DVec3{-20, 0, 0};
+        currentShape = Shape::spawnAttached(player, spawnOffset, shapeWidth, shapeHeight, shapeLifetime, attackFrequency, shapeDamage, player->getColor());
+        
+        // Flip the spawn side for next time
+        spawnOnRight = !spawnOnRight;
         
         // Set cooldowns
         weaponCooldown = fireRate;
@@ -74,7 +81,7 @@ namespace Actor {
             switch (upgradeLevel) {
                 case 1:
                     shapeDamage *= 1.25f; // More damage
-                    shapeWidth *= 1.2f; // Wider shape
+                    shapeWidth *= 1.4f; // Wider shape
                     shapeHeight *= 1.2f; // Longer shape
                     break;
                 case 2:
@@ -84,8 +91,8 @@ namespace Actor {
                     attackFrequency *= 1.25f; // Even faster attacks
                     break;
                 case 4:
-                    shapeWidth *= 1.2f; // Wider shape
-                    shapeHeight *= 1.2f; // Longer shape
+                    shapeWidth *= 1.5f; // Wider shape
+                    shapeHeight *= 2.2f; // Longer shape
                     break;
                 case 5:
                     shapeDamage *= 1.25f; // More damage
