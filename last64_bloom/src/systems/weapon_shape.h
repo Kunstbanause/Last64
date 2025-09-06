@@ -22,11 +22,11 @@ namespace Actor {
         void upgrade() override;
 
     private:
-        float fireRate;              // Time between shots
-        float weaponCooldown;        // Cooldown between placing shapes
         float shapeLifetime;         // How long shapes last
         float attackFrequency;       // Time between attacks on the same enemy
-        float shapeSize;             // Size of the shapes
+        float weaponCooldown;        // Cooldown between placing shapes
+        float shapeWidth;            // Width of the shapes
+        float shapeHeight;           // Height of the shapes
         int shapeDamage;             // Damage per attack
         Shape* currentShape;         // Currently active shape
     };

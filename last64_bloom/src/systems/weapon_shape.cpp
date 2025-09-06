@@ -11,10 +11,11 @@ namespace Actor {
     WeaponShape::WeaponShape() : WeaponBase(WeaponType::SHAPE) {
         fireRate = 5.0f;        // Time between shots
         weaponCooldown = 0.0f;  // Current cooldown
-        shapeLifetime = 5.0f;   // Shapes last 5 seconds
-        attackFrequency = 0.5f; // Attack every 0.5 seconds
-        shapeSize = 4.0f;       // Default size
-        shapeDamage = 4;        // Default damage
+        shapeLifetime = 1.0f;   // Shapes last 1 second
+        attackFrequency = 0.3f; // Attack every 0.3 seconds (faster for a melee-like weapon)
+        shapeWidth = 14.0f;      // Default width
+        shapeHeight = 5.0f;      // Default height (long rectangle)
+        shapeDamage = 6;        // Default damage
         currentShape = nullptr; // No active shape initially
         maxUpgradeLevel = 5;    // Max upgrade level
     }
@@ -35,9 +36,8 @@ namespace Actor {
         }
         
         // Auto-fire if we're off cooldown and don't already have an active shape
-        if (weaponCooldown <= 0.0f && !currentShape && player) {
+        if (weaponCooldown <= 0.0f && player) {
             fire();
-            weaponCooldown = fireRate; // Reset weapon cooldown
         }
     }
 
@@ -50,9 +50,12 @@ namespace Actor {
     }
 
     void WeaponShape::fire() {
-        // Spawn a shape attached to the player
-        currentShape = Shape::spawnAttached(player, {0, 0, 0}, shapeLifetime, attackFrequency, shapeDamage, player->getColor(), shapeSize);
+        if (!player || currentShape) return;
+        currentShape = Shape::spawnAttached(player, {20, 0, 0}, shapeWidth, shapeHeight, shapeLifetime, attackFrequency, shapeDamage, player->getColor());
         
+        // Set cooldowns
+        weaponCooldown = fireRate;
+
         // Play fire sound
         // gSFXManager.play(SFXManager::SFX_HIT);
     }
@@ -70,19 +73,22 @@ namespace Actor {
             
             switch (upgradeLevel) {
                 case 1:
-                    shapeDamage = 6;
+                    shapeDamage *= 1.25f; // More damage
+                    shapeWidth *= 1.2f; // Wider shape
+                    shapeHeight *= 1.2f; // Longer shape
                     break;
                 case 2:
-                    shapeLifetime = 6.0f;
+                    shapeLifetime *= 1.2f;
                     break;
                 case 3:
-                    attackFrequency = 0.4f; // Faster attacks
+                    attackFrequency *= 1.25f; // Even faster attacks
                     break;
                 case 4:
-                    shapeSize = 1.2f; // Larger shape
+                    shapeWidth *= 1.2f; // Wider shape
+                    shapeHeight *= 1.2f; // Longer shape
                     break;
                 case 5:
-                    shapeDamage = 8; // More damage
+                    shapeDamage *= 1.25f; // More damage
                     break;
                 default:
                     break;

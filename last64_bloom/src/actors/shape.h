@@ -30,7 +30,8 @@ namespace Actor {
         uint32_t poolIndex;
         int damage; // Damage dealt by this shape
         uint32_t color; // Color of this shape
-        float size; // Size of this shape (scale factor)
+        float width; // Width of this shape
+        float height; // Height of this shape
         std::unordered_map<uint32_t, float> enemyAttackTimers; // Track attack timers per enemy
 
         static void initializePool();
@@ -42,8 +43,8 @@ namespace Actor {
         // Static methods for managing the pool
         static void initialize();
         static void cleanup();
-        static Shape* spawn(const T3DVec3& position, float maxLifetime, float attackFrequency, int damage, uint32_t color = 0xFF00FFFF, float size = 1.0f);
-        static Shape* spawnAttached(Base* attachTo, const T3DVec3& offset, float maxLifetime, float attackFrequency, int damage, uint32_t color = 0xFF00FFFF, float size = 1.0f);
+        static Shape* spawn(const T3DVec3& position, float width, float height, float maxLifetime, float attackFrequency, int damage, uint32_t color = 0xFF00FFFF);
+        static Shape* spawnAttached(Base* attachTo, const T3DVec3& offset, float width, float height, float maxLifetime, float attackFrequency, int damage, uint32_t color = 0xFF00FFFF);
         static void updateAll(float deltaTime);
         static void drawAll(float deltaTime);
         static uint32_t getActiveCount() { return activeCount; }
@@ -65,11 +66,13 @@ namespace Actor {
             return position; 
         }
         void setPosition(const T3DVec3& newPosition) { position = newPosition; }
-        float getRadius() const override { return 2.0f * size; } // Shapes are 2x2 quads, scaled by size
-        void getAABBSize(float& width, float& height) const override; // Shapes are 4x4 quads
+        float getRadius() const override { return sqrtf((width/2.0f)*(width/2.0f) + (height/2.0f)*(height/2.0f)); } // Radius based on dimensions
+        void getAABBSize(float& aabbWidth, float& aabbHeight) const override; // Use actual dimensions
         int getDamage() const { return damage; }
         uint32_t getColor() const { return color; }
         void setColor(uint32_t newColor) { color = newColor; }
+        float getWidth() const { return width; }
+        float getHeight() const { return height; }
         
         // Shape-specific methods
         bool canDamageEnemy(uint32_t enemyId) const;

@@ -32,7 +32,8 @@ namespace Actor {
         attackFrequency = 1.0f;
         damage = 4; // Default damage
         color = 0xFF00FFFF; // Default color (cyan)
-        size = 1.0f; // Default size
+        width = 4.0f; // Default width
+        height = 4.0f; // Default height
         flags |= FLAG_DISABLED;
     }
 
@@ -42,10 +43,10 @@ namespace Actor {
         // The pool is managed statically
     }
     
-    void Shape::getAABBSize(float& width, float& height) const {
-        // Shapes are rendered as 4x4 quads (2 units in each direction), scaled by size
-        width = 4.0f * size;
-        height = 4.0f * size;
+    void Shape::getAABBSize(float& aabbWidth, float& aabbHeight) const {
+        // Use the actual dimensions of the shape
+        aabbWidth = width;
+        aabbHeight = height;
     }
 
     void Shape::initialize() {
@@ -84,7 +85,7 @@ namespace Actor {
 
         for (int i = 0; i < MAX_SHAPES; i++) {
             int idx = i * 2;
-            // A simple 2x2 quad
+            // A simple rectangle (default 4x4)
             sharedVertices[idx] = (T3DVertPacked){};
             sharedVertices[idx].posA[0] = -2; sharedVertices[idx].posA[1] = -2; sharedVertices[idx].posA[2] = 0;
             sharedVertices[idx].posB[0] =  2; sharedVertices[idx].posB[1] = -2; sharedVertices[idx].posB[2] = 0;
@@ -112,7 +113,7 @@ namespace Actor {
         initialized = true;
     }
 
-    Shape* Shape::spawn(const T3DVec3& pos, float maxLifetime, float attackFrequency, int damage, uint32_t color, float size) {
+    Shape* Shape::spawn(const T3DVec3& pos, float width, float height, float maxLifetime, float attackFrequency, int damage, uint32_t color) {
         if (!initialized) initializePool();
 
         for (uint32_t i = 0; i < MAX_SHAPES; i++) {
@@ -128,7 +129,8 @@ namespace Actor {
                 s->attackFrequency = attackFrequency;
                 s->damage = damage;
                 s->color = color;
-                s->size = size;
+                s->width = width;
+                s->height = height;
                 s->enemyAttackTimers.clear(); // Reset enemy attack timers
                 s->flags &= ~FLAG_DISABLED;
                 return s;
@@ -137,7 +139,7 @@ namespace Actor {
         return nullptr;
     }
     
-    Shape* Shape::spawnAttached(Base* attachTo, const T3DVec3& offset, float maxLifetime, float attackFrequency, int damage, uint32_t color, float size) {
+    Shape* Shape::spawnAttached(Base* attachTo, const T3DVec3& offset, float width, float height, float maxLifetime, float attackFrequency, int damage, uint32_t color) {
         if (!initialized) initializePool();
 
         for (uint32_t i = 0; i < MAX_SHAPES; i++) {
@@ -154,7 +156,8 @@ namespace Actor {
                 s->attackFrequency = attackFrequency;
                 s->damage = damage;
                 s->color = color;
-                s->size = size;
+                s->width = width;
+                s->height = height;
                 s->enemyAttackTimers.clear(); // Reset enemy attack timers
                 s->flags &= ~FLAG_DISABLED;
                 return s;
@@ -221,12 +224,14 @@ namespace Actor {
             }
         }
 
-        // Update matrix position
+        // Update matrix position and scale
         T3DVec3 currentPosition = getPosition(); // This will use attachment if applicable
         if (poolIndex < MAX_SHAPES) {
+            // Calculate scale based on width and height
+            T3DVec3 scale = {{width / 4.0f, height / 4.0f, 1.0f}}; // Default quad is 4x4
             t3d_mat4fp_from_srt_euler(
                 sharedMatrices[poolIndex],
-                (T3DVec3){{size, size, size}},
+                scale,
                 (T3DVec3){{0.0f, 0.0f, 0.0f}},
                 currentPosition
             );
