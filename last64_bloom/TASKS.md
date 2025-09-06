@@ -57,6 +57,7 @@
 - [x] Color Conversion tool from hex to hdr 8bRGBA8it
 
 - [x] New Weapon defensive shield
+- [ ] New Weapon mechanic: Shape. Instead of a projectile the shape is not moving or attached to the player character. It has not speed on its own. Deals damage with an attack frequency until the lifetime is over. The attacks are immediate, so an enemy entering the shape take damage right away, then the attack frequency timer runs down before that enemy can take damage from that shape again. This is tracked per enemy. Weapons using it have a cooldown to respawn it. 
 
 - [ ] Upgrade decisions, a/b, slowdown, in-world or UI?
 

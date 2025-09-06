@@ -1,5 +1,10 @@
 {
     "problems.autoReveal": false,
     "problems.showCurrentInStatus": false,
-    "C_Cpp.errorSquiggles": "disabled"
+    "C_Cpp.errorSquiggles": "disabled",
+    "files.associations": {
+        "deque": "cpp",
+        "string": "cpp",
+        "vector": "cpp"
+    }
 }

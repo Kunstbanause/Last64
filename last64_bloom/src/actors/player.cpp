@@ -8,6 +8,7 @@
 #include "../systems/weapon_circular.h"
 #include "../systems/weapon_spiral.h"
 #include "../systems/weapon_shield.h"
+#include "../systems/weapon_shape.h"
 #include "../main.h"
 #include "../debugMenu.h"
 #include "../render/colors.h"
@@ -126,8 +127,8 @@ namespace Actor {
             // Use specific weapon based on debug selection (1-5)
             weaponType = debugWeaponSelection - 1;
         } else {
-            // Random weapon selection (0-4)
-            weaponType = rand() % 5;
+            // Random weapon selection (0-5)
+            weaponType = rand() % 6;
         }
         
         WeaponBase* initialWeapon = nullptr;
@@ -146,6 +147,9 @@ namespace Actor {
                 break;
             case 4:
                 initialWeapon = new WeaponShield();
+                break;
+            case 5:
+                initialWeapon = new WeaponShape();
                 break;
         }
         if (initialWeapon) {

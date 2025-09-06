@@ -58,6 +58,7 @@ SceneLast64::SceneLast64()
     // Initialize systems (without players for now)
     Actor::Enemy::initialize();
     Actor::Projectile::initialize();
+    Actor::Shape::initialize();
     SpawnManager::initialize();
     
     // Play background music once when scene starts
@@ -72,6 +73,7 @@ SceneLast64::~SceneLast64()
     delete player4;
     Actor::Enemy::cleanup();
     Actor::Projectile::cleanup();
+    Actor::Shape::cleanup();
     Experience::shutdown();
     SpawnManager::deinitialize();
     
@@ -138,6 +140,7 @@ void SceneLast64::updateScene(float deltaTime)
                             // Re-initialize Enemy and Projectile systems for a new round
                             Actor::Enemy::initialize();
                             Actor::Projectile::initialize();
+                            Actor::Shape::initialize();
                             // Initialize Experience system
                             Experience::initialize();
                             // Add all currently joined players to the Experience system
@@ -215,6 +218,9 @@ void SceneLast64::updateScene(float deltaTime)
             
             // Update all projectiles
             Actor::Projectile::updateAll(deltaTime);
+            
+            // Update all shapes
+            Actor::Shape::updateAll(deltaTime);
 
             // --- Collision Detection ---
             // Enemy-Projectile Collision
@@ -321,6 +327,9 @@ void SceneLast64::draw3D(float deltaTime)
     // Draw all projectiles
     Actor::Projectile::drawAll(deltaTime);
     
+    // Draw all shapes
+    Actor::Shape::drawAll(deltaTime);
+    
     // Draw all players
     t3d_screen_clear_depth(); // Clear so the players are on top.
     if (player1) player1->draw3D(deltaTime);
@@ -395,6 +404,9 @@ void SceneLast64::draw2D(float deltaTime)
                                         break;
                                     case Actor::WeaponType::SHIELD:
                                         weaponChar = 'D';
+                                        break;
+                                    case Actor::WeaponType::SHAPE:
+                                        weaponChar = 'W';
                                         break;
                                     default:
                                         weaponChar = 'X';

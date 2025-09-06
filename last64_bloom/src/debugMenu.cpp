@@ -89,14 +89,13 @@ static inline joypad_buttons_t joypad_get_all_held() {
     return combined;
 }
 
-
 void DebugMenu::reset()
 {
   entries.clear();
   changedFlags.clear();
 
   // entries.push_back({"        ", EntryType::NONE, nullptr}); // Separator
-  entries.push_back({"Weapon  ", EntryType::INT, &debugWeaponSelection, 0, 5}); // 0 = Random, 1-5 = Specific weapons
+  entries.push_back({"Weapon  ", EntryType::INT, &debugWeaponSelection, 0, 6}); // 0 = Random, 1-5 = Specific weapons, 6 = Shape
   entries.push_back({"Force MP", EntryType::BOOL, &isForceAllPlayers});
   entries.push_back({"        ", EntryType::NONE, nullptr}); // Separator
   entries.push_back({"Scene   ", EntryType::INT, &sceneId, 0, 4});
@@ -218,9 +217,9 @@ void DebugMenu::draw()
           }
         } else if (entry.value == &debugWeaponSelection) {
           // Special handling for weapon selection
-          const char* weaponNames[] = {"Random", "Projectile", "Homing", "Circular", "Spiral", "Shield"};
+          const char* weaponNames[] = {"Random", "Projectile", "Homing", "Circular", "Spiral", "Shield", "Shape"};
           int weaponIdx = *(int*)entry.value;
-          if (weaponIdx >= 0 && weaponIdx <= 5) {
+          if (weaponIdx >= 0 && weaponIdx <= 6) {
             Debug::printf(posX + 8, posY, "%s: %d (%s)", entry.name, weaponIdx, weaponNames[weaponIdx]);
           } else {
             Debug::printf(posX + 8, posY, "%s: %d", entry.name, weaponIdx);
