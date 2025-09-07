@@ -41,6 +41,7 @@ namespace Actor {
         void update(float deltaTime) override;
         void draw3D(float deltaTime) override;
         void drawPTX(float deltaTime) override;
+        // static float getMaxLifetime() { return maxLifetime; }
 
         void deactivate();
         bool isActive() const;

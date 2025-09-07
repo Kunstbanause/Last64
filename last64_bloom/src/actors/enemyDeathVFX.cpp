@@ -26,7 +26,7 @@ namespace Actor {
         poolIndex = MAX_ENEMY_DEATH_VFX; // Invalid index until spawned
         position = {0, 0, 0};
         lifetime = 0.0f;
-        maxLifetime = 0.2f; // Half a second lifetime
+        maxLifetime = 0.3f; // Half a second lifetime
         size = 1.0f;
         color = 0xFFFFFFFF; // Default white color
         flags |= FLAG_DISABLED; // Start as disabled
@@ -136,7 +136,10 @@ namespace Actor {
                 vfx->lifetime = 0.0f;
                 
                 vfx->flags &= ~FLAG_DISABLED; // Enable the VFX
-                
+
+                // randomize max lifetime range by reducing it up to 25%
+                vfx->maxLifetime = 0.3f - ((float)(rand() % 25) / 100.0f * 0.25f);;
+
                 return vfx;
             }
         }
@@ -187,10 +190,16 @@ namespace Actor {
         
         if (poolIndex < MAX_ENEMY_DEATH_VFX) {
             // Calculate alpha based on remaining lifetime (fade out effect)
-            float fadePercentage = lifetime / maxLifetime;
-            float sizeOverTime = size +(size * fadePercentage);
-            float alpha = 1.0f - fadePercentage;
-            uint8_t alphaByte = (uint8_t)(alpha * 255.0f);
+            float lifeTimePercentage = lifetime / maxLifetime;
+            float sizeOverTime = size +(size * lifeTimePercentage);
+            float rotationOverTime = lifeTimePercentage * 3.14159f * 2.0f; // Sometimes left / sometimes right way
+            // Randomly rotate left or right
+            if (poolIndex % 2 == 0) { // Even indices rotate left
+                rotationOverTime *= -1.0f;
+            }
+            
+            float alpha = 1.0f - lifeTimePercentage;
+            uint8_t alphaByte = (uint8_t)(alpha * 50.0f);
             
             // Apply alpha to color
             uint32_t colorWithAlpha = (color & 0x00FFFFFF) | (alphaByte << 24);
@@ -206,7 +215,7 @@ namespace Actor {
                 t3d_mat4fp_from_srt_euler(
                     sharedMatrices[poolIndex],
                     (T3DVec3){{size * sizeOverTime, size * sizeOverTime, size * sizeOverTime}},  // scale
-                    (T3DVec3){{0.0f, 0.0f, 0.0f}},  // rotation
+                    (T3DVec3){{0.0f, 0.0f, rotationOverTime}},  // rotation
                     position                         // translation
                 );
             }
