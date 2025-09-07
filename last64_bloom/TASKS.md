@@ -62,6 +62,8 @@
 - [x] Added first boss enemy
 - [x] Fixed bug: Enemies targeting dead players
 
+### ✅ Phase 10: Refinment
+ 
 ~~- [ ] Player outline for better readaibility? (failed)~~
 - [x] Player with white vertex color to better identify the direction?
 - [ ] Colored debug text? (failed)
@@ -72,13 +74,7 @@
 - [x] New Weapon defensive shield
 - [x] New Weapon mechanic: Shape. Instead of a projectile the shape is not moving or attached to the player character. It has not speed on its own. Deals damage with an attack frequency until the lifetime is over. The attacks are immediate, so an enemy entering the shape take damage right away, then the attack frequency timer runs down before that enemy can take damage from that shape again. This is tracked per enemy. Weapons using it have a cooldown to respawn it. 
 
-- [ ] Upgrade decisions, a/b, slowdown, in-world or UI?
-
-- [ ] Passive upgrades
-
-- [ ] meta progession
-
-- [ ] HDR/Bloom effect when levek up
+- [x] HDR/Bloom effect when level up or boss kill
 - [x] Spawn death vfx, rotate, scale, color
 
 - [x] Player drawn below projectiles (especially shield weapon)
@@ -87,6 +83,11 @@
 
 - [x] projectiles in different sizes
 - [x] Proectiles in player color
+
+### ✅ Phase 11: Upgrades overhaul
+- [ ] Upgrade decisions, a/b, slowdown, in-world or UI?
+- [ ] Passive upgrades
+- [ ] meta progession
 
 ## 🛠️ KNOWN ISSUES
 ~~All the geometry is black (not showing the configured color). Something with the custom code generated geometry or render pipeline is not correct.~~
