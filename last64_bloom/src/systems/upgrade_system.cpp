@@ -37,9 +37,9 @@ namespace UpgradeSystem {
         }
         
         // Check if player can get a new weapon (different from current)
-        // Try up to 10 times to find a valid new weapon (increased from 3)
+        // Try up to 10 times to find a valid new weapon
         for (int i = 0; i < 10; i++) {
-            int weaponType = rand() % 5; // Increased from 4 to 5
+            int weaponType = rand() % 5;
             Actor::WeaponBase* newWeapon = createWeapon(weaponType);
             
             if (newWeapon && canAddWeapon(player, newWeapon)) {
@@ -105,7 +105,7 @@ namespace UpgradeSystem {
                 return new Actor::WeaponCircular();
             case 3:
                 return new Actor::WeaponSpiral();
-            case 4: // New case for shape weapon
+            case 4:
                 return new Actor::WeaponShape();
             default:
                 return nullptr;

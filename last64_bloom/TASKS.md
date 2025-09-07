@@ -1,3 +1,16 @@
+## 🛠️ Implemented Features
+
+### Weapons
+- **Projectile Weapon**: Basic weapon that fires projectiles in a straight line
+- **Homing Weapon**: Fires projectiles that home in on nearby enemies
+- **Circular Weapon**: Fires projectiles in a circular pattern around the player
+- **Spiral Weapon**: Spawns projectiles tha circle around the player
+
+### Upgrades
+- **Weapon Upgrades**: Each weapon can be upgraded to increase its effectiveness
+- **New Weapons**: Players can acquire new weapon types as they level up
+- **Random Selection**: When leveling up, a random weapon is upgraded (if any can be upgraded) or a new random weapon type is acquired (if not already owned)
+
 ## 🛠️ Development Milestones
 
 ### ✅Phase 0: Files and Compile
@@ -57,7 +70,7 @@
 - [x] Color Conversion tool from hex to hdr 8bRGBA8it
 
 - [x] New Weapon defensive shield
-- [ ] New Weapon mechanic: Shape. Instead of a projectile the shape is not moving or attached to the player character. It has not speed on its own. Deals damage with an attack frequency until the lifetime is over. The attacks are immediate, so an enemy entering the shape take damage right away, then the attack frequency timer runs down before that enemy can take damage from that shape again. This is tracked per enemy. Weapons using it have a cooldown to respawn it. 
+- [x] New Weapon mechanic: Shape. Instead of a projectile the shape is not moving or attached to the player character. It has not speed on its own. Deals damage with an attack frequency until the lifetime is over. The attacks are immediate, so an enemy entering the shape take damage right away, then the attack frequency timer runs down before that enemy can take damage from that shape again. This is tracked per enemy. Weapons using it have a cooldown to respawn it. 
 
 - [ ] Upgrade decisions, a/b, slowdown, in-world or UI?
 
@@ -74,19 +87,6 @@
 
 - [x] projectiles in different sizes
 - [x] Proectiles in player color
-
-## 🛠️ Implemented Features
-
-### Weapons
-- **Projectile Weapon**: Basic weapon that fires projectiles in a straight line
-- **Homing Weapon**: Fires projectiles that home in on nearby enemies
-- **Circular Weapon**: Fires projectiles in a circular pattern around the player
-- **Spiral Weapon**: Spawns projectiles tha circle around the player
-
-### Upgrades
-- **Weapon Upgrades**: Each weapon can be upgraded to increase its effectiveness
-- **New Weapons**: Players can acquire new weapon types as they level up
-- **Random Selection**: When leveling up, a random weapon is upgraded (if any can be upgraded) or a new random weapon type is acquired (if not already owned)
 
 ## 🛠️ KNOWN ISSUES
 ~~All the geometry is black (not showing the configured color). Something with the custom code generated geometry or render pipeline is not correct.~~

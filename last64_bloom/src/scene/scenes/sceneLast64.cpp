@@ -56,7 +56,7 @@ SceneLast64::SceneLast64()
     player3 = nullptr;
     player4 = nullptr;
     
-    // Initialize systems (without players for now)
+    // Initialize systems
     Actor::Enemy::initialize();
     Actor::Projectile::initialize();
     Actor::Shape::initialize();
