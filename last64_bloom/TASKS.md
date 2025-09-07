@@ -65,7 +65,8 @@
 
 - [ ] meta progession
 
-- [ ] HDR/Bloom effect when players,ebnemies, bosses die
+- [ ] HDR/Bloom effect when enemies die
+- [x] Spawn death vfx, rotate, scale, color
 
 - [x] Player drawn below projectiles (especially shield weapon)
 - [ ] Shield with alpha / transparency / Dithering
