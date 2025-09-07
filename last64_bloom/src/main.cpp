@@ -31,6 +31,7 @@
 #include "scene/scenes/sceneBunker.h"
 #include "scene/scenes/sceneLast64.h"
 #include "systems/experience.h"
+#include "render/hdrBoost.h"
 #include "audio.h"
 
 State state{
@@ -97,6 +98,9 @@ int main()
 
   t3d_fog_set_enabled(false);
 
+  // Initialize HDR boost system
+  HDRBoost::initialize(state.ppConf.hdrFactor);
+
   SceneManager::loadScene(0);
 
   uint32_t frameIdx = 0;
@@ -149,7 +153,7 @@ int main()
     rdpq_attach(fb, display_get_zbuf());
 
     // Set the default HDR factor from the state
-    Experience::setDefaultHDRFactor(state.ppConf.hdrFactor);
+    HDRBoost::setDefaultHDRFactor(state.ppConf.hdrFactor);
 
     // Add debug output every x frames to show the game is running
     static int frameCounter = 0;
@@ -178,12 +182,12 @@ int main()
       }
     }
 
-    // Update HDR boost
-    Experience::updateHDRBoost(deltaTime);
+    // Update HDR boost system
+    HDRBoost::update(deltaTime);
     
     // Apply HDR boost factor
     PostProcessConf modifiedConf = state.ppConf;
-    modifiedConf.hdrFactor = Experience::getHDRBoostFactor();
+    modifiedConf.hdrFactor = HDRBoost::getCurrentHDRFactor();
     postProc[frameIdx].setConf(modifiedConf);
     postProc[frameIdx].beginFrame();
 

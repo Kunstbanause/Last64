@@ -5,6 +5,7 @@
 #include "enemy.h"
 #include "player.h"
 #include "../systems/experience.h"
+#include "../render/hdrBoost.h"
 #include "../main.h"
 #include <t3d/t3d.h>
 #include <t3d/tpx.h>
@@ -331,6 +332,8 @@ namespace Actor {
                 break;
             case EnemySize::LARGE:
                 vfxSize = 4.0f;
+                // Trigger HDR boost when a boss dies
+                HDRBoost::triggerBoost();
                 break;
         }
         
