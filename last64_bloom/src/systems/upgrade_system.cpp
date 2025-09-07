@@ -8,11 +8,23 @@
 #include "weapon_circular.h"
 #include "weapon_spiral.h"
 #include "weapon_shape.h"
+#include "weapon_shield.h"
 #include <cstdlib>
 #include <algorithm>
 #include <typeinfo>
+#include <set>
 
 namespace UpgradeSystem {
+    // All possible weapon types
+    const std::vector<Actor::WeaponType> ALL_WEAPON_TYPES = {
+        Actor::WeaponType::PROJECTILE,
+        Actor::WeaponType::HOMING,
+        Actor::WeaponType::CIRCULAR,
+        Actor::WeaponType::SPIRAL,
+        Actor::WeaponType::SHIELD,
+        Actor::WeaponType::SHAPE
+    };
+    
     std::vector<UpgradeOption> generateUpgradeOptions(Actor::Player* player) {
         std::vector<UpgradeOption> options;
         
@@ -36,22 +48,33 @@ namespace UpgradeSystem {
             options.push_back(upgradeOption);
         }
         
-        // Check if player can get a new weapon (different from current)
-        // Try up to 10 times to find a valid new weapon
-        for (int i = 0; i < 10; i++) {
-            int weaponType = rand() % 5;
-            Actor::WeaponBase* newWeapon = createWeapon(weaponType);
+        // Instead of trying randomly, let's find which weapon types the player doesn't have yet
+        std::set<Actor::WeaponType> existingWeaponTypes;
+        for (const auto& weapon : weapons) {
+            if (weapon) {
+                existingWeaponTypes.insert(weapon->getWeaponType());
+            }
+        }
+        
+        // Find weapon types that the player doesn't have
+        std::vector<Actor::WeaponType> availableWeaponTypes;
+        for (const auto& weaponType : ALL_WEAPON_TYPES) {
+            if (existingWeaponTypes.find(weaponType) == existingWeaponTypes.end()) {
+                availableWeaponTypes.push_back(weaponType);
+            }
+        }
+        
+        // If there are available weapon types, randomly select one
+        if (!availableWeaponTypes.empty()) {
+            int randomIndex = rand() % availableWeaponTypes.size();
+            Actor::WeaponBase* newWeapon = createWeapon(static_cast<int>(availableWeaponTypes[randomIndex]));
             
-            if (newWeapon && canAddWeapon(player, newWeapon)) {
+            if (newWeapon) {
                 UpgradeOption newWeaponOption;
                 newWeaponOption.type = UpgradeType::NEW_WEAPON;
                 newWeaponOption.weapon = newWeapon;
                 options.push_back(newWeaponOption);
-                break; // Only add one new weapon option
             }
-            
-            // Clean up the temporary weapon
-            delete newWeapon;
         }
         
         return options;
@@ -106,6 +129,27 @@ namespace UpgradeSystem {
             case 3:
                 return new Actor::WeaponSpiral();
             case 4:
+                return new Actor::WeaponShield();
+            case 5:
+                return new Actor::WeaponShape();
+            default:
+                return nullptr;
+        }
+    }
+    
+    Actor::WeaponBase* createWeapon(Actor::WeaponType weaponType) {
+        switch (weaponType) {
+            case Actor::WeaponType::PROJECTILE:
+                return new Actor::WeaponProjectile();
+            case Actor::WeaponType::HOMING:
+                return new Actor::WeaponHoming();
+            case Actor::WeaponType::CIRCULAR:
+                return new Actor::WeaponCircular();
+            case Actor::WeaponType::SPIRAL:
+                return new Actor::WeaponSpiral();
+            case Actor::WeaponType::SHIELD:
+                return new Actor::WeaponShield();
+            case Actor::WeaponType::SHAPE:
                 return new Actor::WeaponShape();
             default:
                 return nullptr;

@@ -33,4 +33,5 @@ namespace UpgradeSystem {
     
     // Create a new weapon of a specific type
     Actor::WeaponBase* createWeapon(int weaponType);
+    Actor::WeaponBase* createWeapon(Actor::WeaponType weaponType);
 }
