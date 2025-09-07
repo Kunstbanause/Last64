@@ -120,11 +120,11 @@ namespace Actor {
         // Initialize weapon based on debug selection or random
         int weaponType = 0;
         if (debugWeaponSelection > 0) {
-            // Use specific weapon based on debug selection (1-5)
+            // Use specific weapon based on debug selection
             weaponType = debugWeaponSelection - 1;
         } else {
             // Random weapon selection (0-5)
-            weaponType = rand() % 6;
+            weaponType = rand() % WeaponRegistry::getWeaponCount();
         }
         
         WeaponBase* initialWeapon = nullptr;
