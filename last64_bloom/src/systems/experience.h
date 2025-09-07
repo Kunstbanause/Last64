@@ -22,4 +22,5 @@ namespace Experience {
     // HDR boost functions
     void updateHDRBoost(float deltaTime);
     float getHDRBoostFactor();
+    void setDefaultHDRFactor(float defaultFactor);
 };

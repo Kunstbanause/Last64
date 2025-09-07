@@ -19,10 +19,13 @@ namespace {
     const float xpGrowthFactor = 1.25f;
     
     // HDR boost variables
-    float hdrBoostFactor = 1.0f;
-    float hdrBoostTimer = 0.0f;
-    constexpr float HDR_BOOST_DURATION = 3.0f;
-    constexpr float HDR_BOOST_VALUE = 1.5f;
+    float defaultHDRFactor = 0.8f;  // Default HDR factor from main.cpp
+    float currentHDRFactor = 0.8f;  // Current HDR factor
+    float targetHDRFactor = 0.8f;   // Target HDR factor
+    float hdrBoostTimer = 0.0f;     // Timer for the boost
+    constexpr float HDR_BOOST_DURATION = 1.0f;  // Total duration of the effect
+    constexpr float HDR_PEAK_DURATION = 0.1f;   // Duration to stay at peak
+    constexpr float HDR_PEAK_VALUE = 5.0f;      // Peak HDR value
 }
 
 void Experience::initialize() {
@@ -35,7 +38,10 @@ void Experience::initialize() {
     }
     
     // Initialize HDR boost
-    hdrBoostFactor = 1.0f;
+    // Note: We'll set the defaultHDRFactor when the first call to getHDRBoostFactor is made
+    // or we could create a setter for it from main.cpp
+    currentHDRFactor = 0.8f;
+    targetHDRFactor = 0.8f;
     hdrBoostTimer = 0.0f;
 }
 
@@ -46,7 +52,8 @@ void Experience::shutdown() {
     activePlayerCount = 0;
     
     // Reset HDR boost
-    hdrBoostFactor = 1.0f;
+    currentHDRFactor = defaultHDRFactor;
+    targetHDRFactor = defaultHDRFactor;
     hdrBoostTimer = 0.0f;
 }
 
@@ -79,7 +86,7 @@ void Experience::addXP(int amount) {
         gSFXManager.play(SFXManager::SFX_LEVEL_UP);
 
         // Trigger HDR boost on level up
-        hdrBoostFactor = HDR_BOOST_VALUE;
+        targetHDRFactor = HDR_PEAK_VALUE;
         hdrBoostTimer = HDR_BOOST_DURATION;
 
         // Generate upgrade options for each player
@@ -154,13 +161,45 @@ Actor::Player* Experience::getRandomAlivePlayer() {
 void Experience::updateHDRBoost(float deltaTime) {
     if (hdrBoostTimer > 0.0f) {
         hdrBoostTimer -= deltaTime;
+        
         if (hdrBoostTimer <= 0.0f) {
+            // Boost is finished, reset to default
             hdrBoostTimer = 0.0f;
-            hdrBoostFactor = 1.0f;
+            currentHDRFactor = defaultHDRFactor;
+            targetHDRFactor = defaultHDRFactor;
+        } else {
+            // Calculate interpolation factor
+            float progress = 1.0f - (hdrBoostTimer / HDR_BOOST_DURATION);
+            
+            // Determine target based on progress
+            if (progress < (HDR_PEAK_DURATION / HDR_BOOST_DURATION)) {
+                // Still in peak phase
+                targetHDRFactor = HDR_PEAK_VALUE;
+            } else {
+                // Fade back to default
+                targetHDRFactor = defaultHDRFactor;
+            }
+            
+            // Smoothly interpolate towards target
+            float speed = 15.0f; // Adjust this value to change the smoothness
+            if (currentHDRFactor < targetHDRFactor) {
+                currentHDRFactor = fminf(currentHDRFactor + speed * deltaTime, targetHDRFactor);
+            } else if (currentHDRFactor > targetHDRFactor) {
+                currentHDRFactor = fmaxf(currentHDRFactor - speed * deltaTime, targetHDRFactor);
+            }
         }
     }
 }
 
 float Experience::getHDRBoostFactor() {
-    return hdrBoostFactor;
+    return currentHDRFactor;
+}
+
+void Experience::setDefaultHDRFactor(float defaultFactor) {
+    defaultHDRFactor = defaultFactor;
+    // If no boost is active, update the current factor to match
+    if (hdrBoostTimer <= 0.0f) {
+        currentHDRFactor = defaultFactor;
+        targetHDRFactor = defaultFactor;
+    }
 }

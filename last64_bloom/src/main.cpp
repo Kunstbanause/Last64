@@ -148,6 +148,9 @@ int main()
     fb = display_get();
     rdpq_attach(fb, display_get_zbuf());
 
+    // Set the default HDR factor from the state
+    Experience::setDefaultHDRFactor(state.ppConf.hdrFactor);
+
     // Add debug output every x frames to show the game is running
     static int frameCounter = 0;
     frameCounter++;
@@ -180,7 +183,7 @@ int main()
     
     // Apply HDR boost factor
     PostProcessConf modifiedConf = state.ppConf;
-    modifiedConf.hdrFactor *= Experience::getHDRBoostFactor();
+    modifiedConf.hdrFactor = Experience::getHDRBoostFactor();
     postProc[frameIdx].setConf(modifiedConf);
     postProc[frameIdx].beginFrame();
 
