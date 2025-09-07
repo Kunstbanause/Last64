@@ -191,17 +191,16 @@ namespace Actor {
         
         if (poolIndex < MAX_ENEMY_DEATH_VFX) {
             float lifeTimePercentage = lifetime / maxVariedLifetime;
-            // float sizeOverTime = size +(size * lifeTimePercentage); USing alpha instead, so it shrinks
+            // float sizeOverTime = size +(size * lifeTimePercentage); Using alpha value instead, so it shrinks
             float rotationOverTime = lifeTimePercentage * 3.14159f * size;
             if (poolIndex % 2 == 0) { // Even indices rotate left
                 rotationOverTime *= -1.0f;
             }
             
             float alpha = 1.0f - lifeTimePercentage;
-            uint8_t alphaByte = (uint8_t)(alpha * 50.0f);
             // Apply alpha to color
-            uint32_t colorWithAlpha = (color & 0x00FFFFFF) | (alphaByte << 24);
-            // Update vertex colors for this specific VFX object
+            uint8_t alphaByte = (uint8_t)(alpha * 50.0f);
+            uint32_t colorWithAlpha = color; //(color & 0x00FFFFFF) | (alphaByte << 24);
             sharedVertices[poolIndex * 2].rgbaA = colorWithAlpha;
             sharedVertices[poolIndex * 2].rgbaB = colorWithAlpha;
             sharedVertices[poolIndex * 2 + 1].rgbaA = colorWithAlpha;
