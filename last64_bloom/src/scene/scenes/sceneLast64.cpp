@@ -456,8 +456,10 @@ void SceneLast64::draw2D(float deltaTime)
             }
             
             // Draw enemy and projectile counts
-            Debug::printf(230, 10, "E:%d P:%d", Actor::Enemy::getActiveCount(), Actor::Projectile::getActiveCount());
-            
+            if (Actor::Projectile::getActiveCount() >= 75 || Actor::Enemy::getActiveCount() >= 75) {
+                Debug::printf(230, 10, "E:%d P:%d", Actor::Enemy::getActiveCount(), Actor::Projectile::getActiveCount());
+            }
+
             // Draw Level
             Debug::printf(10, SCREEN_HEIGHT-30, "Level:%d", Experience::getLevel());
             
