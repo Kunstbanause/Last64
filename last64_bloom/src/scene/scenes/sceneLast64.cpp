@@ -456,24 +456,24 @@ void SceneLast64::draw2D(float deltaTime)
             }
             
             // Draw enemy and projectile counts
-            if (Actor::Projectile::getActiveCount() >= 75 || Actor::Enemy::getActiveCount() >= 75) {
-                Debug::printf(230, 10, "E:%d P:%d", Actor::Enemy::getActiveCount(), Actor::Projectile::getActiveCount());
+            if (Actor::Projectile::getActiveCount() >= 75 || Actor::Enemy::getActiveCount() >= 75 || Debug::isMenuVisible()) {
+                Debug::printf(230, 30, "E:%d P:%d", Actor::Enemy::getActiveCount(), Actor::Projectile::getActiveCount());
             }
 
-            // Draw Level
-            Debug::printf(10, SCREEN_HEIGHT-30, "Level:%d", Experience::getLevel());
-            
             // Draw current wave
-            Debug::printf(SCREEN_WIDTH/2-20, SCREEN_HEIGHT-20, "Wave:%d", SpawnManager::getCurrentWave() + 1);
+            Debug::printf(SCREEN_WIDTH/2-20, 10, "Wave:%d", SpawnManager::getCurrentWave() + 1);
 
             // Draw round timer
             int minutes = (int)roundTimer / 60;
             int seconds = (int)roundTimer % 60;
             if (minutes > 0) {
-                Debug::printf(150, 10, "%02d:%02d", minutes, seconds);
+                Debug::printf(142, 20, "%02d:%02d", minutes, seconds);
             } else {
-                Debug::printf(150, 10, "%02d", seconds);
+                Debug::printf(150, 20, "%02d", seconds);
             }
+
+            // Draw Level
+            Debug::printf(10, SCREEN_HEIGHT-30, "Level:%d", Experience::getLevel());
 
             break;
         }
