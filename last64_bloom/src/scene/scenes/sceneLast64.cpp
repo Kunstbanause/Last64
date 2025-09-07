@@ -60,6 +60,9 @@ SceneLast64::SceneLast64()
     Actor::EnemyDeathVFX::initialize();
     SpawnManager::initialize();
     
+    // Initialize weapon icons
+    WeaponIcons::init();
+    
     // Play background music once when scene starts
     gSFXManager.play(SFXManager::SFX_MUSIC1);
 }
@@ -76,6 +79,9 @@ SceneLast64::~SceneLast64()
     Actor::EnemyDeathVFX::cleanup();
     Experience::shutdown();
     SpawnManager::deinitialize();
+    
+    // Clean up weapon icons
+    WeaponIcons::destroy();
     
     // Clean up scene matrix
     if (sceneMatFP) {
@@ -420,42 +426,29 @@ void SceneLast64::draw2D(float deltaTime)
                     case 3: currentPlayer = player4; break;
                 }
                 if (currentPlayer) {
-                    // Display all player weapons in a compact format
+                    // Display all player weapons using icons
                     auto& weapons = currentPlayer->getWeapons();
                     if (!weapons.empty()) {
-                        // Create a string to show all weapons
-                        char weaponString[50] = {0}; // Buffer for weapon info
-                        strcpy(weaponString, "P");
-                        char playerNum[2] = {0};
-                        playerNum[0] = '0' + (i + 1);
-                        strcat(weaponString, playerNum);
-                        strcat(weaponString, ":");
+                        // Draw player number
+                        Debug::printf(10, 10 + (i * 10), "P%d:", i + 1);
                         
-                        // Add info for each weapon
-                        for (size_t j = 0; j < weapons.size() && j < 3; ++j) { // Limit to 3 weapons for display
+                        // Draw weapon icons
+                        float iconX = 35; // Start position for icons
+                        float iconY = 10 + (i * 10) - 4; // Adjust Y position to center icons
+                        
+                        // Draw up to 3 weapon icons
+                        for (size_t j = 0; j < weapons.size() && j < 3; ++j) {
                             if (weapons[j]) {
                                 int level = weapons[j]->getUpgradeLevel();
+                                Actor::WeaponType weaponType = weapons[j]->getWeaponType();
                                 
-                                // Use first letter of weapon type as identifier
-                                // P=Projectile, H=Homing, C=Circular, S=Spiral, ...
-                                char weaponChar = 'X';
-                                const WeaponRegistry::WeaponMetadata* metadata = 
-                                    WeaponRegistry::getWeaponMetadata(weapons[j]->getWeaponType());
-                                if (metadata) {
-                                    weaponChar = metadata->shortName[0];
-                                }
-                                char temp[4] = {0};
+                                // Draw the weapon icon
+                                WeaponIcons::drawIcon(iconX, iconY, weaponType, level);
                                 
-                                // Add weapon info to string
-                                temp[0] = weaponChar;
-                                temp[1] = '0' + level;
-                                temp[2] = (j < weapons.size() - 1 && j < 2) ? ',' : '\0'; // Add comma if not last
-                                temp[3] = '\0';
-                                strcat(weaponString, temp);
+                                // Move to next icon position
+                                iconX += WeaponIcons::getIconWidth() + 2; // Add spacing between icons
                             }
                         }
-                        
-                        Debug::printf(10, 10 + (i * 10), "%s", weaponString);
                     } else {
                         Debug::printf(10, 10 + (i * 10), "P%d:None", i + 1);
                     }

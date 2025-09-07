@@ -10,7 +10,8 @@
 #include "../../actors/player.h" // Include Player class                                                                                                                                                                                                
 #include "../../actors/enemy.h"  // Include Enemy class                                                                                                                                                                                                 
 #include "../../actors/projectile.h"
-#include "../../actors/shape.h"                                                                                                                                                                                                                    
+#include "../../actors/shape.h"
+#include "../../render/weaponIcons.h"                                                                                                                                                                                                                    
 #include <t3d/t3d.h>                                                                                                                                                                                                                                    
 #include <t3d/t3dmath.h>                                                                                                                                                                                                                                
 
