@@ -175,7 +175,13 @@ int main()
       }
     }
 
-    postProc[frameIdx].setConf(state.ppConf);
+    // Update HDR boost
+    Experience::updateHDRBoost(deltaTime);
+    
+    // Apply HDR boost factor
+    PostProcessConf modifiedConf = state.ppConf;
+    modifiedConf.hdrFactor *= Experience::getHDRBoostFactor();
+    postProc[frameIdx].setConf(modifiedConf);
     postProc[frameIdx].beginFrame();
 
     t3d_frame_start();

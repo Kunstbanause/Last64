@@ -18,4 +18,8 @@ namespace Experience {
     
     // Get a random alive player (returns nullptr if none are alive)
     Actor::Player* getRandomAlivePlayer();
+    
+    // HDR boost functions
+    void updateHDRBoost(float deltaTime);
+    float getHDRBoostFactor();
 };

@@ -78,7 +78,7 @@
 
 - [ ] meta progession
 
-- [ ] HDR/Bloom effect when enemies die
+- [ ] HDR/Bloom effect when levek up
 - [x] Spawn death vfx, rotate, scale, color
 
 - [x] Player drawn below projectiles (especially shield weapon)

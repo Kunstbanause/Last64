@@ -17,6 +17,12 @@ namespace {
 
     // Exponential growth factor for XP required for next level
     const float xpGrowthFactor = 1.25f;
+    
+    // HDR boost variables
+    float hdrBoostFactor = 1.0f;
+    float hdrBoostTimer = 0.0f;
+    constexpr float HDR_BOOST_DURATION = 3.0f;
+    constexpr float HDR_BOOST_VALUE = 1.5f;
 }
 
 void Experience::initialize() {
@@ -27,6 +33,10 @@ void Experience::initialize() {
     for (int i = 0; i < MAX_PLAYERS; ++i) {
         activePlayers[i] = nullptr;
     }
+    
+    // Initialize HDR boost
+    hdrBoostFactor = 1.0f;
+    hdrBoostTimer = 0.0f;
 }
 
 void Experience::shutdown() {
@@ -34,6 +44,10 @@ void Experience::shutdown() {
         activePlayers[i] = nullptr;
     }
     activePlayerCount = 0;
+    
+    // Reset HDR boost
+    hdrBoostFactor = 1.0f;
+    hdrBoostTimer = 0.0f;
 }
 
 void Experience::addPlayer(Actor::Player* player) {
@@ -63,6 +77,10 @@ void Experience::addXP(int amount) {
         currentXP -= xpToNextLevel;
         xpToNextLevel = static_cast<int>(xpToNextLevel * xpGrowthFactor);
         gSFXManager.play(SFXManager::SFX_LEVEL_UP);
+
+        // Trigger HDR boost on level up
+        hdrBoostFactor = HDR_BOOST_VALUE;
+        hdrBoostTimer = HDR_BOOST_DURATION;
 
         // Generate upgrade options for each player
         for (int i = 0; i < activePlayerCount; ++i) {
@@ -131,4 +149,18 @@ Actor::Player* Experience::getRandomAlivePlayer() {
     }
     
     return nullptr;
+}
+
+void Experience::updateHDRBoost(float deltaTime) {
+    if (hdrBoostTimer > 0.0f) {
+        hdrBoostTimer -= deltaTime;
+        if (hdrBoostTimer <= 0.0f) {
+            hdrBoostTimer = 0.0f;
+            hdrBoostFactor = 1.0f;
+        }
+    }
+}
+
+float Experience::getHDRBoostFactor() {
+    return hdrBoostFactor;
 }
