@@ -334,6 +334,7 @@ void SceneLast64::draw3D(float deltaTime)
     Actor::EnemyDeathVFX::drawAll(deltaTime);
 
     // Draw all projectiles
+    t3d_screen_clear_depth();
     Actor::Projectile::drawAll(deltaTime);
 
     // Draw all enemies

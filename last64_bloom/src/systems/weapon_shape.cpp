@@ -11,7 +11,7 @@ namespace Actor {
     WeaponShape::WeaponShape() : WeaponBase(WeaponType::SHAPE) {
         fireRate = 3.0f;        // Time between shots
         weaponCooldown = 0.0f;  // Current cooldown
-        shapeLifetime = 1.0f;   // Shapes last 1 second
+        shapeLifetime = 0.6f;   // Shapes last 1 second
         attackFrequency = 0.3f; // Attack every 0.3 seconds (faster for a melee-like weapon)
         shapeWidth = 14.0f;     // Default width
         shapeHeight = 5.0f;     // Default height (long rectangle)
@@ -54,7 +54,7 @@ namespace Actor {
         if (!player || currentShape) return;
         
         // Alternate between left and right spawn positions
-        T3DVec3 spawnOffset = spawnOnRight ? T3DVec3{20, 0, 0} : T3DVec3{-20, 0, 0};
+        T3DVec3 spawnOffset = spawnOnRight ? T3DVec3{shapeWidth/2, 0, 0} : T3DVec3{-shapeWidth/2, 0, 0};
         currentShape = Shape::spawnAttached(player, spawnOffset, shapeWidth, shapeHeight, shapeLifetime, attackFrequency, shapeDamage, player->getColor());
         
         // Flip the spawn side for next time
@@ -82,19 +82,20 @@ namespace Actor {
                 case 1:
                     shapeDamage *= 1.25f; // More damage
                     shapeWidth *= 1.4f; // Wider shape
-                    shapeHeight *= 1.2f; // Longer shape
                     break;
                 case 2:
-                    shapeLifetime *= 1.2f;
+                    shapeLifetime += 0.3f;
+                    shapeHeight *= 1.5f; // Longer shape
                     break;
                 case 3:
-                    attackFrequency *= 1.25f; // Even faster attacks
-                    break;
-                case 4:
-                    shapeWidth *= 1.5f; // Wider shape
                     shapeHeight *= 2.2f; // Longer shape
                     break;
+                case 4:
+                    shapeWidth *= 2.5f; // Wider shape
+                    attackFrequency *= 1.25f; // Even faster attacks
+                    break;
                 case 5:
+                    shapeWidth *= 3.5f; // Wider shape
                     shapeDamage *= 1.25f; // More damage
                     break;
                 default:
