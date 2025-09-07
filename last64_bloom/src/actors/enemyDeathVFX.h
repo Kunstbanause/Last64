@@ -20,6 +20,7 @@ namespace Actor {
 
         T3DVec3 position;
         float lifetime;
+        float random;
         float maxVariedLifetime;
         static float maxLifetime;
         uint32_t poolIndex;

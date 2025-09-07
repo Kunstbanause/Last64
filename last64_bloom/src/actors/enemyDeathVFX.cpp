@@ -31,6 +31,7 @@ namespace Actor {
         size = 1.0f;
         color = 0xFFFFFFFF; // Default white color
         flags |= FLAG_DISABLED; // Start as disabled
+        random = 0.0f;
     }
 
     EnemyDeathVFX::~EnemyDeathVFX() {
@@ -135,7 +136,10 @@ namespace Actor {
                 vfx->size = size;
                 // vfx->color = color; // Disabeled enemy color during death vfx for now, always white
                 vfx->lifetime = 0.0f;
-                
+
+                // Random range between 1 and bigger:
+                vfx->random = 1.0f + (float)(rand() % 150) / 100.0f;
+
                 vfx->flags &= ~FLAG_DISABLED; // Enable the VFX
 
                 // randomize max lifetime range by reducing it up to 25%
@@ -199,7 +203,7 @@ namespace Actor {
             
             float alpha = 1.0f - lifeTimePercentage;
             // Apply alpha to color
-            uint8_t alphaByte = (uint8_t)(alpha * 50.0f);
+            // uint8_t alphaByte = (uint8_t)(alpha * 50.0f);
             uint32_t colorWithAlpha = color; //(color & 0x00FFFFFF) | (alphaByte << 24);
             sharedVertices[poolIndex * 2].rgbaA = colorWithAlpha;
             sharedVertices[poolIndex * 2].rgbaB = colorWithAlpha;
@@ -208,9 +212,10 @@ namespace Actor {
 
             // Update matrix with scale
             if (poolIndex < MAX_ENEMY_DEATH_VFX) {
+                // random = (float)(rand() % 300) / 100.0f; // Randomly scale size every frame?
                 t3d_mat4fp_from_srt_euler(
                     sharedMatrices[poolIndex],
-                    (T3DVec3){{size * alpha, size * alpha, size * alpha}},  // scale
+                    (T3DVec3){{size * alpha * random, size * alpha * random, size * alpha * random}},
                     (T3DVec3){{0.0f, 0.0f, rotationOverTime}},  // rotation
                     position                         // translation
                 );
