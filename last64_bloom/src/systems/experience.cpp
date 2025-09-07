@@ -23,7 +23,7 @@ namespace {
     float currentHDRFactor = 0.8f;  // Current HDR factor
     float targetHDRFactor = 0.8f;   // Target HDR factor
     float hdrBoostTimer = 0.0f;     // Timer for the boost
-    constexpr float HDR_BOOST_DURATION = 1.0f;  // Total duration of the effect
+    constexpr float HDR_BOOST_DURATION = 5.0f;  // Total duration of the effect
     constexpr float HDR_PEAK_DURATION = 0.1f;   // Duration to stay at peak
     constexpr float HDR_PEAK_VALUE = 5.0f;      // Peak HDR value
 }
@@ -170,18 +170,19 @@ void Experience::updateHDRBoost(float deltaTime) {
         } else {
             // Calculate interpolation factor
             float progress = 1.0f - (hdrBoostTimer / HDR_BOOST_DURATION);
-            
+            float speed = 5.0f; // Adjust this value to change the smoothness
             // Determine target based on progress
             if (progress < (HDR_PEAK_DURATION / HDR_BOOST_DURATION)) {
                 // Still in peak phase
                 targetHDRFactor = HDR_PEAK_VALUE;
+                speed = 150.0f; // Adjust this value to change the smoothness
             } else {
                 // Fade back to default
                 targetHDRFactor = defaultHDRFactor;
+                speed = 15.0f; // Adjust this value to change the smoothness
             }
             
             // Smoothly interpolate towards target
-            float speed = 15.0f; // Adjust this value to change the smoothness
             if (currentHDRFactor < targetHDRFactor) {
                 currentHDRFactor = fminf(currentHDRFactor + speed * deltaTime, targetHDRFactor);
             } else if (currentHDRFactor > targetHDRFactor) {
