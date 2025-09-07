@@ -15,7 +15,7 @@ namespace Actor {
     WeaponShield::WeaponShield() : WeaponBase(WeaponType::SHIELD) {
         // Set weapon-specific properties
         fireRate = 0.0f;              // Not used for shield
-        shieldSize = 12.0f;           // Size of the shield
+        shieldSize = 8.0f;           // Size of the shield
         shieldLifetime = 3.0f;        // Shield lasts x seconds
         shieldCooldown = 2.0f;        // cooldown
         shieldActive = false;         // Shield starts inactive
@@ -119,6 +119,7 @@ namespace Actor {
             damage += 2; // Increase damage dealt to enemies
             shieldCooldown *= 0.85f; // Reduce cooldown time
             shieldLifetime *= 1.1f; // Increase duration
+            shieldSize *= 1.05f; // Increase duration
         }
     }
 }

@@ -61,7 +61,7 @@
 
 - [ ] Upgrade decisions, a/b, slowdown, in-world or UI?
 
-- [ ] Passive upgradess
+- [ ] Passive upgrades
 
 - [ ] meta progession
 

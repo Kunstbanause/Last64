@@ -327,17 +327,18 @@ void SceneLast64::draw3D(float deltaTime)
     // Set combiner mode to use vertex colors (SHADE) instead of textures
     rdpq_mode_combiner(RDPQ_COMBINER_SHADE);
     
-    // Draw all enemies
-    Actor::Enemy::drawAll(deltaTime);
-
-    // Draw all projectiles
-    Actor::Projectile::drawAll(deltaTime);
-    
     // Draw all shapes
     Actor::Shape::drawAll(deltaTime);
     
     // Draw all enemy death VFX
     Actor::EnemyDeathVFX::drawAll(deltaTime);
+
+    // Draw all projectiles
+    Actor::Projectile::drawAll(deltaTime);
+
+    // Draw all enemies
+    t3d_screen_clear_depth();
+    Actor::Enemy::drawAll(deltaTime);
     
     // Draw all players
     t3d_screen_clear_depth(); // Clear so the players are on top.

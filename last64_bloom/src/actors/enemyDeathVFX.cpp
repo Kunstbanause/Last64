@@ -135,7 +135,6 @@ namespace Actor {
                 vfx->position = position;
                 vfx->size = size;
                 // vfx->color = color; // Disabeled enemy color during death vfx for now, always white
-                vfx->color =  0x160F0CFF; // Disabeled enemy color during death vfx for now, always white
                 vfx->lifetime = 0.0f;
 
                 // Random range between 1 and bigger:
@@ -206,10 +205,10 @@ namespace Actor {
             // Apply alpha to color
             // uint8_t alphaByte = (uint8_t)(alpha * 50.0f);
             // uint32_t colorWithAlpha =  0x1C190BFF; //(color & 0x00FFFFFF) | (alphaByte << 24);
-            sharedVertices[poolIndex * 2].rgbaA = colorWithAlpha;
-            sharedVertices[poolIndex * 2].rgbaB = colorWithAlpha;
-            sharedVertices[poolIndex * 2 + 1].rgbaA = colorWithAlpha;
-            sharedVertices[poolIndex * 2 + 1].rgbaB = colorWithAlpha;
+            sharedVertices[poolIndex * 2].rgbaA = color;
+            sharedVertices[poolIndex * 2].rgbaB = color;
+            sharedVertices[poolIndex * 2 + 1].rgbaA = color;
+            sharedVertices[poolIndex * 2 + 1].rgbaB = color;
 
             // Update matrix with scale
             if (poolIndex < MAX_ENEMY_DEATH_VFX) {
