@@ -20,7 +20,8 @@ namespace Actor {
 
         T3DVec3 position;
         float lifetime;
-        float maxLifetime;
+        float maxVariedLifetime;
+        static float maxLifetime;
         uint32_t poolIndex;
         uint32_t color;
         float size;
@@ -41,7 +42,7 @@ namespace Actor {
         void update(float deltaTime) override;
         void draw3D(float deltaTime) override;
         void drawPTX(float deltaTime) override;
-        // static float getMaxLifetime() { return maxLifetime; }
+        static float getMaxLifetime();
 
         void deactivate();
         bool isActive() const;

@@ -11,6 +11,7 @@
 
 namespace Actor {
     // Static member definitions
+    float EnemyDeathVFX::maxLifetime = 0.3f;
     T3DVertPacked* EnemyDeathVFX::sharedVertices = nullptr;
     T3DMat4FP** EnemyDeathVFX::sharedMatrices = nullptr;
     bool* EnemyDeathVFX::activeFlags = nullptr;
@@ -26,7 +27,7 @@ namespace Actor {
         poolIndex = MAX_ENEMY_DEATH_VFX; // Invalid index until spawned
         position = {0, 0, 0};
         lifetime = 0.0f;
-        maxLifetime = 0.3f; // Half a second lifetime
+        maxVariedLifetime = maxLifetime; // Default to base max lifetime
         size = 1.0f;
         color = 0xFFFFFFFF; // Default white color
         flags |= FLAG_DISABLED; // Start as disabled
@@ -138,7 +139,7 @@ namespace Actor {
                 vfx->flags &= ~FLAG_DISABLED; // Enable the VFX
 
                 // randomize max lifetime range by reducing it up to 25%
-                vfx->maxLifetime = 0.3f - ((float)(rand() % 25) / 100.0f * 0.25f);;
+                vfx->maxVariedLifetime = maxLifetime - ((float)(rand() % 25) / 100.0f * 0.25f);
 
                 return vfx;
             }
@@ -179,7 +180,7 @@ namespace Actor {
         lifetime += deltaTime;
         
         // Deactivate when lifetime is exceeded
-        if (lifetime >= maxLifetime) {
+        if (lifetime >= maxVariedLifetime) {
             deactivate();
             return;
         }
@@ -190,7 +191,7 @@ namespace Actor {
         
         if (poolIndex < MAX_ENEMY_DEATH_VFX) {
             // Calculate alpha based on remaining lifetime (fade out effect)
-            float lifeTimePercentage = lifetime / maxLifetime;
+            float lifeTimePercentage = lifetime / maxVariedLifetime;
             float sizeOverTime = size +(size * lifeTimePercentage);
             float rotationOverTime = lifeTimePercentage * 3.14159f * 2.0f; // Sometimes left / sometimes right way
             // Randomly rotate left or right
@@ -246,5 +247,9 @@ namespace Actor {
             return activeFlags[poolIndex] && !(flags & FLAG_DISABLED);
         }
         return false;
+    }
+
+    float EnemyDeathVFX::getMaxLifetime() {
+        return maxLifetime;
     }
 }
