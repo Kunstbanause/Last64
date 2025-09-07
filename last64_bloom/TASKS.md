@@ -61,6 +61,12 @@
 
 - [ ] Upgrade decisions, a/b, slowdown, in-world or UI?
 
+- [ ] Passive upgradess
+
+- [ ] meta progession
+
+- [ ] HDR/Bloom effect when players,ebnemies, bosses die
+
 - [x] Player drawn below projectiles (especially shield weapon)
 - [ ] Shield with alpha / transparency / Dithering
 - [x] Shield with reduced color
