@@ -239,7 +239,7 @@ void SceneLast64::updateScene(float deltaTime)
                 if (pressed.r) {
                     // Skip to next wave by adjusting the round timer
                     int currentWave = SpawnManager::getCurrentWave();
-                    roundTimer = (currentWave + 1) * 60.0f + 1.0f; // Jump to just after the next wave starts
+                    roundTimer = (currentWave + 1) * SpawnManager::getWaveTimeMax() + 1.0f; // Jump to just after the next wave starts
                     break; // Only trigger once per frame
                 }
             }

@@ -8,6 +8,7 @@
 #include "../actors/enemy.h"
 
 namespace SpawnManager {
+
     // Enum for allowed spawn edges
     enum SpawnEdges {
         SPAWN_EDGE_TOP    = 1 << 0,  // 1
@@ -43,7 +44,10 @@ namespace SpawnManager {
     
     // Get the time elapsed in the current wave
     float getWaveTime();
-    
+
+    // get Wave Time max
+    float getWaveTimeMax();
+
     // Get the total game time
     float getTotalTime();
     

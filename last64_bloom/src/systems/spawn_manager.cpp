@@ -15,6 +15,7 @@ namespace SpawnManager {
     static int maxWaves = 0; // Will be set from Waves::getMaxWaves()
     static int currentWave = 0;
     static float waveTimer = 0.0f;
+    static float waveTimerMax = 30.0f; // Each wave lasts 60 seconds
     static float spawnTimer = 0.0f;
     static bool initialized = false;
     static bool bossSpawned = false;
@@ -119,6 +120,10 @@ namespace SpawnManager {
     float getWaveTime() {
         return waveTimer;
     }
+
+    float getWaveTimeMax() {
+        return waveTimerMax;
+    }
     
     const WaveConfig& getCurrentWaveConfig() {
         // Return current wave config, or last wave if we've gone beyond
@@ -137,7 +142,7 @@ namespace SpawnManager {
         waveTimer += deltaTime;
         
         // Determine current wave based on total time (1 minute per wave)
-        int newWave = (int)(roundTimer / 60.0f);
+        int newWave = (int)(roundTimer / waveTimerMax);
         if (maxWaves > 0 && newWave > maxWaves - 1) newWave = maxWaves - 1; // Cap at final wave
         
         // If we've moved to a new wave, reset wave timer and counters
