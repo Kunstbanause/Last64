@@ -3,25 +3,21 @@
 * @license MIT
 */
 #include "player.h"
-#include "../systems/weapon_projectile.h"
-#include "../systems/weapon_homing.h"
-#include "../systems/weapon_circular.h"
-#include "../systems/weapon_spiral.h"
-#include "../systems/weapon_shield.h"
-#include "../systems/weapon_shape.h"
-#include "../main.h"
-#include "../debugMenu.h"
+#include "projectile.h"
+#include "../systems/weapon_registry.h"
 #include "../render/colors.h"
+#include "../main.h"
+#include <t3d/t3d.h>
+#include <libdragon.h>
+#include <cmath>
 #include <t3d/t3d.h>
 #include <t3d/tpx.h>
 #include <libdragon.h>
 #include <malloc.h>
 #include <algorithm>
-#include <t3d/t3d.h>
-#include <t3d/tpx.h>
-#include <libdragon.h>
-#include <malloc.h>
-#include <algorithm>
+
+// Forward declaration of the global debugWeaponSelection variable
+extern int debugWeaponSelection;
 
 namespace Actor {
     // Static members for player mesh
@@ -132,26 +128,8 @@ namespace Actor {
         }
         
         WeaponBase* initialWeapon = nullptr;
-        switch (weaponType) {
-            case 0:
-                initialWeapon = new WeaponProjectile();
-                break;
-            case 1:
-                initialWeapon = new WeaponHoming();
-                break;
-            case 2:
-                initialWeapon = new WeaponCircular();
-                break;
-            case 3:
-                initialWeapon = new WeaponSpiral();
-                break;
-            case 4:
-                initialWeapon = new WeaponShield();
-                break;
-            case 5:
-                initialWeapon = new WeaponShape();
-                break;
-        }
+        Actor::WeaponType weaponTypeEnum = WeaponRegistry::getWeaponTypeFromIndex(weaponType);
+        initialWeapon = WeaponRegistry::createWeapon(weaponTypeEnum);
         if (initialWeapon) {
             initialWeapon->setPlayer(this);
             weapons.push_back(initialWeapon);

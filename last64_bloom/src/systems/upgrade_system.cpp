@@ -3,28 +3,13 @@
 * @license MIT
 */
 #include "upgrade_system.h"
-#include "weapon_projectile.h"
-#include "weapon_homing.h"
-#include "weapon_circular.h"
-#include "weapon_spiral.h"
-#include "weapon_shape.h"
-#include "weapon_shield.h"
+#include "weapon_registry.h"
 #include <cstdlib>
 #include <algorithm>
 #include <typeinfo>
 #include <set>
 
 namespace UpgradeSystem {
-    // All possible weapon types
-    const std::vector<Actor::WeaponType> ALL_WEAPON_TYPES = {
-        Actor::WeaponType::PROJECTILE,
-        Actor::WeaponType::HOMING,
-        Actor::WeaponType::CIRCULAR,
-        Actor::WeaponType::SPIRAL,
-        Actor::WeaponType::SHIELD,
-        Actor::WeaponType::SHAPE
-    };
-    
     std::vector<UpgradeOption> generateUpgradeOptions(Actor::Player* player) {
         std::vector<UpgradeOption> options;
         
@@ -58,7 +43,8 @@ namespace UpgradeSystem {
         
         // Find weapon types that the player doesn't have
         std::vector<Actor::WeaponType> availableWeaponTypes;
-        for (const auto& weaponType : ALL_WEAPON_TYPES) {
+        const std::vector<Actor::WeaponType>& allWeaponTypes = WeaponRegistry::getAllWeaponTypes();
+        for (const auto& weaponType : allWeaponTypes) {
             if (existingWeaponTypes.find(weaponType) == existingWeaponTypes.end()) {
                 availableWeaponTypes.push_back(weaponType);
             }
@@ -67,7 +53,7 @@ namespace UpgradeSystem {
         // If there are available weapon types, randomly select one
         if (!availableWeaponTypes.empty()) {
             int randomIndex = rand() % availableWeaponTypes.size();
-            Actor::WeaponBase* newWeapon = createWeapon(static_cast<int>(availableWeaponTypes[randomIndex]));
+            Actor::WeaponBase* newWeapon = WeaponRegistry::createWeapon(availableWeaponTypes[randomIndex]);
             
             if (newWeapon) {
                 UpgradeOption newWeaponOption;
@@ -116,43 +102,5 @@ namespace UpgradeSystem {
         }
         
         return true;
-    }
-    
-    Actor::WeaponBase* createWeapon(int weaponType) {
-        switch (weaponType) {
-            case 0:
-                return new Actor::WeaponProjectile();
-            case 1:
-                return new Actor::WeaponHoming();
-            case 2:
-                return new Actor::WeaponCircular();
-            case 3:
-                return new Actor::WeaponSpiral();
-            case 4:
-                return new Actor::WeaponShield();
-            case 5:
-                return new Actor::WeaponShape();
-            default:
-                return nullptr;
-        }
-    }
-    
-    Actor::WeaponBase* createWeapon(Actor::WeaponType weaponType) {
-        switch (weaponType) {
-            case Actor::WeaponType::PROJECTILE:
-                return new Actor::WeaponProjectile();
-            case Actor::WeaponType::HOMING:
-                return new Actor::WeaponHoming();
-            case Actor::WeaponType::CIRCULAR:
-                return new Actor::WeaponCircular();
-            case Actor::WeaponType::SPIRAL:
-                return new Actor::WeaponSpiral();
-            case Actor::WeaponType::SHIELD:
-                return new Actor::WeaponShield();
-            case Actor::WeaponType::SHAPE:
-                return new Actor::WeaponShape();
-            default:
-                return nullptr;
-        }
     }
 }

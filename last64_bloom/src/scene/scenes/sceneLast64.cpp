@@ -3,21 +3,18 @@
 * @license MIT
 */
 #include "sceneLast64.h"
-#include "../../main.h"
-#include "../../debugMenu.h"
-#include "../../render/debugDraw.h"
-#include "../../render/colorTest.h"
+#include "../../actors/player.h"
+#include "../../actors/enemy.h"
+#include "../../actors/projectile.h"
 #include "../../systems/experience.h"
-#include "../../systems/upgrade_system.h"
 #include "../../systems/spawn_manager.h"
-#include "../../actors/enemyDeathVFX.h"
-#include <t3d/t3d.h>
-#include <t3d/tpx.h>
-#include <t3d/t3dmath.h>
+#include "../../systems/weapon_registry.h"
+#include "../../main.h"
+#include "../../render/colorTest.h"
+#include "../../debugMenu.h"
 #include <libdragon.h>
-#include <vector>
-#include <string.h>
-#include "../../audio.h"
+#include <t3d/t3d.h>
+#include <cmath>
 
 namespace {
   // Ambient lighting
@@ -43,8 +40,8 @@ SceneLast64::SceneLast64()
     camera.near = 5.0f;
     camera.far = 500.0f; // Increased to accommodate larger scene
     // Position camera to look at the center of the screen from a reasonable distance
-    camera.pos = {SCREEN_RIGHT/2.0f, SCREEN_BOTTOM/2.0f, 200.0f};
-    camera.target = {SCREEN_RIGHT/2.0f, SCREEN_BOTTOM/2.0f, 0.0f};
+    camera.pos = {(float)(SCREEN_RIGHT/2.0f), (float)(SCREEN_BOTTOM/2.0f), 200.0f};
+    camera.target = {(float)(SCREEN_RIGHT/2.0f), (float)(SCREEN_BOTTOM/2.0f), 0.0f};
 
     // Initialize scene matrix
     sceneMatFP = (T3DMat4FP*)malloc_uncached(sizeof(T3DMat4FP));
@@ -112,7 +109,7 @@ void SceneLast64::updateScene(float deltaTime)
                         T3DVec3 startPos;
                         if (isForceAllPlayers) { // Debug spawn all players
                             startPos = {{SCREEN_RIGHT/2.0f - 20.0f, SCREEN_BOTTOM/2.0f, 0.0f}}; player1 = new Actor::Player(startPos, JOYPAD_PORT_1);
-                            startPos = {{SCREEN_RIGHT/2.0f, SCREEN_BOTTOM/2.0f, 0.0f}}; player2 = new Actor::Player(startPos, JOYPAD_PORT_2);
+                            startPos = {{SCREEN_RIGHT/2.0f        , SCREEN_BOTTOM/2.0f, 0.0f}}; player2 = new Actor::Player(startPos, JOYPAD_PORT_2);
                             startPos = {{SCREEN_RIGHT/2.0f + 20.0f, SCREEN_BOTTOM/2.0f, 0.0f}}; player3 = new Actor::Player(startPos, JOYPAD_PORT_3);
                             startPos = {{SCREEN_RIGHT/2.0f + 40.0f, SCREEN_BOTTOM/2.0f, 0.0f}}; player4 = new Actor::Player(startPos, JOYPAD_PORT_4);
                             activePlayerCount = 4; // All players joined
@@ -120,45 +117,64 @@ void SceneLast64::updateScene(float deltaTime)
                         else
                         {
                             switch (i) {
-                                case 0: startPos = {{SCREEN_RIGHT/2.0f - 20.0f, SCREEN_BOTTOM/2.0f, 0.0f}}; player1 = new Actor::Player(startPos, JOYPAD_PORT_1); break;
-                                case 1: startPos = {{SCREEN_RIGHT/2.0f, SCREEN_BOTTOM/2.0f, 0.0f}}; player2 = new Actor::Player(startPos, JOYPAD_PORT_2); break;
-                                case 2: startPos = {{SCREEN_RIGHT/2.0f + 20.0f, SCREEN_BOTTOM/2.0f, 0.0f}}; player3 = new Actor::Player(startPos, JOYPAD_PORT_3); break;
-                                case 3: startPos = {{SCREEN_RIGHT/2.0f + 40.0f, SCREEN_BOTTOM/2.0f, 0.0f}}; player4 = new Actor::Player(startPos, JOYPAD_PORT_4); break;
+                                case 0: 
+                                    startPos.x = (float)(SCREEN_RIGHT/2.0f - 20.0f);
+                                    startPos.y = (float)(SCREEN_BOTTOM/2.0f);
+                                    startPos.z = 0.0f;
+                                    player1 = new Actor::Player(startPos, JOYPAD_PORT_1); 
+                                    break;
+                                case 1: 
+                                    startPos.x = (float)(SCREEN_RIGHT/2.0f);
+                                    startPos.y = (float)(SCREEN_BOTTOM/2.0f);
+                                    startPos.z = 0.0f;
+                                    player2 = new Actor::Player(startPos, JOYPAD_PORT_2); 
+                                    break;
+                                case 2: 
+                                    startPos.x = (float)(SCREEN_RIGHT/2.0f + 20.0f);
+                                    startPos.y = (float)(SCREEN_BOTTOM/2.0f);
+                                    startPos.z = 0.0f;
+                                    player3 = new Actor::Player(startPos, JOYPAD_PORT_3); 
+                                    break;
+                                case 3: 
+                                    startPos.x = (float)(SCREEN_RIGHT/2.0f + 40.0f);
+                                    startPos.y = (float)(SCREEN_BOTTOM/2.0f);
+                                    startPos.z = 0.0f;
+                                    player4 = new Actor::Player(startPos, JOYPAD_PORT_4); 
+                                    break;
                             }
                             activePlayerCount++;
-                        }
-                        
-                        gSFXManager.play(SFXManager::SFX_START);
-
-                        // If this is the first player to join, start the round
-                        bool anyPlayerJoined = false;
-                        for (int j = 0; j < 4; ++j) {
-                            if (playerJoined[j]) {
-                                anyPlayerJoined = true;
-                                break;
-                            }
-                        }
-                        if (anyPlayerJoined && currentGameState == WAITING_FOR_PLAYERS) {
-                            currentGameState = ROUND_ACTIVE;
-                            // Re-initialize Enemy and Projectile systems for a new round
-                            Actor::Enemy::initialize();
-                            Actor::Projectile::initialize();
-                            Actor::Shape::initialize();
-                            // Initialize Experience system
-                            Experience::initialize();
-                            // Add all currently joined players to the Experience system
-                            if (player1) Experience::addPlayer(player1);
-                            if (player2) Experience::addPlayer(player2);
-                            if (player3) Experience::addPlayer(player3);
-                            if (player4) Experience::addPlayer(player4);
-                            // Restart background music when round starts
-                            gSFXManager.play(SFXManager::SFX_MUSIC1);
+                            gSFXManager.play(SFXManager::SFX_START);
                         }
                     }
+
+            // If this is the first player to join, start the round
+            bool anyPlayerJoined = false;
+            for (int j = 0; j < 4; ++j) {
+                if (playerJoined[j]) {
+                    anyPlayerJoined = true;
+                    break;
                 }
             }
-            break;
+            if (anyPlayerJoined && currentGameState == WAITING_FOR_PLAYERS) {
+                currentGameState = ROUND_ACTIVE;
+                // Re-initialize Enemy and Projectile systems for a new round
+                Actor::Enemy::initialize();
+                Actor::Projectile::initialize();
+                Actor::Shape::initialize();
+                // Initialize Experience system
+                Experience::initialize();
+                // Add all currently joined players to the Experience system
+                if (player1) Experience::addPlayer(player1);
+                if (player2) Experience::addPlayer(player2);
+                if (player3) Experience::addPlayer(player3);
+                if (player4) Experience::addPlayer(player4);
+                // Restart background music when round starts
+                gSFXManager.play(SFXManager::SFX_MUSIC1);
+            }
         }
+    }
+    break;
+}
 
         case ROUND_ACTIVE: {
             // Check for player input to join (even during active round)
@@ -171,10 +187,34 @@ void SceneLast64::updateScene(float deltaTime)
                         T3DVec3 startPos;
                         Actor::Player* newPlayer = nullptr;
                         switch (i) {
-                            case 0: startPos = {{SCREEN_RIGHT/2.0f - 20.0f, SCREEN_BOTTOM/2.0f, 0.0f}}; player1 = new Actor::Player(startPos, JOYPAD_PORT_1); newPlayer = player1; break;
-                            case 1: startPos = {{SCREEN_RIGHT/2.0f, SCREEN_BOTTOM/2.0f, 0.0f}}; player2 = new Actor::Player(startPos, JOYPAD_PORT_2); newPlayer = player2; break;
-                            case 2: startPos = {{SCREEN_RIGHT/2.0f + 20.0f, SCREEN_BOTTOM/2.0f, 0.0f}}; player3 = new Actor::Player(startPos, JOYPAD_PORT_3); newPlayer = player3; break;
-                            case 3: startPos = {{SCREEN_RIGHT/2.0f + 40.0f, SCREEN_BOTTOM/2.0f, 0.0f}}; player4 = new Actor::Player(startPos, JOYPAD_PORT_4); newPlayer = player4; break;
+                            case 0: 
+                                startPos.x = (float)(SCREEN_RIGHT/2.0f - 20.0f);
+                                startPos.y = (float)(SCREEN_BOTTOM/2.0f);
+                                startPos.z = 0.0f;
+                                player1 = new Actor::Player(startPos, JOYPAD_PORT_1); 
+                                newPlayer = player1; 
+                                break;
+                            case 1: 
+                                startPos.x = (float)(SCREEN_RIGHT/2.0f);
+                                startPos.y = (float)(SCREEN_BOTTOM/2.0f);
+                                startPos.z = 0.0f;
+                                player2 = new Actor::Player(startPos, JOYPAD_PORT_2); 
+                                newPlayer = player2; 
+                                break;
+                            case 2: 
+                                startPos.x = (float)(SCREEN_RIGHT/2.0f + 20.0f);
+                                startPos.y = (float)(SCREEN_BOTTOM/2.0f);
+                                startPos.z = 0.0f;
+                                player3 = new Actor::Player(startPos, JOYPAD_PORT_3); 
+                                newPlayer = player3; 
+                                break;
+                            case 3: 
+                                startPos.x = (float)(SCREEN_RIGHT/2.0f + 40.0f);
+                                startPos.y = (float)(SCREEN_BOTTOM/2.0f);
+                                startPos.z = 0.0f;
+                                player4 = new Actor::Player(startPos, JOYPAD_PORT_4); 
+                                newPlayer = player4; 
+                                break;
                         }
                         activePlayerCount++;
                         gSFXManager.play(SFXManager::SFX_JOIN);
@@ -195,7 +235,7 @@ void SceneLast64::updateScene(float deltaTime)
                     Experience::addXP(Experience::getXToNextLevel());
                     break; // Only trigger once per frame
                 }
-            // Debug input: Press R button to skip to next wave
+                // Debug input: Press R button to skip to next wave
                 if (pressed.r) {
                     // Skip to next wave by adjusting the round timer
                     int currentWave = SpawnManager::getCurrentWave();
@@ -385,7 +425,6 @@ void SceneLast64::draw2D(float deltaTime)
                     if (!weapons.empty()) {
                         // Create a string to show all weapons
                         char weaponString[50] = {0}; // Buffer for weapon info
-                        char temp[10] = {0};
                         strcpy(weaponString, "P");
                         char playerNum[2] = {0};
                         playerNum[0] = '0' + (i + 1);
@@ -395,34 +434,17 @@ void SceneLast64::draw2D(float deltaTime)
                         // Add info for each weapon
                         for (size_t j = 0; j < weapons.size() && j < 3; ++j) { // Limit to 3 weapons for display
                             if (weapons[j]) {
-                                char weaponChar = '?';
                                 int level = weapons[j]->getUpgradeLevel();
                                 
                                 // Use first letter of weapon type as identifier
                                 // P=Projectile, H=Homing, C=Circular, S=Spiral, ...
-                                switch (weapons[j]->getWeaponType()) {
-                                    case Actor::WeaponType::PROJECTILE:
-                                        weaponChar = 'P';
-                                        break;
-                                    case Actor::WeaponType::HOMING:
-                                        weaponChar = 'H';
-                                        break;
-                                    case Actor::WeaponType::CIRCULAR:
-                                        weaponChar = 'C';
-                                        break;
-                                    case Actor::WeaponType::SPIRAL:
-                                        weaponChar = 'S';
-                                        break;
-                                    case Actor::WeaponType::SHIELD:
-                                        weaponChar = 'D';
-                                        break;
-                                    case Actor::WeaponType::SHAPE:
-                                        weaponChar = 'W';
-                                        break;
-                                    default:
-                                        weaponChar = 'X';
-                                        break;
+                                char weaponChar = 'X';
+                                const WeaponRegistry::WeaponMetadata* metadata = 
+                                    WeaponRegistry::getWeaponMetadata(weapons[j]->getWeaponType());
+                                if (metadata) {
+                                    weaponChar = metadata->shortName[0];
                                 }
+                                char temp[4] = {0};
                                 
                                 // Add weapon info to string
                                 temp[0] = weaponChar;

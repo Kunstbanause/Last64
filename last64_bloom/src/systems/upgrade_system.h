@@ -4,7 +4,6 @@
 */
 #pragma once
 #include "../actors/player.h"
-#include "weapon_base.h"
 #include <vector>
 
 namespace UpgradeSystem {
@@ -30,8 +29,4 @@ namespace UpgradeSystem {
     
     // Check if a player can receive a new weapon (doesn't already have it)
     bool canAddWeapon(Actor::Player* player, Actor::WeaponBase* newWeapon);
-    
-    // Create a new weapon of a specific type
-    Actor::WeaponBase* createWeapon(int weaponType);
-    Actor::WeaponBase* createWeapon(Actor::WeaponType weaponType);
 }
