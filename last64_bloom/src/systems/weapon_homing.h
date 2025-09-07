@@ -27,6 +27,7 @@ namespace Actor {
         float projectileSpeed;
         float projectileSlowdown;
         float projectileLifetime;     // Lifetime of projectiles
+        float projectileSize;         // Size of projectiles
         float detectionRange;        // Range to detect enemies
     };
 }

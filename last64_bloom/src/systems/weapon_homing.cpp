@@ -19,13 +19,14 @@ namespace Actor {
     WeaponHoming::WeaponHoming() : WeaponBase(WeaponType::HOMING) {
         // Set weapon-specific properties
         fireRate = 1.5f;              // Slower fire rate
-        projectileSpeed = 150.0f;     // Slower projectile speed
-        projectileSlowdown = 100.0f;  // Less slowdown
-        projectileLifetime = 2.2f;   // Longer lifetime for homing projectiles
-        detectionRange = 100.0f;      // Detection range for enemies
+        projectileSpeed = 80.0f;     // Slower projectile speed
+        projectileSlowdown = 20.0f;   // Moderate slowdown
+        projectileLifetime = 2.6f;    // Longer lifetime for homing projectiles
+        projectileSize = 4.0f;        // Size for homing projectiles
+        detectionRange = 80.0f;       // Detection range for enemies
 
         // Default Parameters
-        maxUpgradeLevel = 3;          // Fewer upgrade levels
+        maxUpgradeLevel = 5;          // Fewer upgrade levels
         spawnOffset = {0, 0, 0};
         damage = 8;                   // Higher damage as its a single pojectile
     }
@@ -77,6 +78,7 @@ namespace Actor {
         float closestDistanceSq = detectionRange * detectionRange;
         
         // Iterate through all enemies to find the closest one
+        // TODO: dont use sqaure but AABB or circle collision for better performance
         for (uint32_t i = 0; i < MAX_ENEMIES; i++) {
             if (Actor::Enemy::isActive(i)) {
                 Actor::Enemy* enemy = Actor::Enemy::getEnemy(i);
@@ -120,12 +122,12 @@ namespace Actor {
             }
         }
         
-        // Spawn a projectile with double damage, use player color instead of special color, double size
+        // Spawn a projectile with
         uint32_t projectileColor = HOMING_PROJECTILE_COLOR;
         if (player) {
             projectileColor = player->getColor();
         }
-        Projectile::spawn(spawnPos, fireDirection, projectileSpeed, projectileSlowdown, projectileLifetime, damage, projectileColor, 2.0f);
+        Projectile::spawn(spawnPos, fireDirection, projectileSpeed, projectileSlowdown, projectileLifetime, damage, projectileColor, projectileSize);
     }
 
     void WeaponHoming::fireManual() {
@@ -146,9 +148,12 @@ namespace Actor {
         if (upgradeLevel < maxUpgradeLevel) {
             upgradeLevel++;
             // Increase fire rate and projectile speed for each upgrade
-            fireRate *= 0.9f;     // Increase fire rate
-            projectileSpeed *= 1.1f; // Increase projectile speed
-            detectionRange *= 1.1f;  // Increase detection range
+            fireRate *= 0.85f;     // Increase fire rate
+            projectileSpeed *= 1.2f; // Increase projectile speed
+            projectileSlowdown *= 1.1f; // Increase slowdown
+            detectionRange *= 1.2f;  // Increase detection range
+            projectileSize *= 1.1f;     // Slightly increase size
+            damage += 1;          // Increase damage
         }
     }
 }
