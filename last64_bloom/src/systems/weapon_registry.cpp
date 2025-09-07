@@ -16,44 +16,44 @@ namespace WeaponRegistry {
     static const std::vector<WeaponMetadata> weaponRegistry = {
         {
             Actor::WeaponType::PROJECTILE,
-            "Projectile Weapon",
-            "Projectile",
-            "Fires basic projectiles in the direction of movement",
+            "Projectile Spread",
+            "P",
+            "Fires projectiles in the direction of movement",
             []() -> Actor::WeaponBase* { return new Actor::WeaponProjectile(); }
         },
         {
             Actor::WeaponType::HOMING,
-            "Homing Weapon",
-            "Homing",
+            "Homing Projectiles",
+            "H",
             "Fires projectiles that home in on nearby enemies",
             []() -> Actor::WeaponBase* { return new Actor::WeaponHoming(); }
         },
         {
             Actor::WeaponType::CIRCULAR,
-            "Circular Weapon",
-            "Circular",
-            "Fires projectiles in a circular pattern around the player",
+            "Circular Projectiles",
+            "C",
+            "Fires projectiles in a circular pattern aways from the player",
             []() -> Actor::WeaponBase* { return new Actor::WeaponCircular(); }
         },
         {
             Actor::WeaponType::SPIRAL,
-            "Spiral Weapon",
             "Spiral",
-            "Fires projectiles in a spiral pattern",
+            "S",
+            "Projectiles in a spiral around the player",
             []() -> Actor::WeaponBase* { return new Actor::WeaponSpiral(); }
         },
         {
             Actor::WeaponType::SHIELD,
-            "Shield Weapon",
-            "Shield",
-            "Generates a protective shield around the player",
+            "Defene",
+            "D",
+            "Generates a shield around the player",
             []() -> Actor::WeaponBase* { return new Actor::WeaponShield(); }
         },
         {
             Actor::WeaponType::SHAPE,
-            "Shape Weapon",
-            "Shape",
-            "Fires shaped projectiles",
+            "Whip",
+            "W",
+            "Spawns Whip Shape",
             []() -> Actor::WeaponBase* { return new Actor::WeaponShape(); }
         }
     };
