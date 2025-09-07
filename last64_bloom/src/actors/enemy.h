@@ -5,6 +5,7 @@
 #pragma once
 #include "../actors/base.h"
 #include "player.h"
+#include "enemyDeathVFX.h"
 #include <t3d/t3d.h>
 
 #define MAX_ENEMIES 100

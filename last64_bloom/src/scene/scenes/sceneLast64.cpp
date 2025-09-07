@@ -10,6 +10,7 @@
 #include "../../systems/experience.h"
 #include "../../systems/upgrade_system.h"
 #include "../../systems/spawn_manager.h"
+#include "../../actors/enemyDeathVFX.h"
 #include <t3d/t3d.h>
 #include <t3d/tpx.h>
 #include <t3d/t3dmath.h>
@@ -59,6 +60,7 @@ SceneLast64::SceneLast64()
     Actor::Enemy::initialize();
     Actor::Projectile::initialize();
     Actor::Shape::initialize();
+    Actor::EnemyDeathVFX::initialize();
     SpawnManager::initialize();
     
     // Play background music once when scene starts
@@ -74,6 +76,7 @@ SceneLast64::~SceneLast64()
     Actor::Enemy::cleanup();
     Actor::Projectile::cleanup();
     Actor::Shape::cleanup();
+    Actor::EnemyDeathVFX::cleanup();
     Experience::shutdown();
     SpawnManager::deinitialize();
     
@@ -222,6 +225,9 @@ void SceneLast64::updateScene(float deltaTime)
             // Update all shapes
             Actor::Shape::updateAll(deltaTime);
 
+            // Update all enemy death VFX
+            Actor::EnemyDeathVFX::updateAll(deltaTime);
+
             // --- Collision Detection ---
             // Enemy-Projectile Collision
             for (uint32_t i = 0; i < MAX_ENEMIES; ++i) {
@@ -329,6 +335,9 @@ void SceneLast64::draw3D(float deltaTime)
     
     // Draw all shapes
     Actor::Shape::drawAll(deltaTime);
+    
+    // Draw all enemy death VFX
+    Actor::EnemyDeathVFX::drawAll(deltaTime);
     
     // Draw all players
     t3d_screen_clear_depth(); // Clear so the players are on top.

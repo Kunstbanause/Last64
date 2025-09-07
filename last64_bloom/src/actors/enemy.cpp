@@ -320,6 +320,22 @@ namespace Actor {
     }
 
     void Enemy::die() {
+        // Spawn death VFX with the same position, size, and color as the enemy
+        float vfxSize = 1.0f;
+        switch (size) {
+            case EnemySize::SMALL:
+                vfxSize = 1.0f;
+                break;
+            case EnemySize::MEDIUM:
+                vfxSize = 1.5f;
+                break;
+            case EnemySize::LARGE:
+                vfxSize = 4.0f;
+                break;
+        }
+        
+        EnemyDeathVFX::spawn(position, vfxSize, color);
+        
         Experience::addXP(xpReward);
         deactivate();
     }
