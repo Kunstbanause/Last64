@@ -84,6 +84,8 @@
 - [x] projectiles in different sizes
 - [x] Proectiles in player color
 
+- [x] HUD: Weapon Icons
+
 ### ✅ Phase 11: Upgrades overhaul
 - [ ] Upgrade decisions, a/b, slowdown, in-world or UI?
 - [ ] Passive upgrades
