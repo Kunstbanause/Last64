@@ -99,11 +99,12 @@ namespace WeaponIcons {
         // Draw level number in the corner
         char levelStr[4] = {0};
         snprintf(levelStr, 4, "%d", level);
-        
+
         // Draw text using the debug draw system
         float charX = x + (ICON_WIDTH / 2) - 3;
         float charY = y + (ICON_HEIGHT / 2) - 4;
-        Debug::print(charX, charY, &weaponChar);
+        char weaponStr[2] = { weaponChar, '\0' };
+        Debug::print(charX, charY, weaponStr);
         
         float levelX = x + ICON_WIDTH - 6;
         float levelY = y + ICON_HEIGHT - 8;
