@@ -426,7 +426,7 @@ void SceneLast64::draw2D(float deltaTime)
                     auto& weapons = currentPlayer->getWeapons();
                     if (!weapons.empty()) {
                         // Draw player number
-                        Debug::printf(10, 10 + (i * 10), "P%d", i + 1);
+                        Debug::printf(10, 10 + (i * 20), "P%d", i + 1);
                         
                         // Draw weapon icons
                         float iconX = 35; // Start position for icons
@@ -500,7 +500,7 @@ void SceneLast64::draw2D(float deltaTime)
             
             // Draw enemy and projectile counts
             if (Actor::Projectile::getActiveCount() >= 75 || Actor::Enemy::getActiveCount() >= 75 || Debug::isMenuVisible()) {
-                Debug::printf(230, 30, "E:%d P:%d", Actor::Enemy::getActiveCount(), Actor::Projectile::getActiveCount());
+                Debug::printf(230, 200, "E:%d P:%d", Actor::Enemy::getActiveCount(), Actor::Projectile::getActiveCount());
             }
 
             // Draw current wave
