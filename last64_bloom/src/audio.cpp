@@ -49,6 +49,11 @@ void SFXManager::play(SfxId id)
     }
 }
 
+void SFXManager::setVolume_Music(float volume)
+{
+    mixer_ch_set_vol(2, volume, volume);
+}
+
 void SFXManager::stop(SfxId id)
 {
     switch (id)

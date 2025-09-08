@@ -65,6 +65,7 @@ SceneLast64::SceneLast64()
     
     // Play background music once when scene starts
     gSFXManager.play(SFXManager::SFX_MUSIC1);
+    gSFXManager.setVolume_Music(0.2f); // Set Volume to normal
 }
 
 SceneLast64::~SceneLast64()
@@ -175,7 +176,7 @@ void SceneLast64::updateScene(float deltaTime)
                 if (player3) Experience::addPlayer(player3);
                 if (player4) Experience::addPlayer(player4);
                 // Restart background music when round starts
-                gSFXManager.play(SFXManager::SFX_MUSIC1);
+                gSFXManager.setVolume_Music(1.0f); // Set Volume to normal
             }
         }
     }
@@ -321,7 +322,7 @@ void SceneLast64::updateScene(float deltaTime)
             if (alivePlayers == 0 && activePlayerCount > 0) { // Ensure at least one player was active before game over
                 currentGameState = GAME_OVER;
                 // Stop background music when game is over
-                gSFXManager.stop(SFXManager::SFX_MUSIC1);
+                gSFXManager.setVolume_Music(0.2f); // Lower volume
                 // gSFXManager.play(SFXManager::SFX_GAME_OVER); // Assuming a game over sound effect
             }
             break;
@@ -341,7 +342,7 @@ void SceneLast64::updateScene(float deltaTime)
             if (restartPressed) {
                 restartRequested = true; // Signal restart Scene
                 // Restart background music when game restarts
-                gSFXManager.play(SFXManager::SFX_MUSIC1);
+                gSFXManager.setVolume_Music(1.0f); // Set Volume to normal
                 // All cleanup and reset logic will be handled by SceneManager::loadScene(0)
                 // and the SceneLast64 destructor/constructor.
             }
