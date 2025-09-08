@@ -33,33 +33,36 @@ namespace UpgradeSystem {
             options.push_back(upgradeOption);
         }
         
-        // Instead of trying randomly, let's find which weapon types the player doesn't have yet
-        std::set<Actor::WeaponType> existingWeaponTypes;
-        for (const auto& weapon : weapons) {
-            if (weapon) {
-                existingWeaponTypes.insert(weapon->getWeaponType());
+        // Check if we can add a new weapon (limit to 3 weapons)
+        if (weapons.size() < 3) {
+            // Instead of trying randomly, let's find which weapon types the player doesn't have yet
+            std::set<Actor::WeaponType> existingWeaponTypes;
+            for (const auto& weapon : weapons) {
+                if (weapon) {
+                    existingWeaponTypes.insert(weapon->getWeaponType());
+                }
             }
-        }
-        
-        // Find weapon types that the player doesn't have
-        std::vector<Actor::WeaponType> availableWeaponTypes;
-        const std::vector<Actor::WeaponType>& allWeaponTypes = WeaponRegistry::getAllWeaponTypes();
-        for (const auto& weaponType : allWeaponTypes) {
-            if (existingWeaponTypes.find(weaponType) == existingWeaponTypes.end()) {
-                availableWeaponTypes.push_back(weaponType);
-            }
-        }
-        
-        // If there are available weapon types, randomly select one
-        if (!availableWeaponTypes.empty()) {
-            int randomIndex = rand() % availableWeaponTypes.size();
-            Actor::WeaponBase* newWeapon = WeaponRegistry::createWeapon(availableWeaponTypes[randomIndex]);
             
-            if (newWeapon) {
-                UpgradeOption newWeaponOption;
-                newWeaponOption.type = UpgradeType::NEW_WEAPON;
-                newWeaponOption.weapon = newWeapon;
-                options.push_back(newWeaponOption);
+            // Find weapon types that the player doesn't have
+            std::vector<Actor::WeaponType> availableWeaponTypes;
+            const std::vector<Actor::WeaponType>& allWeaponTypes = WeaponRegistry::getAllWeaponTypes();
+            for (const auto& weaponType : allWeaponTypes) {
+                if (existingWeaponTypes.find(weaponType) == existingWeaponTypes.end()) {
+                    availableWeaponTypes.push_back(weaponType);
+                }
+            }
+            
+            // If there are available weapon types, randomly select one
+            if (!availableWeaponTypes.empty()) {
+                int randomIndex = rand() % availableWeaponTypes.size();
+                Actor::WeaponBase* newWeapon = WeaponRegistry::createWeapon(availableWeaponTypes[randomIndex]);
+                
+                if (newWeapon) {
+                    UpgradeOption newWeaponOption;
+                    newWeaponOption.type = UpgradeType::NEW_WEAPON;
+                    newWeaponOption.weapon = newWeapon;
+                    options.push_back(newWeaponOption);
+                }
             }
         }
         
