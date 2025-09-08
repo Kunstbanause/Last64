@@ -19,7 +19,7 @@ namespace WeaponIcons {
         weaponIconSprites[0] = sprite_load("rom:/icons/1_spread.sprite");
         weaponIconSprites[1] = sprite_load("rom:/icons/2_homing.sprite");
         weaponIconSprites[2] = sprite_load("rom:/icons/3_star.sprite");
-        weaponIconSprites[3] = sprite_load("rom:/icons/4_Spiral.sprite");
+        weaponIconSprites[3] = sprite_load("rom:/icons/4_spiral.sprite");
         weaponIconSprites[4] = sprite_load("rom:/icons/5_shield.sprite");
         weaponIconSprites[5] = sprite_load("rom:/icons/6_whip.sprite");
         
@@ -65,7 +65,7 @@ namespace WeaponIcons {
                 spriteIndex = 2; // 3_star.png
                 break;
             case Actor::WeaponType::SPIRAL:
-                spriteIndex = 3; // 4_Spiral.png
+                spriteIndex = 3; // 4_spiral.png
                 break;
             case Actor::WeaponType::SHIELD:
                 spriteIndex = 4; // 5_shield.png
