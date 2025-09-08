@@ -14,7 +14,7 @@ src += $(wildcard src/scene/*.cpp) $(wildcard src/camera/*.cpp) $(wildcard src/a
 src += $(wildcard src/memory/*.cpp) $(wildcard src/scene/scenes/*.cpp) $(wildcard src/systems/*.cpp)
 
 assets_png = $(wildcard assets/*.png) $(wildcard assets/env/*.png) $(wildcard assets/space/*.png)
-assets_png += $(wildcard assets/magic/*.png) $(wildcard assets/skyAnim/*.png) $(wildcard assets/mariotest/*.png)
+assets_png += $(wildcard assets/magic/*.png) $(wildcard assets/skyAnim/*.png) $(wildcard assets/icons/*.png)
 
 assets_gltf = $(wildcard assets/*.glb) $(wildcard assets/space/*.glb) $(wildcard assets/skyAnim/*.glb)
 assets_gltf += $(wildcard assets/mariotest/*.glb)

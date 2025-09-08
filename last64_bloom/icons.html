@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vampire Survivors Weapon Icons</title>
+    <style>
+        body {
+            background: #222;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: monospace;
+            color: white;
+        }
+        
+        .atlas-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .atlas {
+            display: flex;
+            background: #333;
+            padding: 10px;
+            border: 2px solid #555;
+        }
+        
+        .icon {
+            width: 16px;
+            height: 16px;
+            border: 1px solid #444;
+            margin: 1px;
+        }
+        
+        .preview {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .icon-preview {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .icon-large {
+            width: 64px;
+            height: 64px;
+            image-rendering: pixelated;
+            border: 1px solid #555;
+        }
+        
+        .label {
+            font-size: 12px;
+            text-align: center;
+            max-width: 80px;
+        }
+    </style>
+</head>
+<body>
+    <div class="atlas-container">
+        <h1>N64 Style Weapon Icons Atlas (16x16)</h1>
+        
+        <div class="atlas">
+            <canvas class="icon" id="projectile-spread"></canvas>
+            <canvas class="icon" id="homing-single"></canvas>
+            <canvas class="icon" id="circular-star"></canvas>
+            <canvas class="icon" id="spiral"></canvas>
+            <canvas class="icon" id="shield"></canvas>
+            <canvas class="icon" id="whip"></canvas>
+        </div>
+        
+        <div style="margin-top: 30px;">
+            <h3>PNG Atlas (48x32)</h3>
+            <canvas id="png-atlas" width="48" height="32" style="border: 1px solid #555; image-rendering: pixelated; width: 192px; height: 128px; background: #000;"></canvas>
+            <br>
+            <button onclick="downloadAtlas()" style="margin-top: 10px; padding: 10px; background: #444; color: white; border: 1px solid #666; cursor: pointer; border-radius: 3px;">Download PNG Atlas</button>
+            <div style="margin-top: 10px; font-size: 12px; color: #aaa;">
+                Layout: Top row (Spread, Homing, Star) | Bottom row (Spiral, Shield, Whip)
+            </div>
+        </div>
+
+        <div class="preview">
+            <div class="icon-preview">
+                <canvas class="icon-large" id="preview-spread"></canvas>
+                <div class="label">Projectile Spread</div>
+            </div>
+            <div class="icon-preview">
+                <canvas class="icon-large" id="preview-homing"></canvas>
+                <div class="label">Homing Single</div>
+            </div>
+            <div class="icon-preview">
+                <canvas class="icon-large" id="preview-star"></canvas>
+                <div class="label">Circular Star</div>
+            </div>
+            <div class="icon-preview">
+                <canvas class="icon-large" id="preview-spiral"></canvas>
+                <div class="label">Spiral</div>
+            </div>
+            <div class="icon-preview">
+                <canvas class="icon-large" id="preview-shield"></canvas>
+                <div class="label">Shield</div>
+            </div>
+            <div class="icon-preview">
+                <canvas class="icon-large" id="preview-whip"></canvas>
+                <div class="label">Whip</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // N64-style color palette
+        const colors = {
+            // Red projectile colors
+            redDark: '#8B0000',
+            redMed: '#CC3333',
+            redLight: '#FF6666',
+            redBright: '#FFAAAA',
+            
+            // Green defensive colors
+            greenDark: '#006400',
+            greenMed: '#33AA33',
+            greenLight: '#66CC66',
+            greenBright: '#99FF99',
+            
+            // Blue shape colors
+            blueDark: '#000080',
+            blueMed: '#3333CC',
+            blueLight: '#6666FF',
+            blueBright: '#AAAAFF',
+            
+            // Common colors
+            black: '#000000',
+            white: '#FFFFFF',
+            gray: '#808080',
+            darkGray: '#404040'
+        };
+
+        function drawPixel(ctx, x, y, color) {
+            ctx.fillStyle = color;
+            ctx.fillRect(x, y, 1, 1);
+        }
+
+        function drawProjectileSpread(ctx) {
+            // Clear background
+            ctx.fillStyle = colors.black;
+            ctx.fillRect(0, 0, 16, 16);
+            
+            // Central gun barrel
+            drawPixel(ctx, 7, 12, colors.gray);
+            drawPixel(ctx, 8, 12, colors.gray);
+            drawPixel(ctx, 7, 13, colors.darkGray);
+            drawPixel(ctx, 8, 13, colors.darkGray);
+            
+            // Spread projectiles
+            drawPixel(ctx, 4, 4, colors.redBright);
+            drawPixel(ctx, 5, 5, colors.redLight);
+            drawPixel(ctx, 6, 6, colors.redMed);
+            
+            drawPixel(ctx, 7, 3, colors.redBright);
+            drawPixel(ctx, 7, 4, colors.redLight);
+            drawPixel(ctx, 7, 5, colors.redMed);
+            
+            drawPixel(ctx, 8, 3, colors.redBright);
+            drawPixel(ctx, 8, 4, colors.redLight);
+            drawPixel(ctx, 8, 5, colors.redMed);
+            
+            drawPixel(ctx, 11, 4, colors.redBright);
+            drawPixel(ctx, 10, 5, colors.redLight);
+            drawPixel(ctx, 9, 6, colors.redMed);
+        }
+
+        function drawHomingSingle(ctx) {
+            ctx.fillStyle = colors.black;
+            ctx.fillRect(0, 0, 16, 16);
+            
+            // Curved trajectory
+            drawPixel(ctx, 2, 8, colors.redDark);
+            drawPixel(ctx, 3, 7, colors.redMed);
+            drawPixel(ctx, 4, 6, colors.redMed);
+            drawPixel(ctx, 5, 5, colors.redLight);
+            drawPixel(ctx, 7, 4, colors.redLight);
+            drawPixel(ctx, 9, 5, colors.redLight);
+            drawPixel(ctx, 11, 6, colors.redBright);
+            
+            // Arrow head at end
+            drawPixel(ctx, 12, 6, colors.redBright);
+            drawPixel(ctx, 11, 5, colors.redBright);
+            drawPixel(ctx, 11, 7, colors.redBright);
+            
+            // Target indicator
+            drawPixel(ctx, 13, 2, colors.redLight);
+            drawPixel(ctx, 14, 3, colors.redLight);
+            drawPixel(ctx, 12, 3, colors.redLight);
+            drawPixel(ctx, 13, 4, colors.redLight);
+        }
+
+        function drawCircularStar(ctx) {
+            ctx.fillStyle = colors.black;
+            ctx.fillRect(0, 0, 16, 16);
+            
+            // Center point
+            drawPixel(ctx, 7, 7, colors.redBright);
+            drawPixel(ctx, 8, 7, colors.redBright);
+            drawPixel(ctx, 7, 8, colors.redBright);
+            drawPixel(ctx, 8, 8, colors.redBright);
+            
+            // 8-directional projectiles
+            // Up
+            drawPixel(ctx, 7, 2, colors.redLight);
+            drawPixel(ctx, 8, 2, colors.redLight);
+            // Up-right
+            drawPixel(ctx, 12, 2, colors.redLight);
+            // Right
+            drawPixel(ctx, 13, 7, colors.redLight);
+            drawPixel(ctx, 13, 8, colors.redLight);
+            // Down-right
+            drawPixel(ctx, 12, 13, colors.redLight);
+            // Down
+            drawPixel(ctx, 7, 13, colors.redLight);
+            drawPixel(ctx, 8, 13, colors.redLight);
+            // Down-left
+            drawPixel(ctx, 3, 13, colors.redLight);
+            // Left
+            drawPixel(ctx, 2, 7, colors.redLight);
+            drawPixel(ctx, 2, 8, colors.redLight);
+            // Up-left
+            drawPixel(ctx, 3, 2, colors.redLight);
+        }
+
+        function drawSpiral(ctx) {
+            ctx.fillStyle = colors.black;
+            ctx.fillRect(0, 0, 16, 16);
+            
+            // Player at center
+            drawPixel(ctx, 7, 7, colors.blueBright);
+            drawPixel(ctx, 8, 7, colors.blueBright);
+            drawPixel(ctx, 7, 8, colors.blueBright);
+            drawPixel(ctx, 8, 8, colors.blueBright);
+            
+            // Spiral pattern
+            drawPixel(ctx, 5, 7, colors.blueLight);
+            drawPixel(ctx, 5, 5, colors.blueLight);
+            drawPixel(ctx, 8, 4, colors.blueLight);
+            drawPixel(ctx, 11, 6, colors.blueLight);
+            drawPixel(ctx, 11, 9, colors.blueLight);
+            drawPixel(ctx, 8, 11, colors.blueLight);
+            drawPixel(ctx, 4, 10, colors.blueLight);
+            drawPixel(ctx, 3, 6, colors.blueLight);
+        }
+
+        function drawShield(ctx) {
+            ctx.fillStyle = colors.black;
+            ctx.fillRect(0, 0, 16, 16);
+            
+            // Shield outline
+            const shield = [
+                [7, 2], [8, 2],
+                [6, 3], [7, 3], [8, 3], [9, 3],
+                [5, 4], [6, 4], [7, 4], [8, 4], [9, 4], [10, 4],
+                [5, 5], [10, 5],
+                [5, 6], [10, 6],
+                [5, 7], [10, 7],
+                [5, 8], [10, 8],
+                [6, 9], [9, 9],
+                [6, 10], [9, 10],
+                [7, 11], [8, 11],
+                [7, 12], [8, 12]
+            ];
+            
+            // Fill shield
+            for (let [x, y] of shield) {
+                drawPixel(ctx, x, y, colors.greenLight);
+            }
+            
+            // Inner details
+            drawPixel(ctx, 7, 4, colors.greenBright);
+            drawPixel(ctx, 8, 4, colors.greenBright);
+            drawPixel(ctx, 7, 5, colors.greenBright);
+            drawPixel(ctx, 8, 5, colors.greenBright);
+            
+            // Dark edges
+            drawPixel(ctx, 5, 4, colors.greenDark);
+            drawPixel(ctx, 10, 4, colors.greenDark);
+            drawPixel(ctx, 5, 8, colors.greenDark);
+            drawPixel(ctx, 10, 8, colors.greenDark);
+        }
+
+        function drawWhip(ctx) {
+            ctx.fillStyle = colors.black;
+            ctx.fillRect(0, 0, 16, 16);
+            
+            // Handle
+            drawPixel(ctx, 2, 12, colors.blueMed);
+            drawPixel(ctx, 2, 13, colors.blueMed);
+            drawPixel(ctx, 3, 12, colors.blueDark);
+            drawPixel(ctx, 3, 13, colors.blueDark);
+            
+            // Whip curve
+            drawPixel(ctx, 4, 11, colors.blueLight);
+            drawPixel(ctx, 5, 9, colors.blueLight);
+            drawPixel(ctx, 6, 7, colors.blueLight);
+            drawPixel(ctx, 7, 5, colors.blueLight);
+            drawPixel(ctx, 9, 4, colors.blueLight);
+            drawPixel(ctx, 11, 3, colors.blueLight);
+            drawPixel(ctx, 13, 2, colors.blueLight);
+            
+            // Whip tip effect
+            drawPixel(ctx, 14, 1, colors.blueBright);
+            drawPixel(ctx, 14, 2, colors.blueBright);
+            drawPixel(ctx, 13, 1, colors.blueBright);
+        }
+
+        // Draw all icons
+        function drawIcon(canvasId, drawFunction) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            ctx.imageSmoothingEnabled = false;
+            drawFunction(ctx);
+        }
+
+        function drawIconLarge(canvasId, drawFunction) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            ctx.imageSmoothingEnabled = false;
+            
+            // Scale up 4x
+            ctx.scale(4, 4);
+            drawFunction(ctx);
+        }
+
+        // Create PNG Atlas
+        function createPNGAtlas() {
+            const atlasCanvas = document.getElementById('png-atlas');
+            if (!atlasCanvas) {
+                console.error('Atlas canvas not found');
+                return;
+            }
+            const atlasCtx = atlasCanvas.getContext('2d');
+            atlasCtx.imageSmoothingEnabled = false;
+            
+            // Clear the atlas
+            atlasCtx.fillStyle = colors.black;
+            atlasCtx.fillRect(0, 0, 48, 32);
+            
+            // Draw icons in 3x2 grid
+            // Top row
+            atlasCtx.save();
+            atlasCtx.translate(0, 0);
+            drawProjectileSpread(atlasCtx);
+            atlasCtx.restore();
+            
+            atlasCtx.save();
+            atlasCtx.translate(16, 0);
+            drawHomingSingle(atlasCtx);
+            atlasCtx.restore();
+            
+            atlasCtx.save();
+            atlasCtx.translate(32, 0);
+            drawCircularStar(atlasCtx);
+            atlasCtx.restore();
+            
+            // Bottom row
+            atlasCtx.save();
+            atlasCtx.translate(0, 16);
+            drawSpiral(atlasCtx);
+            atlasCtx.restore();
+            
+            atlasCtx.save();
+            atlasCtx.translate(16, 16);
+            drawShield(atlasCtx);
+            atlasCtx.restore();
+            
+            atlasCtx.save();
+            atlasCtx.translate(32, 16);
+            drawWhip(atlasCtx);
+            atlasCtx.restore();
+        }
+
+        function downloadAtlas() {
+            const atlasCanvas = document.getElementById('png-atlas');
+            if (!atlasCanvas) {
+                alert('Atlas canvas not ready');
+                return;
+            }
+            const link = document.createElement('a');
+            link.download = 'vampire_weapon_atlas_48x32.png';
+            link.href = atlasCanvas.toDataURL();
+            link.click();
+        }
+
+        // Wait for DOM to be ready, then draw everything
+        document.addEventListener('DOMContentLoaded', function() {
+            // Draw atlas icons
+            drawIcon('projectile-spread', drawProjectileSpread);
+            drawIcon('homing-single', drawHomingSingle);
+            drawIcon('circular-star', drawCircularStar);
+            drawIcon('spiral', drawSpiral);
+            drawIcon('shield', drawShield);
+            drawIcon('whip', drawWhip);
+
+            // Draw preview icons
+            drawIconLarge('preview-spread', drawProjectileSpread);
+            drawIconLarge('preview-homing', drawHomingSingle);
+            drawIconLarge('preview-star', drawCircularStar);
+            drawIconLarge('preview-spiral', drawSpiral);
+            drawIconLarge('preview-shield', drawShield);
+            drawIconLarge('preview-whip', drawWhip);
+
+            // Create the PNG atlas
+            createPNGAtlas();
+        });
+    </script>
+</body>
+</html>
