@@ -417,24 +417,20 @@ void SceneLast64::draw2D(float deltaTime)
         }
         case ROUND_ACTIVE: {
             // Draw player weapons overview
-            for (int i = 0; i < 4; ++i) {
-                Actor::Player* currentPlayer = nullptr;
-                switch (i) {
-                    case 0: currentPlayer = player1; break;
-                    case 1: currentPlayer = player2; break;
-                    case 2: currentPlayer = player3; break;
-                    case 3: currentPlayer = player4; break;
-                }
+            // Draw player 1 and 2 weapons at top left
+            Actor::Player* playersTopLeft[2] = {player1, player2};
+            for (int i = 0; i < 2; ++i) {
+                Actor::Player* currentPlayer = playersTopLeft[i];
                 if (currentPlayer) {
                     // Display all player weapons using icons
                     auto& weapons = currentPlayer->getWeapons();
                     if (!weapons.empty()) {
                         // Draw player number
-                        Debug::printf(10, 10 + (i * 10), "P%d:", i + 1);
+                        Debug::printf(10, 10 + (i * 10), "P%d", i + 1);
                         
                         // Draw weapon icons
                         float iconX = 35; // Start position for icons
-                        float iconY = 10 + (i * 10) - 4; // Adjust Y position to center icons
+                        float iconY = 10 + (i * 20) - 4; // Adjust Y position to center icons
                         
                         // Draw up to 3 weapon icons
                         for (size_t j = 0; j < weapons.size() && j < 3; ++j) {
@@ -450,7 +446,54 @@ void SceneLast64::draw2D(float deltaTime)
                             }
                         }
                     } else {
-                        Debug::printf(10, 10 + (i * 10), "P%d:None", i + 1);
+                        Debug::printf(10, 10 + (i * 20), "P%d:None", i + 1);
+                    }
+                }
+            }
+            
+            // Draw player 3 and 4 weapons at top right
+            Actor::Player* playersTopRight[2] = {player3, player4};
+            for (int i = 0; i < 2; ++i) {
+                Actor::Player* currentPlayer = playersTopRight[i];
+                if (currentPlayer) {
+                    // Display all player weapons using icons
+                    auto& weapons = currentPlayer->getWeapons();
+                    if (!weapons.empty()) {
+                        // Calculate position for top right corner
+                        // Start from right side and work backwards
+                        float baseX = SCREEN_WIDTH - 10; // Right edge padding
+                        float yPosition = 10 + (i * 20); // Same vertical spacing as top left
+                        
+                        // Draw player number at the rightmost position
+                        int playerNum = i + 3; // Player 3 or 4
+                        int numWidth = 20; // Approximate width for "P3:" or "P4:"
+                        Debug::printf(baseX - numWidth, yPosition, "P%d", playerNum);
+                        
+                        // Draw weapon icons to the left of the player number
+                        float iconX = baseX - numWidth - 5; // Start position for icons (some padding from player number)
+                        float iconY = yPosition - 4; // Adjust Y position to center icons
+                        
+                        // Draw up to 3 weapon icons (in reverse order to maintain visual order)
+                        int iconsToDraw = (weapons.size() < 3) ? weapons.size() : 3;
+                        for (int j = iconsToDraw - 1; j >= 0; --j) {
+                            if (weapons[j]) {
+                                int level = weapons[j]->getUpgradeLevel();
+                                Actor::WeaponType weaponType = weapons[j]->getWeaponType();
+                                
+                                // Move icon position to the left for each icon
+                                iconX -= WeaponIcons::getIconWidth();
+                                
+                                // Draw the weapon icon
+                                WeaponIcons::drawIcon(iconX, iconY, weaponType, level);
+                                
+                                // Add spacing between icons (move further left)
+                                iconX -= 2; // Spacing between icons
+                            }
+                        }
+                    } else {
+                        // Calculate position for "None" text
+                        float yPosition = 10 + (i * 10);
+                        Debug::printf(SCREEN_WIDTH - 50, yPosition, "P%d:None", i + 3);
                     }
                 }
             }
