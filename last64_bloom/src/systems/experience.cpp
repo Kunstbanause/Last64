@@ -78,6 +78,18 @@ void Experience::addXP(int amount) {
                 if (!upgradeOptions.empty()) {
                     int randomIndex = rand() % upgradeOptions.size();
                     UpgradeSystem::applyUpgrade(activePlayers[i], upgradeOptions[randomIndex]);
+
+                    // Trigger fire command on all weapons for all players
+                    for (int p = 0; p < activePlayerCount; ++p) {
+                        if (activePlayers[p] && !activePlayers[p]->getIsDead()) {
+                            auto& weapons = activePlayers[p]->getWeapons();
+                            for (auto& weapon : weapons) {
+                                if (weapon) {
+                                    weapon->fireManual();
+                                }
+                            }
+                        }
+                    }
                     
                     // Clean up any new weapon options that weren't selected
                     for (auto& option : upgradeOptions) {
