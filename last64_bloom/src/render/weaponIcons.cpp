@@ -6,19 +6,22 @@
 #include "../render/debugDraw.h"
 
 namespace {
-    sprite_t *weaponIconsSprite = nullptr;
+    sprite_t *weaponIconSprites[6] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
     rspq_block_t *dplSetup = nullptr;
     
     constexpr int ICON_WIDTH = 16;
     constexpr int ICON_HEIGHT = 16;
-    constexpr int ICONS_PER_ROW = 6; // 6 weapon types
 }
 
 namespace WeaponIcons {
     void init() {
-        // For now, we'll create a simple placeholder sprite
-        // In a real implementation, this would load from a sprite sheet
-        weaponIconsSprite = nullptr; // Will be set when we have actual icons
+        // Load individual weapon icon sprites
+        weaponIconSprites[0] = sprite_load("rom:/icons/1_spread.sprite");
+        weaponIconSprites[1] = sprite_load("rom:/icons/2_homing.sprite");
+        weaponIconSprites[2] = sprite_load("rom:/icons/3_star.sprite");
+        weaponIconSprites[3] = sprite_load("rom:/icons/4_Spiral.sprite");
+        weaponIconSprites[4] = sprite_load("rom:/icons/5_shield.sprite");
+        weaponIconSprites[5] = sprite_load("rom:/icons/6_whip.sprite");
         
         rspq_block_begin();
             rdpq_sync_pipe();
@@ -36,9 +39,11 @@ namespace WeaponIcons {
     }
     
     void destroy() {
-        if (weaponIconsSprite) {
-            sprite_free(weaponIconsSprite);
-            weaponIconsSprite = nullptr;
+        for (int i = 0; i < 6; i++) {
+            if (weaponIconSprites[i]) {
+                sprite_free(weaponIconSprites[i]);
+                weaponIconSprites[i] = nullptr;
+            }
         }
         if (dplSetup) {
             rspq_block_free(dplSetup);
@@ -47,64 +52,44 @@ namespace WeaponIcons {
     }
     
     void drawIcon(float x, float y, Actor::WeaponType type, int level) {
-        // Set color based on weapon type
-        color_t iconColor = RGBA32(0xFF, 0xFF, 0xFF, 0xFF); // White default
+        // Map weapon type to sprite index
+        int spriteIndex = 0;
         switch (type) {
             case Actor::WeaponType::PROJECTILE:
-                iconColor = RGBA32(0xFF, 0x80, 0x80, 0xFF); // Light red
+                spriteIndex = 0; // 1_spread.png
                 break;
             case Actor::WeaponType::HOMING:
-                iconColor = RGBA32(0x80, 0xFF, 0x80, 0xFF); // Light green
+                spriteIndex = 1; // 2_homing.png
                 break;
             case Actor::WeaponType::CIRCULAR:
-                iconColor = RGBA32(0x80, 0x80, 0xFF, 0xFF); // Light blue
+                spriteIndex = 2; // 3_star.png
                 break;
             case Actor::WeaponType::SPIRAL:
-                iconColor = RGBA32(0xFF, 0xFF, 0x80, 0xFF); // Light yellow
+                spriteIndex = 3; // 4_Spiral.png
                 break;
             case Actor::WeaponType::SHIELD:
-                iconColor = RGBA32(0xC0, 0xC0, 0xC0, 0xFF); // Light gray
+                spriteIndex = 4; // 5_shield.png
                 break;
             case Actor::WeaponType::SHAPE:
-                iconColor = RGBA32(0xFF, 0x80, 0xFF, 0xFF); // Light magenta
+                spriteIndex = 5; // 6_whip.png
                 break;
         }
         
-        // Draw a colored rectangle as a placeholder for the icon
-        rdpq_set_mode_fill(iconColor);
-        
-        // Draw the icon background
-        rdpq_fill_rectangle(x, y, x + ICON_WIDTH, y + ICON_HEIGHT);
-        
-        // Draw a border around the icon
-        rdpq_set_mode_fill(RGBA32(0x00, 0x00, 0x00, 0xFF)); // Black border
-        
-        // Draw border lines manually with rectangles
-        rdpq_fill_rectangle(x, y, x + ICON_WIDTH, y + 1); // Top
-        rdpq_fill_rectangle(x, y, x + 1, y + ICON_HEIGHT); // Left
-        rdpq_fill_rectangle(x + ICON_WIDTH - 1, y, x + ICON_WIDTH, y + ICON_HEIGHT); // Right
-        rdpq_fill_rectangle(x, y + ICON_HEIGHT - 1, x + ICON_WIDTH, y + ICON_HEIGHT); // Bottom
-        
-        // Restore mode for text drawing
-        Debug::printStart();
-        
-        // Draw the weapon type character in the center
-        char weaponChar = 'X';
-        const WeaponRegistry::WeaponMetadata* metadata = 
-            WeaponRegistry::getWeaponMetadata(type);
-        if (metadata) {
-            weaponChar = metadata->shortName[0];
+        // Run the display list setup
+        if (dplSetup) {
+            rspq_block_run(dplSetup);
         }
         
-        // Draw level number in the corner
+        // Draw the sprite if it's loaded
+        if (weaponIconSprites[spriteIndex]) {
+            rdpq_sprite_blit(weaponIconSprites[spriteIndex], x, y, NULL);
+        }
+        
+        // Draw the level number in the corner
+        Debug::printStart();
+        
         char levelStr[4] = {0};
         snprintf(levelStr, 4, "%d", level);
-
-        // Draw text using the debug draw system
-        float charX = x + (ICON_WIDTH / 2) - 3;
-        float charY = y + (ICON_HEIGHT / 2) - 4;
-        char weaponStr[2] = { weaponChar, '\0' };
-        Debug::print(charX, charY, weaponStr);
         
         float levelX = x + ICON_WIDTH - 6;
         float levelY = y + ICON_HEIGHT - 8;
