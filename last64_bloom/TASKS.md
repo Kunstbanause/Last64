@@ -86,10 +86,13 @@
 
 - [x] HUD: Weapon Icons
 
+- [ ] Intro with camera movement (FAILED)
+
 ### ✅ Phase 11: Upgrades overhaul
 - [ ] Upgrade decisions, a/b, slowdown, in-world or UI?
 - [ ] Passive upgrades
 - [ ] meta progession
+- [ ] XP as collectible 
 
 ## 🛠️ KNOWN ISSUES
 ~~All the geometry is black (not showing the configured color). Something with the custom code generated geometry or render pipeline is not correct.~~
