@@ -6,5 +6,6 @@
         "deque": "cpp",
         "string": "cpp",
         "vector": "cpp"
-    }
+    },
+    "kiroAgent.configureMCP": "Disabled"
 }

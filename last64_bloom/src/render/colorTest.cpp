@@ -100,7 +100,7 @@ static void initialize() {
 }
 
 // Cleanup the color test utility
-static void cleanup() {
+[[maybe_unused]] static void cleanup() {
     if (testVertices) {
         free_uncached(testVertices);
         testVertices = nullptr;

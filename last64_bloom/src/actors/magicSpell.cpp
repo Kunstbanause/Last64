@@ -103,7 +103,6 @@ namespace Actor
 
   void MagicSpell::draw3D(float deltaTime)
   {
-    auto &fr = state.activeScene->getCam().getFrustum();
     if(!checkFrustumSphere(pos, args.scale * 90.0f))return;
 
     t3d_matrix_set(matFP.get(), true);
