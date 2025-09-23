@@ -10,6 +10,7 @@
 #include "../../systems/spawn_manager.h"
 #include "../../systems/weapon_registry.h"
 #include "../../main.h"
+#include "../../render/colors.h"
 #include "../../render/colorTest.h"
 #include "../../debugMenu.h"
 #include <libdragon.h>
@@ -17,9 +18,6 @@
 #include <cmath>
 
 namespace {
-  // Ambient lighting
-  constexpr uint8_t colorAmbient[4] = {0xC0, 0xB0, 0xA0, 0xFF};
-
   // Static matrix for scene
   T3DMat4FP* sceneMatFP = nullptr;
 }
@@ -359,7 +357,7 @@ void SceneLast64::draw3D(float deltaTime)
     t3d_screen_clear_depth();
     // rdpq_set_env_color({0xFF, 0xAA, 0xEE, 0xAA}); //slightly see-through soft magenta
 
-    t3d_light_set_ambient(colorAmbient);
+    t3d_light_set_ambient(Colors::colorAmbient);
     t3d_light_set_count(0); // No directional lights, just ambient
     
     // Set exposure for HDR effect

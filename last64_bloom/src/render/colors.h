@@ -4,6 +4,15 @@
 #include <cstdint>
 
 namespace Colors {
+// Ambient lighting
+constexpr uint8_t colorAmbient[4] = {0x80, 0x80, 0x80, 0xFF}; // (128,128,128,255) Neutral grey ambient light
+// constexpr uint8_t colorAmbient[4]   = {0x10, 0x20, 0x10, 0xFF}; // Dark greenish ambient light
+// constexpr uint8_t baseColor[4]      = {0xC0, 0xB0, 0xA0, 0xFF}; // (192,176,160) Soft warm ambient light // Neutral // OLD
+// constexpr uint8_t colorLighter[4]   = {0xE6, 0xDA, 0xCE, 0xFF}; // (230,218,206)
+// constexpr uint8_t colorDarker[4]    = {0x9A, 0x90, 0x86, 0xFF}; // (154,144,134)
+// constexpr uint8_t colorMoreRed[4]   = {0xF3, 0xB0, 0xA0, 0xFF}; // (243,176,160)
+// constexpr uint8_t colorMoreGreen[4] = {0xC0, 0xE3, 0xA0, 0xFF}; // (192,227,160)
+// constexpr uint8_t colorMoreBlue[4]  = {0xC0, 0xB0, 0xF3, 0xFF}; // (192,176,243)
 
 const uint32_t player[] = {
     0x180404FF, // Red
@@ -46,7 +55,12 @@ const uint32_t testColors2D[] = {
     0x5A7088FF,
     0x43BD35FF
 };
+}
 
+#endif // LAST64_BLOOM_COLORS_H
+
+
+// PALETTES
 // const int32_t playerCHASM[] = {
 //     0x090E15FF, // Green
 //     0x120910FF, // Orange
@@ -67,7 +81,3 @@ const uint32_t testColors2D[] = {
 //     0x00FFFFFF, // Cyan
 //     0xFFFF00FF  // Yellow
 // };
-
-}
-
-#endif // LAST64_BLOOM_COLORS_H

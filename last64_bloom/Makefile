@@ -57,6 +57,7 @@ $(BUILD_DIR)/$(PROJECT_NAME).dfs: $(assets_conv)
 $(BUILD_DIR)/$(PROJECT_NAME).elf: $(src:%.cpp=$(BUILD_DIR)/%.o) $(BUILD_DIR)/src/rsp/rsp_fx.o
 # Only rebuild files that actually include colors.h
 $(BUILD_DIR)/src/main.o: src/render/colors.h
+$(BUILD_DIR)/src/scene/scenes/sceneLast64.o: src/render/colors.h
 $(BUILD_DIR)/src/render/colorTest.o: src/render/colors.h
 $(BUILD_DIR)/src/actors/player.o: src/render/colors.h
 
