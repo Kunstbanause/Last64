@@ -49,9 +49,48 @@ void SFXManager::play(SfxId id)
     }
 }
 
+void SFXManager::setVolume_Music(float volume, float fadeTime)
+{
+    // Clamp volume
+    if(volume < 0.0f) volume = 0.0f;
+    if(volume > 1.0f) volume = 1.0f;
+
+    if (fadeTime <= 0.0f) {
+        // Immediate set
+        music_current_vol = volume;
+        music_target_vol = volume;
+        music_fade_duration = 0.0f;
+        music_fade_elapsed = 0.0f;
+        mixer_ch_set_vol(2, volume, volume);
+        return;
+    }
+
+    music_target_vol = volume;
+    music_fade_duration = fadeTime;
+    music_fade_elapsed = 0.0f;
+}
+
+// Compatibility wrapper used by some older code compiled against the single-arg symbol
 void SFXManager::setVolume_Music(float volume)
 {
-   mixer_ch_set_vol(2, volume, volume);
+    setVolume_Music(volume, 0.0f);
+}
+
+void SFXManager::update(float delta)
+{
+    if (music_fade_duration > 0.0f && music_current_vol != music_target_vol) {
+        music_fade_elapsed += delta;
+        float t = music_fade_elapsed / music_fade_duration;
+        if (t >= 1.0f) {
+            music_current_vol = music_target_vol;
+            music_fade_duration = 0.0f;
+            music_fade_elapsed = 0.0f;
+        } else {
+            // Simple linear interpolation
+            music_current_vol = music_current_vol + (music_target_vol - music_current_vol) * t;
+        }
+        mixer_ch_set_vol(2, music_current_vol, music_current_vol);
+    }
 }
 
 void SFXManager::stop(SfxId id)

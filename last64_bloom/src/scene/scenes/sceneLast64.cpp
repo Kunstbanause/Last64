@@ -170,7 +170,7 @@ void SceneLast64::updateScene(float deltaTime)
                 if (player3) Experience::addPlayer(player3);
                 if (player4) Experience::addPlayer(player4);
                 // Restart background music when round starts
-                gSFXManager.setVolume_Music(1.0f); // Set Volume to normal
+                gSFXManager.setVolume_Music(1.0f, 0.34f); // Set Volume to normal
             }
         }
     }
@@ -316,7 +316,7 @@ void SceneLast64::updateScene(float deltaTime)
             if (alivePlayers == 0 && activePlayerCount > 0) { // Ensure at least one player was active before game over
                 currentGameState = GAME_OVER;
                 // Stop background music when game is over
-                gSFXManager.setVolume_Music(0.2f); // Lower volume
+                gSFXManager.setVolume_Music(0.45f, 0.1f); // Lower volume
                 // gSFXManager.play(SFXManager::SFX_GAME_OVER); // Assuming a game over sound effect
             }
             break;
@@ -336,7 +336,7 @@ void SceneLast64::updateScene(float deltaTime)
             if (restartPressed) {
                 restartRequested = true; // Signal restart Scene
                 // Restart background music when game restarts
-                gSFXManager.setVolume_Music(1.0f); // Set Volume to normal
+                gSFXManager.setVolume_Music(1.0f, 0.34f); // Set Volume to normal
                 // All cleanup and reset logic will be handled by SceneManager::loadScene(0)
                 // and the SceneLast64 destructor/constructor.
             }

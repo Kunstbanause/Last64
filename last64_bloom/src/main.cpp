@@ -145,6 +145,8 @@ int main()
     if (showMenu) {
       deltaTime *= 0.1f; // Slow down to 10% speed
     }
+    // Advance audio fades
+    gSFXManager.update(deltaTime);
       state.activeScene->update(deltaTime);
 
       // Check if the current scene (if it's SceneLast64) has requested a restart
