@@ -9,6 +9,8 @@ void SFXManager::init()
     wav64_open(&sfx_join,     "rom:/sfx/join.wav64");
     wav64_open(&sfx_death,    "rom:/sfx/death.wav64");
     wav64_open(&sfx_music1,   "rom:/sfx/music2.wav64");
+    // Enable looping for background music so it repeats when it reaches the end
+    wav64_set_loop(&sfx_music1, true);
     wav64_open(&sfx_hits[0],  "rom:/sfx/hitA01.wav64");
     wav64_open(&sfx_hits[1],  "rom:/sfx/hitA02.wav64");
     wav64_open(&sfx_hits[2],  "rom:/sfx/hitA03.wav64");
