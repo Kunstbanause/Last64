@@ -2,8 +2,6 @@
 #include <libdragon.h>
 #include <stdlib.h>
 
-SFXManager gSFXManager;
-
 void SFXManager::init()
 {
     wav64_open(&sfx_level_up, "rom:/sfx/level.wav64");
@@ -40,7 +38,7 @@ void SFXManager::play(SfxId id)
             mixer_ch_play(1, &sfx_death.wave);
             break;
         case SFX_MUSIC1:
-            //mixer_ch_play(2, &sfx_music1.wave);
+            mixer_ch_play(2, &sfx_music1.wave);
             break;
         case SFX_HIT:
             mixer_ch_play(3 + next_hit_channel, &sfx_hits[rand() % sfx_hits_count].wave);
@@ -51,7 +49,7 @@ void SFXManager::play(SfxId id)
 
 void SFXManager::setVolume_Music(float volume)
 {
-    mixer_ch_set_vol(2, volume, volume);
+   mixer_ch_set_vol(2, volume, volume);
 }
 
 void SFXManager::stop(SfxId id)

@@ -60,10 +60,6 @@ SceneLast64::SceneLast64()
     
     // Initialize weapon icons
     WeaponIcons::init();
-    
-    // Play background music once when scene starts
-    gSFXManager.play(SFXManager::SFX_MUSIC1);
-    gSFXManager.setVolume_Music(0.2f); // Set Volume to normal
 }
 
 SceneLast64::~SceneLast64()

@@ -64,6 +64,10 @@ bool Debug::isMenuVisible() {
 
 surface_t* fb = NULL;
 
+// Define the global SFX manager here so it lives for the lifetime of the program
+// and does not get recreated when scenes are reloaded.
+SFXManager gSFXManager;
+
 [[noreturn]]
 int main()
 {
@@ -92,6 +96,8 @@ int main()
 
   joypad_init();
   gSFXManager.init();
+  // Play background music once when main starts
+  gSFXManager.play(SFXManager::SFX_MUSIC1);
 
   t3d_init((T3DInitParams){});
   tpx_init((TPXInitParams){});

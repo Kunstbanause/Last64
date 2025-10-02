@@ -88,6 +88,8 @@
 
 - [x] HUD: Weapon Icons
 
+- [x] Music and audio system out of scene so the music can play when the scene restarts
+
 - [ ] Intro with camera movement (FAILED)
 
 ### ✅ Phase 11: Upgrades overhaul
