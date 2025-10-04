@@ -92,8 +92,11 @@
 
 - [ ] Intro with camera movement (FAILED)
 
+- [x] last save off value screen
+
 ### ✅ Phase 11: Upgrades overhaul
 - [x] a/b, slowdown, next to player
+- [ ] weapon choice is wron way around a / b buttons left / right
 - [ ] Passive upgrades
 - [ ] meta progession
 - [ ] SAVING!?

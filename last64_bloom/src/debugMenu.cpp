@@ -133,7 +133,7 @@ void DebugMenu::draw()
   auto held = joypad_get_all_held();
 
   // Handle L/R buttons for scene selection
-  int sceneEntryIndex = findSceneEntryIndex();
+  // int sceneEntryIndex = findSceneEntryIndex();
   // if (sceneEntryIndex >= 0) {
   //   if(btn.l && sceneId > entries[sceneEntryIndex].min) {
   //     sceneId--; needsSceneLoad = true;
@@ -199,15 +199,15 @@ void DebugMenu::draw()
     bool present = SaveGame::is_present();
     int type = SaveGame::get_type();
     uint32_t last = SaveGame::get_last_saved_value();
-    Debug::printf(posX + 100, posY, "EEPROM: %s", present ? "YES" : "NO");
+    // Debug::printf(posX + 100, posY, "EEPROM: %s", present ? "YES" : "NO");
     const char *tstr = "NONE";
     if (type == 1) tstr = "4k";
     if (type == 2) tstr = "16k";
-    Debug::printf(posX + 220, posY, "Type: %s", tstr);
+    Debug::printf(posX + 180, posY, "EEPROM: %s", tstr);
     if (SaveGame::was_last_action_load()) {
-      Debug::printf(posX + 220, posY+14, "LastLoad: %lu", (unsigned long)SaveGame::get_last_loaded_value());
+      Debug::printf(posX + 180, posY+14, "LOADED: %lu", (unsigned long)SaveGame::get_last_loaded_value());
     } else {
-      Debug::printf(posX + 220, posY+14, "Last: %lu", (unsigned long)last);
+      Debug::printf(posX + 180, posY+14, "SAVED: %lu", (unsigned long)last);
     }
   }
   //Debug::print(display_get_width() - 100, posY, "[L/R] Scene");

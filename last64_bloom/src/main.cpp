@@ -171,13 +171,13 @@ int main()
 
     if (showMenu) {
       // Save when L+R pressed together (edge detect)
-      if (combined.l) {
+      if (combined.r) {
         testSaveCounter++;
         bool ok = SaveGame::save_test_value(testSaveCounter);
         debugf("Save test value %lu -> %s\n", (unsigned long)testSaveCounter, ok ? "OK" : "FAIL");
       }
       // Load when L+Z pressed together (edge detect)
-      if (combined.r) {
+      if (combined.l) {
         uint32_t val = 0;
         bool ok = SaveGame::load_test_value(val);
         debugf("Load test value -> %lu (%s)\n", (unsigned long)val, ok ? "OK" : "FAIL");
