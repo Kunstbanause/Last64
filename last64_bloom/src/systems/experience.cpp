@@ -24,6 +24,10 @@ namespace {
 
     // Exponential growth factor for XP required for next level
     const float xpGrowthFactor = 1.25f;
+    
+        // Slow motion timer in real seconds. When >0, main loop should scale deltaTime accordingly.
+        float slowMotionRemaining = 0.0f;
+        const float slowMotionScale = 0.25f; // 25% speed in slow motion
 }
 
 void Experience::initialize() {
@@ -143,6 +147,8 @@ void Experience::addXP(int amount) {
 
                 // Append this set of choices to the player's pending queue
                 pendingQueues[i].push_back(std::move(chosen));
+                // Start slow motion for a few seconds (real time)
+                slowMotionRemaining = 2.2f;
 
                 // Fire weapons for visual feedback
                 for (int p = 0; p < activePlayerCount; ++p) {
@@ -262,4 +268,30 @@ void Experience::selectPendingChoice(Actor::Player* player, int choiceIndex) {
 
     // Remove the processed front entry
     pendingQueues[idx].erase(pendingQueues[idx].begin());
+    // If no more queued choices for any player, or if this player's queue is empty, stop slow motion when appropriate
+    bool anyPending = false;
+    for (int i = 0; i < activePlayerCount; ++i) {
+        if (!pendingQueues[i].empty()) { anyPending = true; break; }
+    }
+    if (!anyPending) {
+        slowMotionRemaining = 0.0f;
+    }
+}
+
+void Experience::startSlowMotion(float seconds) {
+    slowMotionRemaining = seconds;
+}
+
+void Experience::tickSlowMotionRealtime(float realDelta) {
+    if (slowMotionRemaining <= 0.0f) return;
+    slowMotionRemaining -= realDelta;
+    if (slowMotionRemaining < 0.0f) slowMotionRemaining = 0.0f;
+}
+
+float Experience::getSlowMotionRemaining() {
+    return slowMotionRemaining;
+}
+
+float Experience::getSlowMotionScale() {
+    return slowMotionScale;
 }

@@ -140,10 +140,17 @@ int main()
       }
     }
 
-    float deltaTime = display_get_delta_time();
+  float realDelta = display_get_delta_time();
+  float deltaTime = realDelta;
     // "Pause"
     if (showMenu) {
       deltaTime *= 0.1f; // Slow down to 10% speed
+    }
+
+    // Tick Experience slow-motion realtime timer (counts down in real seconds)
+    Experience::tickSlowMotionRealtime(realDelta);
+    if (Experience::getSlowMotionRemaining() > 0.0f) {
+      deltaTime *= Experience::getSlowMotionScale();
     }
     // Advance audio fades
     gSFXManager.update(deltaTime);

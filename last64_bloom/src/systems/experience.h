@@ -21,6 +21,12 @@ namespace Experience {
     // Get a random alive player (returns nullptr if none are alive)
     Actor::Player* getRandomAlivePlayer();
 
+    // Slow motion helpers: start a realtime slow motion timer (seconds), tick with real delta
+    void startSlowMotion(float seconds);
+    void tickSlowMotionRealtime(float realDelta);
+    float getSlowMotionRemaining();
+    float getSlowMotionScale();
+
     // Pending upgrade choice helpers (two choices shown to player)
     bool hasPendingChoice(Actor::Player* player);
     const std::vector<UpgradeSystem::UpgradeOption>& getPendingOptions(Actor::Player* player);
