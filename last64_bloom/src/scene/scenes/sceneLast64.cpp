@@ -513,6 +513,50 @@ void SceneLast64::draw2D(float deltaTime)
             // Draw Level
             Debug::printf(10, SCREEN_HEIGHT-30, "Level:%d", Experience::getLevel());
 
+            // Draw pending upgrade choices for players (so they render on top in 2D)
+            Actor::Player* playersArr[4] = {player1, player2, player3, player4};
+            for (int p = 0; p < 4; ++p) {
+                Actor::Player* pl = playersArr[p];
+                if (!pl) continue;
+                if (!Experience::hasPendingChoice(pl)) continue;
+
+                const auto& opts = Experience::getPendingOptions(pl);
+                // Project player world position into screen space so labels follow camera
+                T3DVec3 worldPos = pl->getPosition();
+                T3DViewport* vp = t3d_viewport_get();
+                T3DVec3 screenV = {{0,0,0}};
+                t3d_viewport_calc_viewspace_pos(vp, &screenV, &worldPos);
+                float sx = screenV.v[0];
+                float sy = screenV.v[1] - 12.0f; // slightly above player
+
+                auto optionLabel = [&](const UpgradeSystem::UpgradeOption& opt) -> const char* {
+                    switch (opt.type) {
+                        case UpgradeSystem::UpgradeType::WEAPON_UPGRADE: return "Upgrade";
+                        case UpgradeSystem::UpgradeType::NEW_WEAPON: {
+                            if (opt.weapon) {
+                                switch (opt.weapon->getWeaponType()) {
+                                    case Actor::WeaponType::PROJECTILE: return "New:Projectile";
+                                    case Actor::WeaponType::HOMING: return "New:Homing";
+                                    case Actor::WeaponType::CIRCULAR: return "New:Circular";
+                                    case Actor::WeaponType::SPIRAL: return "New:Spiral";
+                                    case Actor::WeaponType::SHIELD: return "New:Shield";
+                                    case Actor::WeaponType::SHAPE: return "New:Shape";
+                                }
+                            }
+                            return "New:Weapon";
+                        }
+                    }
+                    return "Option";
+                };
+
+                if (opts.size() > 0) {
+                    Debug::printf(sx - 12.0f, sy - 2.0f, "A:%s", optionLabel(opts[0]));
+                }
+                if (opts.size() > 1) {
+                    Debug::printf(sx + 8.0f, sy + 12.0f, "B:%s", optionLabel(opts[1]));
+                }
+            }
+
             break;
         }
         case GAME_OVER: {

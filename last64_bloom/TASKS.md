@@ -93,7 +93,7 @@
 - [ ] Intro with camera movement (FAILED)
 
 ### ✅ Phase 11: Upgrades overhaul
-- [ ] Upgrade decisions, a/b, slowdown, in-world or UI?
+- [ ] Upgrade decisions, a/b, slowdown, in-world or UI? SAVING!?
 - [ ] Passive upgrades
 - [ ] meta progession
 - [ ] XP as collectible 

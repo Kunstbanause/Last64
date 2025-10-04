@@ -15,6 +15,8 @@
 #include <libdragon.h>
 #include <malloc.h>
 #include <algorithm>
+#include "../systems/experience.h"
+#include "../render/debugDraw.h"
 
 // Forward declaration of the global debugWeaponSelection variable
 extern int debugWeaponSelection;
@@ -234,6 +236,16 @@ namespace Actor {
                 }
             }
         }
+
+        // If there is a pending upgrade choice for this player, check A/B presses to select
+        if (Experience::hasPendingChoice(this)) {
+            // A selects left(0), B selects right(1)
+            if (pressed.a) {
+                Experience::selectPendingChoice(this, 0);
+            } else if (pressed.b) {
+                Experience::selectPendingChoice(this, 1);
+            }
+        }
         
         // Update rotation based on movement direction
         if (moveX != 0.0f || moveY != 0.0f) {
@@ -281,6 +293,8 @@ namespace Actor {
             weapon->draw3D(deltaTime);
         }
     }
+
+    // pending choices are rendered in the 2D pass so they appear on top of 3D
 }
     
     void Player::drawPTX(float deltaTime) {

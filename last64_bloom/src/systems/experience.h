@@ -1,5 +1,7 @@
 #pragma once
 #include "../actors/player.h"
+#include "upgrade_system.h"
+#include <vector>
 
 namespace Experience {
     void initialize();
@@ -18,4 +20,10 @@ namespace Experience {
     
     // Get a random alive player (returns nullptr if none are alive)
     Actor::Player* getRandomAlivePlayer();
+
+    // Pending upgrade choice helpers (two choices shown to player)
+    bool hasPendingChoice(Actor::Player* player);
+    const std::vector<UpgradeSystem::UpgradeOption>& getPendingOptions(Actor::Player* player);
+    // Player selects 0 (A) or 1 (B)
+    void selectPendingChoice(Actor::Player* player, int choiceIndex);
 };
