@@ -70,7 +70,7 @@
 
 - [x] Color test strip
 - [x] Color Conversion tool from hex to hdr 8bRGBA8it
-- [ ] Player Light
+- [ ] Player Light (Failed, there is not shading, depth, etc)
 - [x] Test ambient light, see how color strip changes? -> Changed to netural color
 
 - [x] New Weapon defensive shield
@@ -112,3 +112,10 @@
 - [x] Fix github auth
 - [x] Fix: Boss now correctly only spawns once.
 - Spiral Weapon upgrades break old projectiles, stay in place detached from player
+
+- Cache problem:
+[unusual] RSP reading from DMEM address 0x230 which contains a value which is not cache coherent
+        Current RSP PC: 0xc70
+        The value read was previously written by RSP DMA from RDRAM address 0x002358f0
+        RSP DMA started at RSP PC: 0x03c
+        The relative CPU cacheline was dirty (missing cache writeback?)

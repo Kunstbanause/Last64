@@ -67,3 +67,6 @@ sc64:
 -include $(wildcard $(BUILD_DIR)/*.d)
 
 .PHONY: all clean
+
+run: $(PROJECT_NAME).z64
+	flatpak run dev.ares.ares ./$(PROJECT_NAME).z64
