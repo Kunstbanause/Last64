@@ -18,5 +18,7 @@ bool load_test_value(uint32_t &out_value);
 bool is_present();
 int get_type(); // 0 none, 1 = 4k, 2 = 16k
 uint32_t get_last_saved_value();
+uint32_t get_last_loaded_value();
+bool was_last_action_load();
 
 }

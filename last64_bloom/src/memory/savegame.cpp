@@ -10,6 +10,8 @@ void init() {
 }
 
 static uint32_t s_last_saved_value = 0;
+static uint32_t s_last_loaded_value = 0;
+static bool s_last_action_was_load = false;
 
 bool is_present() {
   return eeprom_present() != 0;
@@ -21,6 +23,14 @@ int get_type() {
 
 uint32_t get_last_saved_value() {
   return s_last_saved_value;
+}
+
+uint32_t get_last_loaded_value() {
+  return s_last_loaded_value;
+}
+
+bool was_last_action_load() {
+  return s_last_action_was_load;
 }
 
 bool save_test_value(uint32_t value) {
@@ -46,6 +56,7 @@ bool save_test_value(uint32_t value) {
     return false;
   }
   s_last_saved_value = value;
+  s_last_action_was_load = false;
   debugf("SaveGame: write OK (value=%lu)\n", (unsigned long)value);
   return true;
 }
@@ -57,6 +68,8 @@ bool load_test_value(uint32_t &out_value) {
   debugf("SaveGame: read raw bytes: %02x %02x %02x %02x %02x %02x %02x %02x\n",
          buffer[0], buffer[1], buffer[2], buffer[3], buffer[4], buffer[5], buffer[6], buffer[7]);
     out_value = (uint32_t)buffer[0] << 24 | (uint32_t)buffer[1] << 16 | (uint32_t)buffer[2] << 8 | (uint32_t)buffer[3];
+  s_last_loaded_value = out_value;
+  s_last_action_was_load = true;
   return true;
 }
 
