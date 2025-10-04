@@ -63,44 +63,38 @@
 - [x] Fixed bug: Enemies targeting dead players
 
 ### ✅ Phase 10: Refinment
- 
-~~Player outline for better readaibility? (failed)~~
 - [x] Player with white vertex color to better identify the direction?
-- [ ] Colored debug text? (failed)
-
 - [x] Color test strip
 - [x] Color Conversion tool from hex to hdr 8bRGBA8it
-- [ ] Player Light (Failed, there is not shading, depth, etc)
 - [x] Test ambient light, see how color strip changes? -> Changed to netural color
-
 - [x] New Weapon defensive shield
 - [x] New Weapon mechanic: Shape. Instead of a projectile the shape is not moving or attached to the player character. It has not speed on its own. Deals damage with an attack frequency until the lifetime is over. The attacks are immediate, so an enemy entering the shape take damage right away, then the attack frequency timer runs down before that enemy can take damage from that shape again. This is tracked per enemy. Weapons using it have a cooldown to respawn it. 
-
 - [x] HDR/Bloom effect when level up or boss kill
 - [x] Spawn death vfx, rotate, scale, color
-
 - [x] Player drawn below projectiles (especially shield weapon)
-- [ ] Shield with alpha / transparency / Dithering
 - [x] Shield with reduced color
-
 - [x] projectiles in different sizes
 - [x] Proectiles in player color
-
 - [x] HUD: Weapon Icons
-
 - [x] Music and audio system out of scene so the music can play when the scene restarts
-
-- [ ] Intro with camera movement (FAILED)
-
 - [x] last save off value screen
 
 ### ✅ Phase 11: Upgrades overhaul
 - [x] a/b, slowdown, next to player
 - [x] weapon choice is wron way around a / b buttons left / right
+- [x] SAVING test
+- [x] SAVING useful data :D
 - [ ] Passive upgrades
 - [ ] meta progession
-- [ ] SAVING!?
+
+### ✅ Phase 12: MORE
 - [ ] XP as collectible 
+- [ ] Shield with alpha / transparency / Dithering
+
+###  FAILED
+- [ ] Intro with camera movement (FAILED)
+- [ ] Colored debug text? (failed)
+- [ ] Player Light (Failed, there is not shading, depth, etc)
 
 ## 🛠️ KNOWN ISSUES
 - [x] All the geometry is black (not showing the configured color). Something with the custom code nerated geometry or render pipeline is not correct.
@@ -125,3 +119,4 @@
         The relative CPU cacheline was dirty (missing cache writeback?)
 
 ~~After a while the optins are all the smame~~ Its just when one weapon is fully upgraded. Needs more upgrades
+~~Player outline for better readaibility? (failed)~~
