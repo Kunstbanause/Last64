@@ -19,12 +19,8 @@ namespace {
     Actor::Player* activePlayers[MAX_PLAYERS];
     int activePlayerCount = 0;
 
-    struct PendingChoice {
-        bool active = false;
-        std::vector<UpgradeOption> options;
-    };
-
-    PendingChoice pendingChoices[MAX_PLAYERS];
+    // Per-player queue of pending upgrade option sets. Each element is a set of choices presented at once.
+    std::vector<std::vector<UpgradeOption>> pendingQueues[MAX_PLAYERS];
 
     // Exponential growth factor for XP required for next level
     const float xpGrowthFactor = 1.25f;
@@ -37,11 +33,22 @@ void Experience::initialize() {
     activePlayerCount = 0;
     for (int i = 0; i < MAX_PLAYERS; ++i) {
         activePlayers[i] = nullptr;
+        pendingQueues[i].clear();
     }
 }
 
 void Experience::shutdown() {
     for (int i = 0; i < MAX_PLAYERS; ++i) {
+        // cleanup any queued NEW_WEAPON allocations
+        for (auto &queueEntry : pendingQueues[i]) {
+            for (auto &opt : queueEntry) {
+                if (opt.type == UpgradeSystem::UpgradeType::NEW_WEAPON && opt.weapon) {
+                    delete opt.weapon;
+                    opt.weapon = nullptr;
+                }
+            }
+        }
+        pendingQueues[i].clear();
         activePlayers[i] = nullptr;
     }
     activePlayerCount = 0;
@@ -59,7 +66,20 @@ void Experience::removePlayer(Actor::Player* player) {
             // Shift elements to fill the gap
             for (int j = i; j < activePlayerCount - 1; ++j) {
                 activePlayers[j] = activePlayers[j+1];
+                // move pending queue as well
+                pendingQueues[j] = std::move(pendingQueues[j+1]);
             }
+            // cleanup last slot
+            // delete any queued weapons in the moved-from last queue
+            for (auto &queueEntry : pendingQueues[activePlayerCount-1]) {
+                for (auto &opt : queueEntry) {
+                    if (opt.type == UpgradeSystem::UpgradeType::NEW_WEAPON && opt.weapon) {
+                        delete opt.weapon;
+                        opt.weapon = nullptr;
+                    }
+                }
+            }
+            pendingQueues[activePlayerCount-1].clear();
             activePlayers[activePlayerCount-1] = nullptr; // Clear the last element
             activePlayerCount--;
             break;
@@ -121,9 +141,8 @@ void Experience::addXP(int amount) {
                     chosen.push_back(upgradeOptions[idxB]);
                 }
 
-                // Store in pendingChoices for this player index
-                pendingChoices[i].active = true;
-                pendingChoices[i].options = std::move(chosen);
+                // Append this set of choices to the player's pending queue
+                pendingQueues[i].push_back(std::move(chosen));
 
                 // Fire weapons for visual feedback
                 for (int p = 0; p < activePlayerCount; ++p) {
@@ -199,24 +218,34 @@ static int findPlayerIndex(Actor::Player* player) {
 bool Experience::hasPendingChoice(Actor::Player* player) {
     int idx = findPlayerIndex(player);
     if (idx < 0) return false;
-    return pendingChoices[idx].active;
+    return !pendingQueues[idx].empty();
 }
 
 const std::vector<UpgradeOption>& Experience::getPendingOptions(Actor::Player* player) {
     static std::vector<UpgradeOption> empty;
     int idx = findPlayerIndex(player);
     if (idx < 0) return empty;
-    return pendingChoices[idx].options;
+    if (pendingQueues[idx].empty()) return empty;
+    return pendingQueues[idx].front();
 }
 
 void Experience::selectPendingChoice(Actor::Player* player, int choiceIndex) {
     int idx = findPlayerIndex(player);
     if (idx < 0) return;
-    if (!pendingChoices[idx].active) return;
+    if (pendingQueues[idx].empty()) return;
 
-    auto& opts = pendingChoices[idx].options;
+    auto opts = std::move(pendingQueues[idx].front());
+    // validate index
     if (choiceIndex < 0 || choiceIndex >= (int)opts.size()) {
-        // invalid index, ignore
+        // invalid index, drop this queued entry to be safe
+        // cleanup any allocated NEW_WEAPONs
+        for (auto &opt : opts) {
+            if (opt.type == UpgradeSystem::UpgradeType::NEW_WEAPON && opt.weapon) {
+                delete opt.weapon;
+            }
+        }
+        // pop front
+        pendingQueues[idx].erase(pendingQueues[idx].begin());
         return;
     }
 
@@ -231,7 +260,6 @@ void Experience::selectPendingChoice(Actor::Player* player, int choiceIndex) {
         }
     }
 
-    // Clear pending
-    pendingChoices[idx].options.clear();
-    pendingChoices[idx].active = false;
+    // Remove the processed front entry
+    pendingQueues[idx].erase(pendingQueues[idx].begin());
 }
