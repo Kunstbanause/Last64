@@ -529,31 +529,42 @@ void SceneLast64::draw2D(float deltaTime)
                 float sx = screenV.v[0];
                 float sy = screenV.v[1] - 12.0f; // slightly above player
 
-                auto optionLabel = [&](const UpgradeSystem::UpgradeOption& opt) -> const char* {
-                    switch (opt.type) {
-                        case UpgradeSystem::UpgradeType::WEAPON_UPGRADE: return "Upgrade";
-                        case UpgradeSystem::UpgradeType::NEW_WEAPON: {
-                            if (opt.weapon) {
-                                switch (opt.weapon->getWeaponType()) {
-                                    case Actor::WeaponType::PROJECTILE: return "New:Projectile";
-                                    case Actor::WeaponType::HOMING: return "New:Homing";
-                                    case Actor::WeaponType::CIRCULAR: return "New:Circular";
-                                    case Actor::WeaponType::SPIRAL: return "New:Spiral";
-                                    case Actor::WeaponType::SHIELD: return "New:Shield";
-                                    case Actor::WeaponType::SHAPE: return "New:Shape";
-                                }
-                            }
-                            return "New:Weapon";
-                        }
-                    }
-                    return "Option";
-                };
-
+                // Draw icon for A option (left)
+                float iconW = WeaponIcons::getIconWidth()-4;
+                float iconH = WeaponIcons::getIconHeight()-4;
                 if (opts.size() > 0) {
-                    Debug::printf(sx - 12.0f, sy - 2.0f, "A:%s", optionLabel(opts[0]));
+                    const auto& o = opts[0];
+                    Actor::WeaponType wt = Actor::WeaponType::PROJECTILE;
+                    if (o.weapon) wt = o.weapon->getWeaponType();
+                    float ix = sx - (iconW/2.0f) - 12.0f; // left offset
+                    float iy = sy - (iconH/2.0f);
+                    WeaponIcons::drawIcon(ix, iy, wt, (o.type == UpgradeSystem::UpgradeType::WEAPON_UPGRADE && o.weapon) ? o.weapon->getUpgradeLevel()+1 : 0);
+                    // Draw A prompt to the left of the icon
+                    Debug::printf(ix - 10.0f, iy + (iconH/2.0f) - 4.0f, "A");
+                    // // Draw tag: NEW or +1
+                    // if (o.type == UpgradeSystem::UpgradeType::NEW_WEAPON) {
+                    //     Debug::printf(ix, iy - 8.0f, "NEW");
+                    // } else {
+                    //     Debug::printf(ix + iconW - 6.0f, iy - 8.0f, "+1");
+                    // }
                 }
+
+                // Draw icon for B option (right)
                 if (opts.size() > 1) {
-                    Debug::printf(sx + 8.0f, sy + 12.0f, "B:%s", optionLabel(opts[1]));
+                    const auto& o = opts[1];
+                    Actor::WeaponType wt = Actor::WeaponType::PROJECTILE;
+                    if (o.weapon) wt = o.weapon->getWeaponType();
+                    float ix = sx - (iconW/2.0f) + 12.0f; // right offset
+                    float iy = sy - (iconH/2.0f);
+                    WeaponIcons::drawIcon(ix, iy, wt, (o.type == UpgradeSystem::UpgradeType::WEAPON_UPGRADE && o.weapon) ? o.weapon->getUpgradeLevel()+1 : 0);
+                    // Draw B prompt to the right of the icon
+                    Debug::printf(ix + iconW + 2.0f, iy + (iconH/2.0f) - 4.0f, "B");
+                    // Draw tag: NEW or +1
+                    // if (o.type == UpgradeSystem::UpgradeType::NEW_WEAPON) {
+                    //     Debug::printf(ix, iy - 8.0f, "NEW");
+                    // } else {
+                    //     Debug::printf(ix + iconW - 6.0f, iy - 8.0f, "+1");
+                    // }
                 }
             }
 
