@@ -64,7 +64,7 @@
 
 ### ✅ Phase 10: Refinment
  
-~~- [ ] Player outline for better readaibility? (failed)~~
+~~Player outline for better readaibility? (failed)~~
 - [x] Player with white vertex color to better identify the direction?
 - [ ] Colored debug text? (failed)
 
@@ -97,22 +97,21 @@
 ### ✅ Phase 11: Upgrades overhaul
 - [x] a/b, slowdown, next to player
 - [x] weapon choice is wron way around a / b buttons left / right
-- [ ] After a while the optins are all the smame
 - [ ] Passive upgrades
 - [ ] meta progession
 - [ ] SAVING!?
 - [ ] XP as collectible 
 
 ## 🛠️ KNOWN ISSUES
-~~All the geometry is black (not showing the configured color). Something with the custom code generated geometry or render pipeline is not correct.~~
-~~Projectile null pointer dereference crash has been fixed.~~
-~~Weapon initialization/cleanup issue causing crashes on upgrade has been fixed.~~
-~~Excessive safety checks in projectile system have been cleaned up.~~
-~~Weapon overview now shows all weapons for each player.~~
-~~Debug button (L) added to level up players for testing.~~
-~~Enemies now correctly target dead players again.~~
-~~Bug: Wave counter is not cleared after all players have died~~
-~~Enemies now correctly target dead players again.~~
+- [x] All the geometry is black (not showing the configured color). Something with the custom code nerated geometry or render pipeline is not correct.
+- [x] Projectile null pointer dereference crash has been fixed.
+- [x] Weapon initialization/cleanup issue causing crashes on upgrade has been fixed.
+- [x] Excessive safety checks in projectile system have been cleaned up.
+- [x] Weapon overview now shows all weapons for each player.
+- [x] Debug button (L) added to level up players for testing.
+- [x] Enemies now correctly target dead players again.
+- [x] Bug: Wave counter is not cleared after all players have died
+- [x] Enemies now correctly target dead players again.
 - [x] Fix bug: Wave counter is not cleared after all players have died Deconstructor missing!
 - [x] Fix github auth
 - [x] Fix: Boss now correctly only spawns once.
@@ -124,3 +123,5 @@
         The value read was previously written by RSP DMA from RDRAM address 0x002358f0
         RSP DMA started at RSP PC: 0x03c
         The relative CPU cacheline was dirty (missing cache writeback?)
+
+~~After a while the optins are all the smame~~ Its just when one weapon is fully upgraded. Needs more upgrades
