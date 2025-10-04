@@ -7,6 +7,7 @@
 #include "render/debugDraw.h"
 #include "scene/sceneManager.h"
 #include <vector>
+#include "memory/savegame.h"
 
 namespace
 {
@@ -133,14 +134,14 @@ void DebugMenu::draw()
 
   // Handle L/R buttons for scene selection
   int sceneEntryIndex = findSceneEntryIndex();
-  if (sceneEntryIndex >= 0) {
-    if(btn.l && sceneId > entries[sceneEntryIndex].min) {
-      sceneId--; needsSceneLoad = true;
-    }
-    if(btn.r && sceneId < entries[sceneEntryIndex].max) {
-      sceneId++; needsSceneLoad = true;
-    }
-  }
+  // if (sceneEntryIndex >= 0) {
+  //   if(btn.l && sceneId > entries[sceneEntryIndex].min) {
+  //     sceneId--; needsSceneLoad = true;
+  //   }
+  //   if(btn.r && sceneId < entries[sceneEntryIndex].max) {
+  //     sceneId++; needsSceneLoad = true;
+  //   }
+  // }
 
   if(needsSceneLoad) {
     SceneManager::loadScene(sceneId);
@@ -193,7 +194,19 @@ void DebugMenu::draw()
   float posX = 20;
   float posY = 50;
   Debug::print(posX, posY, "[START] Menu");
-  Debug::print(display_get_width() - 100, posY, "[L/R] Scene");
+  // EEPROM diagnostics
+  {
+  bool present = SaveGame::is_present();
+    int type = SaveGame::get_type();
+    uint32_t last = SaveGame::get_last_saved_value();
+    Debug::printf(posX + 100, posY, "EEPROM: %s", present ? "YES" : "NO");
+    const char *tstr = "NONE";
+    if (type == 1) tstr = "4k";
+    if (type == 2) tstr = "16k";
+    Debug::printf(posX + 220, posY, "Type: %s", tstr);
+    Debug::printf(posX + 220, posY+14, "Last: %lu", (unsigned long)last);
+  }
+  //Debug::print(display_get_width() - 100, posY, "[L/R] Scene");
   posY += 12;
 
   int idx = 0;

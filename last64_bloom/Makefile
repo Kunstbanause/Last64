@@ -62,6 +62,7 @@ $(BUILD_DIR)/src/render/colorTest.o: src/render/colors.h
 $(BUILD_DIR)/src/actors/player.o: src/render/colors.h
 
 $(PROJECT_NAME).z64: N64_ROM_TITLE="Last64 Bloom"
+$(PROJECT_NAME).z64: N64_ED64ROMCONFIGFLAGS=-w eeprom4k
 $(PROJECT_NAME).z64: $(BUILD_DIR)/$(PROJECT_NAME).dfs
 
 clean:

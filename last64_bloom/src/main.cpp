@@ -33,6 +33,7 @@
 #include "systems/experience.h"
 #include "render/hdrBoost.h"
 #include "audio.h"
+#include "memory/savegame.h"
 
 State state{
   .ppConf = {
@@ -93,6 +94,8 @@ int main()
   RspFX::init();
   PostProcess postProc[BUFF_COUNT]{};
   Debug::init();
+  SaveGame::init();
+  debugf("SaveGame: eeprom_present=%d\n", eeprom_present());
 
   joypad_init();
   gSFXManager.init();
@@ -127,16 +130,57 @@ int main()
     SceneManager::update();
 
     joypad_poll();
-    if(joypad_get_buttons_pressed(JOYPAD_PORT_1).start)showMenu = !showMenu;
-    if(joypad_get_buttons_pressed(JOYPAD_PORT_2).start)showMenu = !showMenu;
-    
-    // Toggle between static and fly camera
-    auto pressed = joypad_get_buttons_pressed(JOYPAD_PORT_1);
-    if(pressed.z && state.activeScene) {
+    joypad_buttons_t combined = {0};
+    for (int i = JOYPAD_PORT_1; i <= JOYPAD_PORT_4; i++) {
+      joypad_buttons_t b = joypad_get_buttons_pressed((joypad_port_t)i);
+      combined.a      |= b.a;
+      combined.b      |= b.b;
+      combined.z      |= b.z;
+      combined.start  |= b.start;
+      combined.l      |= b.l;
+      combined.r      |= b.r;
+      combined.d_up   |= b.d_up;
+      combined.d_down |= b.d_down;
+      combined.d_left |= b.d_left;
+      combined.d_right|= b.d_right;
+      combined.c_up   |= b.c_up;
+      combined.c_down |= b.c_down;
+      combined.c_left |= b.c_left;
+      combined.c_right|= b.c_right;
+    }
+    // Toggle menu on Start button press (rising edge across any port)
+    static bool lastStart = false;
+    if (combined.start && !lastStart) {
+      showMenu = !showMenu;
+    }
+    lastStart = combined.start;
+
+  // Toggle between static and fly camera
+    if(combined.z && state.activeScene) {
       SceneBunker* sceneBunker = dynamic_cast<SceneBunker*>(state.activeScene);
       if(sceneBunker) {
         sceneBunker->useFlyCam = !sceneBunker->useFlyCam;
         //debugf("Camera mode: %s\n", sceneBunker->useFlyCam ? "Fly" : "Static");
+      }
+    }
+
+    // Simple save/load test bindings when debug menu is visible:
+    // L + R -> save incrementing counter (on press)
+    // L + Z -> load and print (on press)
+    static uint32_t testSaveCounter = 0;
+
+    if (showMenu) {
+      // Save when L+R pressed together (edge detect)
+      if (combined.l) {
+        testSaveCounter++;
+        bool ok = SaveGame::save_test_value(testSaveCounter);
+        debugf("Save test value %lu -> %s\n", (unsigned long)testSaveCounter, ok ? "OK" : "FAIL");
+      }
+      // Load when L+Z pressed together (edge detect)
+      if (combined.r) {
+        uint32_t val = 0;
+        bool ok = SaveGame::load_test_value(val);
+        debugf("Load test value -> %lu (%s)\n", (unsigned long)val, ok ? "OK" : "FAIL");
       }
     }
 
