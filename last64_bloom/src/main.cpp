@@ -166,7 +166,7 @@ int main()
     // Add debug output every x frames to show the game is running
     static int frameCounter = 0;
     frameCounter++;
-    if (frameCounter % 300 == 0) {
+    if (frameCounter % 1500 == 0) {
         debugf("Game running... Frame: %d\n", frameCounter);
     }
 

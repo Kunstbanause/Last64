@@ -90,7 +90,7 @@ void SceneLast64::updateScene(float deltaTime)
     // Add debug output to show the scene is updating
     static int updateCounter = 0;
     updateCounter++;
-    if (updateCounter % 500 == 0) {
+    if (updateCounter % 2500 == 0) {
         debugf("SceneLast64 updating... Counter: %d, State: %d\n", updateCounter, currentGameState);
     }
     
