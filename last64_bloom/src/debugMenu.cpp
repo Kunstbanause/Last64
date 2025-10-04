@@ -196,7 +196,7 @@ void DebugMenu::draw()
   Debug::print(posX, posY, "[START] Menu");
   // EEPROM diagnostics
   {
-    bool present = SaveGame::is_present();
+    // bool present = SaveGame::is_present();
     int type = SaveGame::get_type();
     uint32_t last = SaveGame::get_last_saved_value();
     // Debug::printf(posX + 100, posY, "EEPROM: %s", present ? "YES" : "NO");

@@ -1,6 +1,7 @@
 filesystem/
 build/
 *.z64
+*.eeprom
 cmake*/
 .idea/
 CMakeLists.txt
