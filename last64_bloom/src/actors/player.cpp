@@ -239,11 +239,11 @@ namespace Actor {
 
         // If there is a pending upgrade choice for this player, check A/B presses to select
         if (Experience::hasPendingChoice(this)) {
-            // A selects left(0), B selects right(1)
+            // A selects right(0), B selects left(1)
             if (pressed.a) {
-                Experience::selectPendingChoice(this, 0);
-            } else if (pressed.b) {
                 Experience::selectPendingChoice(this, 1);
+            } else if (pressed.b) {
+                Experience::selectPendingChoice(this, 0);
             }
         }
         

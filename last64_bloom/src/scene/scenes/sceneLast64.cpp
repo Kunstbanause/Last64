@@ -529,7 +529,7 @@ void SceneLast64::draw2D(float deltaTime)
                 float sx = screenV.v[0];
                 float sy = screenV.v[1] - 12.0f; // slightly above player
 
-                // Draw icon for A option (left)
+                // Draw icon for A option (right)
                 float iconW = WeaponIcons::getIconWidth();
                 float iconH = WeaponIcons::getIconHeight();
                 if (opts.size() > 0) {
@@ -540,10 +540,10 @@ void SceneLast64::draw2D(float deltaTime)
                     float iy = sy - (iconH/2.0f);
                     WeaponIcons::drawIcon(ix, iy, wt, (o.type == UpgradeSystem::UpgradeType::WEAPON_UPGRADE && o.weapon) ? o.weapon->getUpgradeLevel()+1 : 0);
                     // Draw A prompt to the left of the icon
-                    Debug::printf(ix - 10.0f, iy + (iconH/2.0f) - 4.0f, "A");
+                    Debug::printf(ix - 10.0f, iy + (iconH/2.0f) - 4.0f, "B");
                 }
 
-                // Draw icon for B option (right)
+                // Draw icon for B option (left)
                 if (opts.size() > 1) {
                     const auto& o = opts[1];
                     Actor::WeaponType wt = Actor::WeaponType::PROJECTILE;
@@ -552,7 +552,7 @@ void SceneLast64::draw2D(float deltaTime)
                     float iy = sy - (iconH/2.0f);
                     WeaponIcons::drawIcon(ix, iy, wt, (o.type == UpgradeSystem::UpgradeType::WEAPON_UPGRADE && o.weapon) ? o.weapon->getUpgradeLevel()+1 : 0);
                     // Draw B prompt to the right of the icon
-                    Debug::printf(ix + iconW + 2.0f, iy + (iconH/2.0f) - 4.0f, "B");
+                    Debug::printf(ix + iconW + 2.0f, iy + (iconH/2.0f) - 4.0f, "A");
                     // }
                 }
             }

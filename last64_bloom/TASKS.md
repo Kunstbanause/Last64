@@ -96,7 +96,8 @@
 
 ### ✅ Phase 11: Upgrades overhaul
 - [x] a/b, slowdown, next to player
-- [ ] weapon choice is wron way around a / b buttons left / right
+- [x] weapon choice is wron way around a / b buttons left / right
+- [ ] After a while the optins are all the smame
 - [ ] Passive upgrades
 - [ ] meta progession
 - [ ] SAVING!?
