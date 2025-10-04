@@ -530,8 +530,8 @@ void SceneLast64::draw2D(float deltaTime)
                 float sy = screenV.v[1] - 12.0f; // slightly above player
 
                 // Draw icon for A option (left)
-                float iconW = WeaponIcons::getIconWidth()-4;
-                float iconH = WeaponIcons::getIconHeight()-4;
+                float iconW = WeaponIcons::getIconWidth();
+                float iconH = WeaponIcons::getIconHeight();
                 if (opts.size() > 0) {
                     const auto& o = opts[0];
                     Actor::WeaponType wt = Actor::WeaponType::PROJECTILE;
@@ -541,12 +541,6 @@ void SceneLast64::draw2D(float deltaTime)
                     WeaponIcons::drawIcon(ix, iy, wt, (o.type == UpgradeSystem::UpgradeType::WEAPON_UPGRADE && o.weapon) ? o.weapon->getUpgradeLevel()+1 : 0);
                     // Draw A prompt to the left of the icon
                     Debug::printf(ix - 10.0f, iy + (iconH/2.0f) - 4.0f, "A");
-                    // // Draw tag: NEW or +1
-                    // if (o.type == UpgradeSystem::UpgradeType::NEW_WEAPON) {
-                    //     Debug::printf(ix, iy - 8.0f, "NEW");
-                    // } else {
-                    //     Debug::printf(ix + iconW - 6.0f, iy - 8.0f, "+1");
-                    // }
                 }
 
                 // Draw icon for B option (right)
@@ -559,11 +553,6 @@ void SceneLast64::draw2D(float deltaTime)
                     WeaponIcons::drawIcon(ix, iy, wt, (o.type == UpgradeSystem::UpgradeType::WEAPON_UPGRADE && o.weapon) ? o.weapon->getUpgradeLevel()+1 : 0);
                     // Draw B prompt to the right of the icon
                     Debug::printf(ix + iconW + 2.0f, iy + (iconH/2.0f) - 4.0f, "B");
-                    // Draw tag: NEW or +1
-                    // if (o.type == UpgradeSystem::UpgradeType::NEW_WEAPON) {
-                    //     Debug::printf(ix, iy - 8.0f, "NEW");
-                    // } else {
-                    //     Debug::printf(ix + iconW - 6.0f, iy - 8.0f, "+1");
                     // }
                 }
             }
