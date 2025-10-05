@@ -40,7 +40,7 @@ void SFXManager::play(SfxId id)
             mixer_ch_play(1, &sfx_death.wave);
             break;
         case SFX_MUSIC1:
-            mixer_ch_play(2, &sfx_music1.wave);
+            if (isMusicEnabled()) mixer_ch_play(2, &sfx_music1.wave);
             break;
         case SFX_HIT:
             mixer_ch_play(3 + next_hit_channel, &sfx_hits[rand() % sfx_hits_count].wave);
@@ -91,6 +91,23 @@ void SFXManager::update(float delta)
         }
         mixer_ch_set_vol(2, music_current_vol, music_current_vol);
     }
+}
+
+void SFXManager::setMusicEnabled(bool enabled)
+{
+    if (!enabled) {
+        // Stop music channel immediately
+        mixer_ch_stop(2);
+    } else {
+        // Start music channel (looping is configured in init)
+        mixer_ch_play(2, &sfx_music1.wave);
+    }
+    this->music_enabled = enabled;
+}
+
+bool SFXManager::isMusicEnabled() const
+{
+    return this->music_enabled;
 }
 
 void SFXManager::stop(SfxId id)

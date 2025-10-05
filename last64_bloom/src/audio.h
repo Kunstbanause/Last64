@@ -21,6 +21,9 @@ public:
     void setVolume_Music(float volume);
     // Called each frame to advance fades (delta in seconds)
     void update(float delta);
+    // Enable/disable music globally; when disabled music play calls are ignored
+    void setMusicEnabled(bool enabled);
+    bool isMusicEnabled() const;
 
 private:
     static const int HIT_CHANNELS = 11; // We have 16 channels #0-15
@@ -37,6 +40,7 @@ private:
     float music_target_vol = 1.0f;
     float music_fade_duration = 0.0f;
     float music_fade_elapsed = 0.0f;
+    bool music_enabled = true;
 };
 
 extern SFXManager gSFXManager;

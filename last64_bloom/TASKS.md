@@ -83,7 +83,8 @@
 - [x] a/b, slowdown, next to player
 - [x] weapon choice is wron way around a / b buttons left / right
 - [x] SAVING test
-- [x] SAVING useful data :D
+- [x] SAVING useful data: best time, completion flags, total level ups
+- [x] SAVING music setting
 - [ ] Passive upgrades
 - [ ] meta progession
 

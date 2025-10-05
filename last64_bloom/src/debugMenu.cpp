@@ -137,7 +137,7 @@ void DebugMenu::reset()
   // Initialize music state from savegame
   musicEnabledVar = SaveGame::is_music_enabled();
   // Apply immediately
-  gSFXManager.setVolume_Music(musicEnabledVar ? 1.0f : 0.0f, 0.0f);
+  gSFXManager.setMusicEnabled(musicEnabledVar);
 }
 
 void DebugMenu::addEntry(const Entry& entry, bool *changedFlag) {
@@ -214,7 +214,7 @@ void DebugMenu::draw()
   // If music toggle was changed, persist and apply immediately
   if (musicChangedFlag) {
     SaveGame::set_music_enabled(musicEnabledVar);
-  gSFXManager.setVolume_Music(musicEnabledVar ? 1.0f : 0.0f, 0.0f);
+  gSFXManager.setMusicEnabled(musicEnabledVar);
     musicChangedFlag = false;
   }
 
