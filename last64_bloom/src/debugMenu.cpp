@@ -203,23 +203,31 @@ void DebugMenu::draw()
     const char *tstr = "NONE";
     if (type == 1) tstr = "4k";
     if (type == 2) tstr = "16k";
-    Debug::printf(posX + 180, posY, "EEPROM: %s", tstr);
+    Debug::printf(posX + 150, posY, "EEPROM: %s", tstr);
+    // Show last action and structured save fields stacked vertically for readability
+    int infoX = posX + 150;
+    int infoY = posY + 14;
     if (SaveGame::was_last_action_load()) {
-      Debug::printf(posX + 180, posY+14, "LOADED: %lu", (unsigned long)SaveGame::get_last_loaded_value());
+      Debug::printf(infoX, infoY, "Loaded: %lu", (unsigned long)SaveGame::get_last_loaded_value());
     } else {
-      Debug::printf(posX + 180, posY+14, "SAVED: %lu", (unsigned long)last);
+      Debug::printf(infoX, infoY, "Saved:  %lu", (unsigned long)last);
     }
-    // Structured save fields: total level-ups, best time, level-complete flags
+    // Structured save fields: total level-ups, best-time, level-complete flags (one per line)
     uint32_t totalUps = SaveGame::get_total_level_ups();
     uint32_t best = SaveGame::get_best_time();
     uint16_t flags = SaveGame::get_level_complete_flags();
+    infoY += 12;
+    Debug::printf(infoX, infoY, "Level Ups: %lu", (unsigned long)totalUps);
+    infoY += 12;
     if (best > 0) {
       int bm = (int)(best / 60);
       int bs = (int)(best % 60);
-      Debug::printf(posX + 180, posY+28, "LvlUps:%lu Best:%02d:%02d Flags:0x%04x", (unsigned long)totalUps, bm, bs, (unsigned)flags);
+      Debug::printf(infoX, infoY, "Best Time: %02d:%02d", bm, bs);
     } else {
-      Debug::printf(posX + 180, posY+28, "LvlUps:%lu Best:--:-- Flags:0x%04x", (unsigned long)totalUps, (unsigned)flags);
+      Debug::printf(infoX, infoY, "Best Time: --:--");
     }
+    infoY += 12;
+    Debug::printf(infoX, infoY, "Maps DOne: 0x%04x", (unsigned)flags);
   }
   //Debug::print(display_get_width() - 100, posY, "[L/R] Scene");
   posY += 12;
