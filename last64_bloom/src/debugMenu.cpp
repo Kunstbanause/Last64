@@ -8,6 +8,7 @@
 #include "scene/sceneManager.h"
 #include <vector>
 #include "memory/savegame.h"
+#include "audio.h"
 
 namespace
 {
@@ -28,6 +29,10 @@ namespace
 
   std::vector<DebugMenu::Entry> entries{};
   std::vector<bool*> changedFlags{};
+
+  // Music toggle state and changed flag
+  bool musicEnabledVar = true;
+  bool musicChangedFlag = false;
 
   // Helper function to find the index of the scene entry
   int findSceneEntryIndex() {
@@ -107,6 +112,8 @@ void DebugMenu::reset()
   entries.push_back({"Thres   ", EntryType::FLOAT, &state.ppConf.bloomThreshold, 0.0f, 1.0f, 1.0f/256.0f});
   entries.push_back({"RDP-S   ", EntryType::BOOL, &state.ppConf.scalingUseRDP});
   entries.push_back({"Auto    ", EntryType::BOOL, &state.autoExposure});
+  // Add music toggle (will be wired to save)
+  entries.push_back({"Music   ", EntryType::BOOL, &musicEnabledVar});
 
   changedFlags.resize(entries.size());
   
@@ -116,8 +123,21 @@ void DebugMenu::reset()
     changedFlags[sceneEntryIndex] = &needsSceneLoad;
   }
 
+  // Wire music changed flag to the Music entry if present
+  for (size_t i = 0; i < entries.size(); ++i) {
+    if (entries[i].value == &musicEnabledVar) {
+      changedFlags[i] = &musicChangedFlag;
+      break;
+    }
+  }
+
   menuSel = 0;
   idxCustom = entries.size();
+
+  // Initialize music state from savegame
+  musicEnabledVar = SaveGame::is_music_enabled();
+  // Apply immediately
+  gSFXManager.setVolume_Music(musicEnabledVar ? 1.0f : 0.0f, 0.0f);
 }
 
 void DebugMenu::addEntry(const Entry& entry, bool *changedFlag) {
@@ -189,6 +209,13 @@ void DebugMenu::draw()
       default:
         // NONE
         break;
+  }
+
+  // If music toggle was changed, persist and apply immediately
+  if (musicChangedFlag) {
+    SaveGame::set_music_enabled(musicEnabledVar);
+  gSFXManager.setVolume_Music(musicEnabledVar ? 1.0f : 0.0f, 0.0f);
+    musicChangedFlag = false;
   }
 
   float posX = 20;

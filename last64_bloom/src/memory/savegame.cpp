@@ -40,6 +40,7 @@ static bool s_last_action_was_load = false;
 static uint32_t s_total_level_ups = 0;
 static uint32_t s_best_time = 0xFFFFFFFF;
 static uint16_t s_level_complete_flags = 0;
+static bool s_music_enabled = true;
 
 static void load_structured_state() {
   if (!eeprom_present()) return;
@@ -52,6 +53,8 @@ static void load_structured_state() {
   uint8_t buf2[8];
   eeprom_read(2, buf2);
   s_level_complete_flags = ((uint16_t)buf2[0] << 8) | (uint16_t)buf2[1];
+  // byte 2 in block2 stores music enabled flag (1 = enabled)
+  s_music_enabled = buf2[2] != 0;
 }
 
 static void save_structured_state() {
@@ -69,7 +72,7 @@ static void save_structured_state() {
   buf[6] = (s_best_time >> 8) & 0xFFu;
   buf[7] = (s_best_time) & 0xFFu;
   uint8_t res1 = eeprom_write(1, buf);
-  uint8_t buf2[8] = { (uint8_t)((s_level_complete_flags >> 8) & 0xFFu), (uint8_t)(s_level_complete_flags & 0xFFu), 0,0,0,0,0,0 };
+  uint8_t buf2[8] = { (uint8_t)((s_level_complete_flags >> 8) & 0xFFu), (uint8_t)(s_level_complete_flags & 0xFFu), (uint8_t)(s_music_enabled ? 1 : 0),0,0,0,0,0 };
   uint8_t res2 = eeprom_write(2, buf2);
   if (res1 == 0 && res2 == 0) {
     if (s_best_time == 0xFFFFFFFF) {
@@ -168,5 +171,8 @@ void set_level_complete(int levelIndex) {
 uint32_t get_total_level_ups() { return s_total_level_ups; }
 uint32_t get_best_time() { return s_best_time == 0xFFFFFFFF ? 0 : s_best_time; }
 uint16_t get_level_complete_flags() { return s_level_complete_flags; }
+
+void set_music_enabled(bool enabled) { s_music_enabled = enabled; save_structured_state(); }
+bool is_music_enabled() { return s_music_enabled; }
 
 }

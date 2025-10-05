@@ -26,6 +26,10 @@ void accum_level_up();
 void maybe_update_best_time(uint32_t seconds);
 void set_level_complete(int levelIndex);
 
+// Music setting
+void set_music_enabled(bool enabled);
+bool is_music_enabled();
+
 // Accessors
 uint32_t get_total_level_ups();
 uint32_t get_best_time();
