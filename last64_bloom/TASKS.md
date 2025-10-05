@@ -87,6 +87,7 @@
 - [x] SAVING music setting
 - [ ] Passive upgrades
 - [ ] meta progession
+- [ ] proper level complete state
 
 ### ✅ Phase 12: MORE
 - [ ] XP as collectible 

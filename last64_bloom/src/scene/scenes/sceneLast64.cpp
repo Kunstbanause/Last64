@@ -258,6 +258,16 @@ void SceneLast64::updateScene(float deltaTime)
             
             // Update spawn manager
             SpawnManager::update(deltaTime, roundTimer);
+
+            // Check for level complete: final wave survived and no active enemies
+            if (SpawnManager::isFinalWaveCleared()) {
+                currentGameState = LEVEL_COMPLETE;
+                // Save best time and mark level complete
+                SaveGame::maybe_update_best_time((uint32_t)roundTimer);
+                SaveGame::set_level_complete(0); // level index 0 for now
+                // Play a level complete sound or effect
+                gSFXManager.setVolume_Music(1.0f, 0.34f); // restore normal music volume
+            }
             
             // Update all enemies
             Actor::Enemy::updateAll(deltaTime);
@@ -352,6 +362,21 @@ void SceneLast64::updateScene(float deltaTime)
                 // and the SceneLast64 destructor/constructor.
             }
             // If not restarting, just stay in GAME_OVER state
+        }
+        case LEVEL_COMPLETE: {
+            // Simple display state; wait for player to press A to continue/restart
+            bool restartPressed = false;
+            for (int i = 0; i < 4; ++i) {
+                joypad_inputs_t inputs = joypad_get_inputs((joypad_port_t)(JOYPAD_PORT_1 + i));
+                if (inputs.btn.a || inputs.btn.z) {
+                    restartPressed = true;
+                    break;
+                }
+            }
+            if (restartPressed) {
+                restartRequested = true;
+            }
+            break;
         }
     }
 }
@@ -574,6 +599,11 @@ void SceneLast64::draw2D(float deltaTime)
             // Display "Game Over" message
             Debug::printf(120, 100, "Game Over");
             Debug::printf(100, 120, "Press A to restart");
+            break;
+        }
+        case LEVEL_COMPLETE: {
+            Debug::printf(120, 100, "Level Complete!");
+            Debug::printf(100, 120, "Press A to continue");
             break;
         }
     }

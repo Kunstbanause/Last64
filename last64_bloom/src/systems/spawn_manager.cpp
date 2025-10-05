@@ -239,4 +239,18 @@ namespace SpawnManager {
         // Note: waveConfigs data is not dynamically allocated, so it does not need explicit clearing.
         // If waveConfigs held pointers or other complex types that required cleanup, those would be handled here.
     }
+
+    bool isFinalWaveCleared() {
+        if (!initialized) return false;
+        if (maxWaves <= 0) return false;
+        // If we're not on the final wave, it's not cleared
+        if (currentWave < maxWaves - 1) return false;
+    // If there are active enemies, not cleared
+    if (Actor::Enemy::getActiveCount() > 0) return false;
+        // If spawnMaximum is -1 (infinite), we can't consider it cleared
+        const WaveConfig& cfg = getCurrentWaveConfig();
+        if (cfg.spawnMaximum < 0) return false;
+        // Otherwise, final wave finished and no active enemies
+        return true;
+    }
 }

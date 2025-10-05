@@ -18,11 +18,12 @@
 class SceneLast64 : public Scene                                                                                                                                                                                                                        
 {                                                                                                                                                                                                                                                       
   private:                                                                                                                                                                                                                                              
-    enum GameState {
-        WAITING_FOR_PLAYERS,
-        ROUND_ACTIVE,
-        GAME_OVER
-    };
+  enum GameState {
+    WAITING_FOR_PLAYERS,
+    ROUND_ACTIVE,
+    LEVEL_COMPLETE,
+    GAME_OVER
+  };
 
     GameState currentGameState;
     bool playerJoined[4];

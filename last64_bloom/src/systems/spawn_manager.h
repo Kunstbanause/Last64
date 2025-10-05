@@ -56,6 +56,9 @@ namespace SpawnManager {
     
     // Get the current wave configuration
     const WaveConfig& getCurrentWaveConfig();
+
+    // Returns true when the final wave has finished spawning and there are no active enemies
+    bool isFinalWaveCleared();
     
     // Deinitialize the spawn manager
     void deinitialize();

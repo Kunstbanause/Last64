@@ -156,7 +156,9 @@ void accum_level_up() {
 }
 
 void maybe_update_best_time(uint32_t seconds) {
-  if (s_best_time == 0xFFFFFFFF || seconds < s_best_time) {
+  // Treat best time as a high-score (longer survival is better).
+  // Update when no best exists, or when the current run survived longer.
+  if (s_best_time == 0xFFFFFFFF || seconds > s_best_time) {
     s_best_time = seconds;
     save_structured_state();
   }
