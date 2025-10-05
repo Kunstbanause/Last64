@@ -12,6 +12,44 @@ void init() {
 static uint32_t s_last_saved_value = 0;
 static uint32_t s_last_loaded_value = 0;
 static bool s_last_action_was_load = false;
+// Structured state stored in block 1 (and following bytes)
+// Layout (all big-endian as used before):
+// offset 0 (block 1) : total_level_ups (4 bytes)
+// offset 4            : best_time_seconds (4 bytes)
+// offset 8            : level_complete_flags (2 bytes)
+
+static uint32_t s_total_level_ups = 0;
+static uint32_t s_best_time = 0xFFFFFFFF;
+static uint16_t s_level_complete_flags = 0;
+
+static void load_structured_state() {
+  if (!eeprom_present()) return;
+  uint8_t buf[8];
+  // read block 1
+  eeprom_read(1, buf);
+  s_total_level_ups = ((uint32_t)buf[0] << 24) | ((uint32_t)buf[1] << 16) | ((uint32_t)buf[2] << 8) | ((uint32_t)buf[3]);
+  s_best_time = ((uint32_t)buf[4] << 24) | ((uint32_t)buf[5] << 16) | ((uint32_t)buf[6] << 8) | ((uint32_t)buf[7]);
+  // read block 2 low bytes for flags
+  uint8_t buf2[8];
+  eeprom_read(2, buf2);
+  s_level_complete_flags = ((uint16_t)buf2[0] << 8) | (uint16_t)buf2[1];
+}
+
+static void save_structured_state() {
+  if (!eeprom_present()) return;
+  uint8_t buf[8];
+  buf[0] = (s_total_level_ups >> 24) & 0xFFu;
+  buf[1] = (s_total_level_ups >> 16) & 0xFFu;
+  buf[2] = (s_total_level_ups >> 8) & 0xFFu;
+  buf[3] = (s_total_level_ups) & 0xFFu;
+  buf[4] = (s_best_time >> 24) & 0xFFu;
+  buf[5] = (s_best_time >> 16) & 0xFFu;
+  buf[6] = (s_best_time >> 8) & 0xFFu;
+  buf[7] = (s_best_time) & 0xFFu;
+  eeprom_write(1, buf);
+  uint8_t buf2[8] = { (uint8_t)((s_level_complete_flags >> 8) & 0xFFu), (uint8_t)(s_level_complete_flags & 0xFFu), 0,0,0,0,0,0 };
+  eeprom_write(2, buf2);
+}
 
 bool is_present() {
   return eeprom_present() != 0;
@@ -70,7 +108,32 @@ bool load_test_value(uint32_t &out_value) {
     out_value = (uint32_t)buffer[0] << 24 | (uint32_t)buffer[1] << 16 | (uint32_t)buffer[2] << 8 | (uint32_t)buffer[3];
   s_last_loaded_value = out_value;
   s_last_action_was_load = true;
+  // refresh structured state when loading
+  load_structured_state();
   return true;
 }
+
+// Game-state helpers
+void accum_level_up() {
+  s_total_level_ups++;
+  save_structured_state();
+}
+
+void maybe_update_best_time(uint32_t seconds) {
+  if (s_best_time == 0xFFFFFFFF || seconds < s_best_time) {
+    s_best_time = seconds;
+    save_structured_state();
+  }
+}
+
+void set_level_complete(int levelIndex) {
+  if (levelIndex < 0 || levelIndex >= 16) return;
+  s_level_complete_flags |= (1u << levelIndex);
+  save_structured_state();
+}
+
+uint32_t get_total_level_ups() { return s_total_level_ups; }
+uint32_t get_best_time() { return s_best_time == 0xFFFFFFFF ? 0 : s_best_time; }
+uint16_t get_level_complete_flags() { return s_level_complete_flags; }
 
 }

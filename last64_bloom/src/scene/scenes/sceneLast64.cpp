@@ -8,6 +8,8 @@
 #include "../../actors/projectile.h"
 #include "../../systems/experience.h"
 #include "../../systems/spawn_manager.h"
+#include "../../systems/waves.h"
+#include "../../memory/savegame.h"
 #include "../../systems/weapon_registry.h"
 #include "../../main.h"
 #include "../../render/colors.h"
@@ -318,6 +320,15 @@ void SceneLast64::updateScene(float deltaTime)
                 // Stop background music when game is over
                 gSFXManager.setVolume_Music(0.45f, 0.1f); // Lower volume
                 // gSFXManager.play(SFXManager::SFX_GAME_OVER); // Assuming a game over sound effect
+                // Save best time for this run (roundTimer is in seconds)
+                SaveGame::maybe_update_best_time((uint32_t)roundTimer);
+                // If we reached the final wave (level complete) mark level as complete
+                int currentWave = SpawnManager::getCurrentWave();
+                int maxWaves = Waves::getWaveCount();
+                if (currentWave >= maxWaves - 1) {
+                    // For now level index 0
+                    SaveGame::set_level_complete(0);
+                }
             }
             break;
         }

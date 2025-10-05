@@ -21,4 +21,14 @@ uint32_t get_last_saved_value();
 uint32_t get_last_loaded_value();
 bool was_last_action_load();
 
+// Game-state saving helpers
+void accum_level_up();
+void maybe_update_best_time(uint32_t seconds);
+void set_level_complete(int levelIndex);
+
+// Accessors
+uint32_t get_total_level_ups();
+uint32_t get_best_time();
+uint16_t get_level_complete_flags();
+
 }

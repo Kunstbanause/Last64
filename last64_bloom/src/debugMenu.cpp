@@ -209,6 +209,17 @@ void DebugMenu::draw()
     } else {
       Debug::printf(posX + 180, posY+14, "SAVED: %lu", (unsigned long)last);
     }
+    // Structured save fields: total level-ups, best time, level-complete flags
+    uint32_t totalUps = SaveGame::get_total_level_ups();
+    uint32_t best = SaveGame::get_best_time();
+    uint16_t flags = SaveGame::get_level_complete_flags();
+    if (best > 0) {
+      int bm = (int)(best / 60);
+      int bs = (int)(best % 60);
+      Debug::printf(posX + 180, posY+28, "LvlUps:%lu Best:%02d:%02d Flags:0x%04x", (unsigned long)totalUps, bm, bs, (unsigned)flags);
+    } else {
+      Debug::printf(posX + 180, posY+28, "LvlUps:%lu Best:--:-- Flags:0x%04x", (unsigned long)totalUps, (unsigned)flags);
+    }
   }
   //Debug::print(display_get_width() - 100, posY, "[L/R] Scene");
   posY += 12;

@@ -90,6 +90,7 @@
 ### ✅ Phase 12: MORE
 - [ ] XP as collectible 
 - [ ] Shield with alpha / transparency / Dithering
+- [ ] Rework shield to hit multiple targets, no downtime just cooldown
 
 ###  FAILED
 - [ ] Intro with camera movement (FAILED)

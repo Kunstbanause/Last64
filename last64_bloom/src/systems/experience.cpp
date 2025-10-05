@@ -2,6 +2,7 @@
 #include "upgrade_system.h"
 #include "../systems/weapon_base.h"
 #include "../systems/weapon_registry.h"
+#include "../memory/savegame.h"
 #include "../render/hdrBoost.h"
 #include <libdragon.h>
 #include <cmath>
@@ -149,6 +150,9 @@ void Experience::addXP(int amount) {
                 pendingQueues[i].push_back(std::move(chosen));
                 // Start slow motion for a few seconds (real time)
                 slowMotionRemaining = 2.2f;
+
+                // Track total level-ups in persistent save
+                SaveGame::accum_level_up();
 
                 // Fire weapons for visual feedback
                 for (int p = 0; p < activePlayerCount; ++p) {
