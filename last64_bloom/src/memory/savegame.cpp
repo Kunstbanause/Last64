@@ -5,8 +5,27 @@
 
 namespace SaveGame {
 
+// forward declare helper so init() can call it before the static definitions
+static void load_structured_state();
+
 void init() {
-  // nothing to init for libdragon eeprom
+  // Load structured state on startup so main can display/save immediately
+  if (!eeprom_present()) {
+    debugf("SaveGame: EEPROM not present at init\n");
+    return;
+  }
+  load_structured_state();
+  // Print loaded structured values using public accessors
+  uint32_t total = get_total_level_ups();
+  uint32_t best = get_best_time();
+  uint16_t flags = get_level_complete_flags();
+  if (best == 0) {
+    debugf("SaveGame: init loaded - LevelUps:%lu Best:--:-- Flags:0x%04x\n", (unsigned long)total, (unsigned)flags);
+  } else {
+    int bm = (int)(best / 60);
+    int bs = (int)(best % 60);
+    debugf("SaveGame: init loaded - LevelUps:%lu Best:%02d:%02d Flags:0x%04x\n", (unsigned long)total, bm, bs, (unsigned)flags);
+  }
 }
 
 static uint32_t s_last_saved_value = 0;
@@ -36,7 +55,10 @@ static void load_structured_state() {
 }
 
 static void save_structured_state() {
-  if (!eeprom_present()) return;
+  if (!eeprom_present()) {
+    debugf("SaveGame: EEPROM not present - structured save skipped\n");
+    return;
+  }
   uint8_t buf[8];
   buf[0] = (s_total_level_ups >> 24) & 0xFFu;
   buf[1] = (s_total_level_ups >> 16) & 0xFFu;
@@ -46,9 +68,20 @@ static void save_structured_state() {
   buf[5] = (s_best_time >> 16) & 0xFFu;
   buf[6] = (s_best_time >> 8) & 0xFFu;
   buf[7] = (s_best_time) & 0xFFu;
-  eeprom_write(1, buf);
+  uint8_t res1 = eeprom_write(1, buf);
   uint8_t buf2[8] = { (uint8_t)((s_level_complete_flags >> 8) & 0xFFu), (uint8_t)(s_level_complete_flags & 0xFFu), 0,0,0,0,0,0 };
-  eeprom_write(2, buf2);
+  uint8_t res2 = eeprom_write(2, buf2);
+  if (res1 == 0 && res2 == 0) {
+    if (s_best_time == 0xFFFFFFFF) {
+      debugf("SaveGame: structured write OK - LevelUps:%lu Best:--:-- Flags:0x%04x\n", (unsigned long)s_total_level_ups, (unsigned)s_level_complete_flags);
+    } else {
+      int bm = (int)(s_best_time / 60);
+      int bs = (int)(s_best_time % 60);
+      debugf("SaveGame: structured write OK - LevelUps:%lu Best:%02d:%02d Flags:0x%04x\n", (unsigned long)s_total_level_ups, bm, bs, (unsigned)s_level_complete_flags);
+    }
+  } else {
+    debugf("SaveGame: structured write FAILED res1=%u res2=%u\n", (unsigned)res1, (unsigned)res2);
+  }
 }
 
 bool is_present() {
