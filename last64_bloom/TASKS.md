@@ -87,12 +87,13 @@
 - [x] SAVING music setting
 - [ ] Passive upgrades
 - [ ] meta progession
-- [ ] proper level complete state
+- [x] proper level complete state
 
 ### ✅ Phase 12: MORE
 - [ ] XP as collectible 
 - [ ] Shield with alpha / transparency / Dithering
 - [ ] Rework shield to hit multiple targets, no downtime just cooldown
+- [ ] bosses are very similar, fast boss?
 
 ###  FAILED
 - [ ] Intro with camera movement (FAILED)

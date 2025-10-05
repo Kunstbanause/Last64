@@ -24,13 +24,26 @@ namespace UpgradeSystem {
             }
         }
         
-        // If there are upgradable weapons, randomly select one
+        // If there are upgradable weapons, select one or two distinct options
         if (!upgradableWeapons.empty()) {
-            int randomIndex = rand() % upgradableWeapons.size();
-            UpgradeOption upgradeOption;
-            upgradeOption.type = UpgradeType::WEAPON_UPGRADE;
-            upgradeOption.weapon = upgradableWeapons[randomIndex];
-            options.push_back(upgradeOption);
+            // Shuffle indices to pick random distinct choices if available
+            std::vector<int> indices(upgradableWeapons.size());
+            for (size_t i = 0; i < indices.size(); ++i) indices[i] = (int)i;
+            std::random_shuffle(indices.begin(), indices.end());
+
+            // Always add at least one upgrade option
+            UpgradeOption firstOpt;
+            firstOpt.type = UpgradeType::WEAPON_UPGRADE;
+            firstOpt.weapon = upgradableWeapons[indices[0]];
+            options.push_back(firstOpt);
+
+            // If there are at least 2 distinct upgradable weapons, add a second distinct choice
+            if (upgradableWeapons.size() > 1) {
+                UpgradeOption secondOpt;
+                secondOpt.type = UpgradeType::WEAPON_UPGRADE;
+                secondOpt.weapon = upgradableWeapons[indices[1]];
+                options.push_back(secondOpt);
+            }
         }
         
         // Check if we can add a new weapon (limit to 3 weapons)
@@ -54,14 +67,34 @@ namespace UpgradeSystem {
             
             // If there are available weapon types, randomly select one
             if (!availableWeaponTypes.empty()) {
-                int randomIndex = rand() % availableWeaponTypes.size();
-                Actor::WeaponBase* newWeapon = WeaponRegistry::createWeapon(availableWeaponTypes[randomIndex]);
-                
-                if (newWeapon) {
-                    UpgradeOption newWeaponOption;
-                    newWeaponOption.type = UpgradeType::NEW_WEAPON;
-                    newWeaponOption.weapon = newWeapon;
-                    options.push_back(newWeaponOption);
+                // If only one slot remaining, present one NEW_WEAPON option. If multiple different types
+                // are available and there is no weapon-upgrade option already added, consider returning two
+                // distinct NEW_WEAPON options by creating two separate instances of different types.
+                if (availableWeaponTypes.size() == 1 || options.size() > 0) {
+                    int randomIndex = rand() % availableWeaponTypes.size();
+                    Actor::WeaponBase* newWeapon = WeaponRegistry::createWeapon(availableWeaponTypes[randomIndex]);
+                    
+                    if (newWeapon) {
+                        UpgradeOption newWeaponOption;
+                        newWeaponOption.type = UpgradeType::NEW_WEAPON;
+                        newWeaponOption.weapon = newWeapon;
+                        options.push_back(newWeaponOption);
+                    }
+                } else {
+                    // Try to produce two distinct NEW_WEAPON options
+                    std::vector<int> indices(availableWeaponTypes.size());
+                    for (size_t i = 0; i < indices.size(); ++i) indices[i] = (int)i;
+                    std::random_shuffle(indices.begin(), indices.end());
+                    // Create up to two distinct weapons
+                    for (size_t k = 0; k < 2 && k < indices.size(); ++k) {
+                        Actor::WeaponBase* newWeapon = WeaponRegistry::createWeapon(availableWeaponTypes[indices[k]]);
+                        if (newWeapon) {
+                            UpgradeOption newWeaponOption;
+                            newWeaponOption.type = UpgradeType::NEW_WEAPON;
+                            newWeaponOption.weapon = newWeapon;
+                            options.push_back(newWeaponOption);
+                        }
+                    }
                 }
             }
         }
