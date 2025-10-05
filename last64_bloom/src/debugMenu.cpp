@@ -33,6 +33,9 @@ namespace
   // Music toggle state and changed flag
   bool musicEnabledVar = true;
   bool musicChangedFlag = false;
+  // Purge save flag and changed flag
+  bool purgeSaveVar = false;
+  bool purgeSaveChanged = false;
 
   // Helper function to find the index of the scene entry
   int findSceneEntryIndex() {
@@ -114,6 +117,7 @@ void DebugMenu::reset()
   entries.push_back({"Auto    ", EntryType::BOOL, &state.autoExposure});
   // Add music toggle (will be wired to save)
   entries.push_back({"Music   ", EntryType::BOOL, &musicEnabledVar});
+  entries.push_back({"PurgeS  ", EntryType::BOOL, &purgeSaveVar});
 
   changedFlags.resize(entries.size());
   
@@ -127,6 +131,13 @@ void DebugMenu::reset()
   for (size_t i = 0; i < entries.size(); ++i) {
     if (entries[i].value == &musicEnabledVar) {
       changedFlags[i] = &musicChangedFlag;
+      break;
+    }
+  }
+  // Wire purge flag
+  for (size_t i = 0; i < entries.size(); ++i) {
+    if (entries[i].value == &purgeSaveVar) {
+      changedFlags[i] = &purgeSaveChanged;
       break;
     }
   }
@@ -216,6 +227,15 @@ void DebugMenu::draw()
     SaveGame::set_music_enabled(musicEnabledVar);
   gSFXManager.setMusicEnabled(musicEnabledVar);
     musicChangedFlag = false;
+  }
+
+  // If purge was toggled, perform purge immediately and reset the toggle
+  if (purgeSaveChanged) {
+    if (purgeSaveVar) {
+      SaveGame::purge_save();
+      purgeSaveVar = false;
+    }
+    purgeSaveChanged = false;
   }
 
   float posX = 20;

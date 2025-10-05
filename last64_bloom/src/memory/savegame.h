@@ -30,6 +30,9 @@ void set_level_complete(int levelIndex);
 void set_music_enabled(bool enabled);
 bool is_music_enabled();
 
+// Purge all save data (for testing)
+void purge_save();
+
 // Accessors
 uint32_t get_total_level_ups();
 uint32_t get_best_time();

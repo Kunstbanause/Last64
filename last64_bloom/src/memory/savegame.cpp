@@ -175,4 +175,19 @@ uint16_t get_level_complete_flags() { return s_level_complete_flags; }
 void set_music_enabled(bool enabled) { s_music_enabled = enabled; save_structured_state(); }
 bool is_music_enabled() { return s_music_enabled; }
 
+void purge_save() {
+  if (!eeprom_present()) return;
+  // Zero out blocks 0..2 used by our save format
+  uint8_t zeros[8] = {0};
+  eeprom_write(0, zeros);
+  eeprom_write(1, zeros);
+  eeprom_write(2, zeros);
+  // Reset in-memory state
+  s_total_level_ups = 0;
+  s_best_time = 0xFFFFFFFF;
+  s_level_complete_flags = 0;
+  s_music_enabled = true;
+  debugf("SaveGame: purge complete\n");
+}
+
 }
