@@ -239,11 +239,19 @@ namespace Actor {
 
         // If there is a pending upgrade choice for this player, check A/B presses to select
         if (Experience::hasPendingChoice(this)) {
-            // A selects right(0), B selects left(1)
-            if (pressed.a) {
-                Experience::selectPendingChoice(this, 1);
-            } else if (pressed.b) {
-                Experience::selectPendingChoice(this, 0);
+            const auto& opts = Experience::getPendingOptions(this);
+            if (opts.size() <= 1) {
+                // Edge-case: only one choice available -> map A to select it
+                if (pressed.a) {
+                    Experience::selectPendingChoice(this, 0);
+                }
+            } else {
+                // Two choices: A selects right(1), B selects left(0) (existing mapping)
+                if (pressed.a) {
+                    Experience::selectPendingChoice(this, 1);
+                } else if (pressed.b) {
+                    Experience::selectPendingChoice(this, 0);
+                }
             }
         }
         

@@ -115,11 +115,12 @@ void Experience::addXP(int amount) {
                 // Choose two options to present (try to pick distinct ones)
                 std::vector<UpgradeOption> chosen;
                 if (upgradeOptions.size() == 1) {
-                    // Duplicate the single option so there are two choices.
-                    // If it's a NEW_WEAPON option we must create a separate weapon instance
-                    // so both choices own different weapon objects (to avoid double-delete).
-                    chosen.push_back(upgradeOptions[0]);
+                    // Single available option. If it's a NEW_WEAPON we duplicate/clone so
+                    // the player sees two selectable items (both valid). If it's a
+                    // WEAPON_UPGRADE, present only the single choice (A selects it).
                     if (upgradeOptions[0].type == UpgradeSystem::UpgradeType::NEW_WEAPON && upgradeOptions[0].weapon) {
+                        // Duplicate the NEW_WEAPON option by creating a separate instance
+                        chosen.push_back(upgradeOptions[0]);
                         Actor::WeaponType wt = upgradeOptions[0].weapon->getWeaponType();
                         Actor::WeaponBase* newW = WeaponRegistry::createWeapon(wt);
                         if (newW) {
@@ -128,11 +129,11 @@ void Experience::addXP(int amount) {
                             opt.weapon = newW;
                             chosen.push_back(opt);
                         } else {
-                            // Fallback: duplicate pointer (rare). This may risk double-delete,
-                            // but WeaponRegistry::createWeapon should normally succeed.
-                            chosen.push_back(upgradeOptions[0]);
+                            // Fallback: if create failed, present only the original
+                            // (do not duplicate to avoid double-delete risk)
                         }
                     } else {
+                        // Single WEAPON_UPGRADE -> present only that choice (A will select it)
                         chosen.push_back(upgradeOptions[0]);
                     }
                 } else {

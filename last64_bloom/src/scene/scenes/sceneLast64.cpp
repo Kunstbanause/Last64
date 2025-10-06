@@ -565,31 +565,42 @@ void SceneLast64::draw2D(float deltaTime)
                 float sx = screenV.v[0];
                 float sy = screenV.v[1] - 12.0f; // slightly above player
 
-                // Draw icon for A option (right)
+                // Draw pending choice icons. If there's only one choice, show only the A prompt.
                 float iconW = WeaponIcons::getIconWidth();
                 float iconH = WeaponIcons::getIconHeight();
-                if (opts.size() > 0) {
+                if (opts.size() == 1) {
                     const auto& o = opts[0];
                     Actor::WeaponType wt = Actor::WeaponType::PROJECTILE;
                     if (o.weapon) wt = o.weapon->getWeaponType();
-                    float ix = sx - (iconW/2.0f) - 12.0f; // left offset
+                    // Center the single icon over the player
+                    float ix = sx - (iconW/2.0f);
                     float iy = sy - (iconH/2.0f);
                     WeaponIcons::drawIcon(ix, iy, wt, (o.type == UpgradeSystem::UpgradeType::WEAPON_UPGRADE && o.weapon) ? o.weapon->getUpgradeLevel()+1 : 0);
                     // Draw A prompt to the left of the icon
-                    Debug::printf(ix - 10.0f, iy + (iconH/2.0f) - 4.0f, "B");
-                }
-
-                // Draw icon for B option (left)
-                if (opts.size() > 1) {
-                    const auto& o = opts[1];
-                    Actor::WeaponType wt = Actor::WeaponType::PROJECTILE;
-                    if (o.weapon) wt = o.weapon->getWeaponType();
-                    float ix = sx - (iconW/2.0f) + 12.0f; // right offset
-                    float iy = sy - (iconH/2.0f);
-                    WeaponIcons::drawIcon(ix, iy, wt, (o.type == UpgradeSystem::UpgradeType::WEAPON_UPGRADE && o.weapon) ? o.weapon->getUpgradeLevel()+1 : 0);
-                    // Draw B prompt to the right of the icon
-                    Debug::printf(ix + iconW + 2.0f, iy + (iconH/2.0f) - 4.0f, "A");
-                    // }
+                    Debug::printf(ix - 10.0f, iy + (iconH/2.0f) - 4.0f, "A");
+                } else {
+                    // Two choices: draw left and right icons. Mapping:
+                    // opts[0] = left choice (selected by B), opts[1] = right choice (selected by A)
+                    if (opts.size() > 0) {
+                        const auto& o = opts[0];
+                        Actor::WeaponType wt = Actor::WeaponType::PROJECTILE;
+                        if (o.weapon) wt = o.weapon->getWeaponType();
+                        float ix = sx - (iconW/2.0f) - 12.0f; // left offset
+                        float iy = sy - (iconH/2.0f);
+                        WeaponIcons::drawIcon(ix, iy, wt, (o.type == UpgradeSystem::UpgradeType::WEAPON_UPGRADE && o.weapon) ? o.weapon->getUpgradeLevel()+1 : 0);
+                        // Draw B prompt to the left of the left icon
+                        Debug::printf(ix - 10.0f, iy + (iconH/2.0f) - 4.0f, "B");
+                    }
+                    if (opts.size() > 1) {
+                        const auto& o = opts[1];
+                        Actor::WeaponType wt = Actor::WeaponType::PROJECTILE;
+                        if (o.weapon) wt = o.weapon->getWeaponType();
+                        float ix = sx - (iconW/2.0f) + 12.0f; // right offset
+                        float iy = sy - (iconH/2.0f);
+                        WeaponIcons::drawIcon(ix, iy, wt, (o.type == UpgradeSystem::UpgradeType::WEAPON_UPGRADE && o.weapon) ? o.weapon->getUpgradeLevel()+1 : 0);
+                        // Draw A prompt to the right of the right icon
+                        Debug::printf(ix + iconW + 2.0f, iy + (iconH/2.0f) - 4.0f, "A");
+                    }
                 }
             }
 

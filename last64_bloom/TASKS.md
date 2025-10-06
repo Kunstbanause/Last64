@@ -114,6 +114,7 @@
 - [x] Fix github auth
 - [x] Fix: Boss now correctly only spawns once.
 - Spiral Weapon upgrades break old projectiles, stay in place detached from player
+- [x] Fix: All options are the same when one weapon is fully upgraded.
 
 - Cache problem:
 [unusual] RSP reading from DMEM address 0x230 which contains a value which is not cache coherent
