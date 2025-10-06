@@ -38,7 +38,7 @@ void t3d_init(T3DInitParams params)
 
   rspq_init();
   char* state = (char*)UncachedAddr(rspq_overlay_get_state(&rsp_tiny3d));
-  char* stateClipping = (char*)UncachedAddr(rspq_overlay_get_state(&rsp_tiny3d_clipping));
+  // char* stateClipping = (char*)UncachedAddr(rspq_overlay_get_state(&rsp_tiny3d_clipping)); // UNSUED?
 
   // Allocate matrix stack and let the ucode know where it is
   matrixStack = malloc_uncached(sizeof(T3DMat4FP) * params.matrixStackSize);
