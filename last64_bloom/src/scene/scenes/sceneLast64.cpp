@@ -439,18 +439,7 @@ void SceneLast64::draw2D(float deltaTime)
     switch (currentGameState) {
         case WAITING_FOR_PLAYERS: {
             // Display "Press A to join" in two columns: players 1-2 on the left, 3-4 on the right
-                // Left column (players 1 and 2)
-                for (int i = 0; i < 2; ++i) {
-                    if (!playerJoined[i]) {
-                        Debug::printf(10, 10 + (i * 14), "P%d: Press A to join", i + 1);
-                    }
-                }
-                // Right column (players 3 and 4)
-                for (int i = 2; i < 4; ++i) {
-                    if (!playerJoined[i]) {
-                        Debug::printf(SCREEN_WIDTH - 160, 10 + ((i - 2) * 14), "P%d: Press A to join", i + 1);
-                    }
-                }
+            Debug::printf(25, 10, "Player 1 to 4: Press (A) to join");
             break;
         }
         case ROUND_ACTIVE: {
@@ -469,8 +458,6 @@ void SceneLast64::draw2D(float deltaTime)
                         // Draw weapon icons
                         float iconX = 35; // Start position for icons
                         float iconY = 10 + (i * 20) - 4; // Adjust Y position to center icons
-                        
-                        // Draw up to 3 weapon icons
                         for (size_t j = 0; j < weapons.size() && j < 3; ++j) {
                             if (weapons[j]) {
                                 int level = weapons[j]->getUpgradeLevel();

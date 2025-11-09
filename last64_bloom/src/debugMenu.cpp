@@ -238,39 +238,41 @@ void DebugMenu::draw()
   }
 
   float posX = 20;
-  float posY = 50;
-  Debug::print(posX, posY, "[START] Menu");
+  float posY = 30;
+  Debug::print(posX+30, posY, "START Menu");
   {
+    // Print savegame info block
     int type = SaveGame::get_type();
     uint32_t last = SaveGame::get_last_saved_value();
     const char *tstr = "NONE";
     if (type == 1) tstr = "4k";
     if (type == 2) tstr = "16k";
-    Debug::printf(posX + 150, posY, "EEPROM: %s", tstr);
+    int saveInfoX = posX + 150;
+    int saveInfoY = posY + 56;
+    Debug::printf(saveInfoX, saveInfoY, "SaveGame EEPROM: %s", tstr);
+    saveInfoY += 10;
     // Show last action and structured save fields stacked vertically for readability
-    int infoX = posX + 150;
-    int infoY = posY + 14;
     if (SaveGame::was_last_action_load()) {
-      Debug::printf(infoX, infoY, "Loaded: %lu", (unsigned long)SaveGame::get_last_loaded_value());
+      Debug::printf(saveInfoX, saveInfoY, "Loaded: %lu", (unsigned long)SaveGame::get_last_loaded_value());
     } else {
-      Debug::printf(infoX, infoY, "Saved:  %lu", (unsigned long)last);
+      Debug::printf(saveInfoX, saveInfoY, "Saved:  %lu", (unsigned long)last);
     }
+    saveInfoY += 10;
     // Structured save fields: total level-ups, best-time, level-complete flags (one per line)
     uint32_t totalUps = SaveGame::get_total_level_ups();
     uint32_t best = SaveGame::get_best_time();
     uint16_t flags = SaveGame::get_level_complete_flags();
-    infoY += 12;
-    Debug::printf(infoX, infoY, "Level Ups: %lu", (unsigned long)totalUps);
-    infoY += 12;
+    Debug::printf(saveInfoX, saveInfoY, "Level Ups: %lu", (unsigned long)totalUps);
+    saveInfoY += 10;
     if (best > 0) {
       int bm = (int)(best / 60);
       int bs = (int)(best % 60);
-      Debug::printf(infoX, infoY, "Best Time: %02d:%02d", bm, bs);
+      Debug::printf(saveInfoX, saveInfoY, "Best Time: %02d:%02d", bm, bs);
     } else {
-      Debug::printf(infoX, infoY, "Best Time: --:--");
+      Debug::printf(saveInfoX, saveInfoY, "Best Time: --:--");
     }
-    infoY += 12;
-    Debug::printf(infoX, infoY, "Maps Done: 0x%04x", (unsigned)flags);
+    saveInfoY += 10;
+    Debug::printf(saveInfoX, saveInfoY, "Maps Done: 0x%04x", (unsigned)flags);
   }
   //Debug::print(display_get_width() - 100, posY, "[L/R] Scene");
   posY += 12;
