@@ -104,18 +104,18 @@ void DebugMenu::reset()
   changedFlags.clear();
 
   // entries.push_back({"        ", EntryType::NONE, nullptr}); // Separator
-  entries.push_back({"Weapon  ", EntryType::INT, &debugWeaponSelection, 0, 6}); // 0 = Random, 1-5 = Specific weapons, 6 = Shape
+  entries.push_back({"Weapon  ", EntryType::INT, &debugWeaponSelection, 0, 6}); // 0 = Random, 1-5 = Specific weapons
   entries.push_back({"Force MP", EntryType::BOOL, &isForceAllPlayers});
   entries.push_back({"        ", EntryType::NONE, nullptr}); // Separator
   entries.push_back({"Scene   ", EntryType::INT, &sceneId, 0, 4});
-  entries.push_back({"Debug   ", EntryType::BOOL, &state.showOffscreen});
+  entries.push_back({"Tex     ", EntryType::BOOL, &state.showOffscreen});
   entries.push_back({"Blurs   ", EntryType::INT, &state.ppConf.blurSteps, 0, 50});
   entries.push_back({"Bloom   ", EntryType::FLOAT, &state.ppConf.blurBrightness, 0.0f, 8.0f, 0.01f});
   entries.push_back({"Expos   ", EntryType::FLOAT, &state.ppConf.hdrFactor, 0.0f, 8.0f, 0.03f});
   entries.push_back({"Thres   ", EntryType::FLOAT, &state.ppConf.bloomThreshold, 0.0f, 1.0f, 1.0f/256.0f});
   entries.push_back({"RDP-S   ", EntryType::BOOL, &state.ppConf.scalingUseRDP});
   entries.push_back({"Auto    ", EntryType::BOOL, &state.autoExposure});
-  // Add music toggle (will be wired to save)
+  entries.push_back({"        ", EntryType::NONE, nullptr}); // Separator
   entries.push_back({"Music   ", EntryType::BOOL, &musicEnabledVar});
   entries.push_back({"PurgeS  ", EntryType::BOOL, &purgeSaveVar});
 
@@ -127,7 +127,7 @@ void DebugMenu::reset()
     changedFlags[sceneEntryIndex] = &needsSceneLoad;
   }
 
-  // Wire music changed flag to the Music entry if present
+  // Wire music changed flag to the Music entry
   for (size_t i = 0; i < entries.size(); ++i) {
     if (entries[i].value == &musicEnabledVar) {
       changedFlags[i] = &musicChangedFlag;
@@ -147,7 +147,6 @@ void DebugMenu::reset()
 
   // Initialize music state from savegame
   musicEnabledVar = SaveGame::is_music_enabled();
-  // Apply immediately
   gSFXManager.setMusicEnabled(musicEnabledVar);
 }
 
@@ -241,12 +240,9 @@ void DebugMenu::draw()
   float posX = 20;
   float posY = 50;
   Debug::print(posX, posY, "[START] Menu");
-  // EEPROM diagnostics
   {
-    // bool present = SaveGame::is_present();
     int type = SaveGame::get_type();
     uint32_t last = SaveGame::get_last_saved_value();
-    // Debug::printf(posX + 100, posY, "EEPROM: %s", present ? "YES" : "NO");
     const char *tstr = "NONE";
     if (type == 1) tstr = "4k";
     if (type == 2) tstr = "16k";
@@ -274,7 +270,7 @@ void DebugMenu::draw()
       Debug::printf(infoX, infoY, "Best Time: --:--");
     }
     infoY += 12;
-    Debug::printf(infoX, infoY, "Maps DOne: 0x%04x", (unsigned)flags);
+    Debug::printf(infoX, infoY, "Maps Done: 0x%04x", (unsigned)flags);
   }
   //Debug::print(display_get_width() - 100, posY, "[L/R] Scene");
   posY += 12;

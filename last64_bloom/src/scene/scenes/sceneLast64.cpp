@@ -438,12 +438,19 @@ void SceneLast64::draw2D(float deltaTime)
 {
     switch (currentGameState) {
         case WAITING_FOR_PLAYERS: {
-            // Display "Press A to join" for each player
-            for (int i = 0; i < 4; ++i) {
-                if (!playerJoined[i]) {
-                    Debug::printf(10, 10 + (i * 10), "P%d: Press A to join", i + 1);
+            // Display "Press A to join" in two columns: players 1-2 on the left, 3-4 on the right
+                // Left column (players 1 and 2)
+                for (int i = 0; i < 2; ++i) {
+                    if (!playerJoined[i]) {
+                        Debug::printf(10, 10 + (i * 14), "P%d: Press A to join", i + 1);
+                    }
                 }
-            }
+                // Right column (players 3 and 4)
+                for (int i = 2; i < 4; ++i) {
+                    if (!playerJoined[i]) {
+                        Debug::printf(SCREEN_WIDTH - 160, 10 + ((i - 2) * 14), "P%d: Press A to join", i + 1);
+                    }
+                }
             break;
         }
         case ROUND_ACTIVE: {
