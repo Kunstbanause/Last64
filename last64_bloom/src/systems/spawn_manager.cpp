@@ -25,7 +25,7 @@ namespace SpawnManager {
     static Actor::Player* players[4] = {nullptr, nullptr, nullptr, nullptr};
     
     // Helper function to get a random spawn position at screen edge based on allowed edges
-    static void getRandomEdgeSpawnPosition(float& spawnX, float& spawnY, int allowedEdges) {
+    static void getRandomEdgeSpawnPosition(float& spawnX, float& spawnY, int allowedEdges, int* outEdge = nullptr) {
         // Build a list of allowed edges
         std::vector<int> edges;
         if (allowedEdges & SPAWN_EDGE_TOP) edges.push_back(0);
@@ -42,7 +42,8 @@ namespace SpawnManager {
         }
         
         // Select a random edge from allowed edges
-        int edge = edges[rand() % edges.size()];
+    int edge = edges[rand() % edges.size()];
+    if (outEdge) *outEdge = edge;
         
         switch (edge) {
             case 0: // Top
@@ -168,13 +169,27 @@ namespace SpawnManager {
                     for (int i = 0; i < config.bossCount; i++) {
                         // Spawn boss at a random edge (respecting allowed edges)
                         float spawnX, spawnY;
-                        getRandomEdgeSpawnPosition(spawnX, spawnY, config.allowedSpawnEdges);
+                        int edge = -1;
+                        getRandomEdgeSpawnPosition(spawnX, spawnY, config.allowedSpawnEdges, &edge);
                         
                         T3DVec3 pos = {{spawnX, spawnY, 0.0f}};
                         float speed = 15.0f * config.speedMultiplier;
+
+                        // Compute fixed-direction if this wave uses linear movement
+                        bool useFixed = config.linearMovement;
+                        T3DVec3 fixedDir = {{0.0f, 0.0f, 0.0f}};
+                        if (useFixed) {
+                            switch (edge) {
+                                case 0: fixedDir = {{0.0f, 1.0f, 0.0f}}; break; // top -> move down (positive y)
+                                case 1: fixedDir = {{-1.0f, 0.0f, 0.0f}}; break; // right -> move left
+                                case 2: fixedDir = {{0.0f, -1.0f, 0.0f}}; break; // bottom -> move up (negative y)
+                                case 3: fixedDir = {{1.0f, 0.0f, 0.0f}}; break; // left -> move right
+                                default: fixedDir = {{0.0f, 0.0f, 0.0f}}; break;
+                            }
+                        }
                         
                         // Spawn enemy with the selected target player and parameters
-                        Actor::Enemy::spawn(pos, speed, targetPlayer, config.enemySize, config.enemyColor, config.xpReward, 8 * config.healthMultiplier);
+                        Actor::Enemy::spawn(pos, speed, targetPlayer, config.enemySize, config.enemyColor, config.xpReward, 8 * config.healthMultiplier, useFixed, fixedDir);
                     }
                     
                     bossSpawned = true;
@@ -201,13 +216,27 @@ namespace SpawnManager {
                 if (targetPlayer) {
                     // Spawn a new enemy at a random edge of the screen
                     float spawnX, spawnY;
-                    getRandomEdgeSpawnPosition(spawnX, spawnY, config.allowedSpawnEdges);
+                    int edge = -1;
+                    getRandomEdgeSpawnPosition(spawnX, spawnY, config.allowedSpawnEdges, &edge);
                     
                     T3DVec3 pos = {{spawnX, spawnY, 0.0f}};
                     float speed = 20.0f * config.speedMultiplier;
-                    
+
+                    // Compute fixed-direction movement if configured for this wave
+                    bool useFixed = config.linearMovement;
+                    T3DVec3 fixedDir = {{0.0f, 0.0f, 0.0f}};
+                    if (useFixed) {
+                        switch (edge) {
+                            case 0: fixedDir = {{0.0f, 1.0f, 0.0f}}; break; // top -> move down
+                            case 1: fixedDir = {{-1.0f, 0.0f, 0.0f}}; break; // right -> move left
+                            case 2: fixedDir = {{0.0f, -1.0f, 0.0f}}; break; // bottom -> move up
+                            case 3: fixedDir = {{1.0f, 0.0f, 0.0f}}; break; // left -> move right
+                            default: fixedDir = {{0.0f, 0.0f, 0.0f}}; break;
+                        }
+                    }
+
                     // Spawn enemy with the selected target player and parameters
-                    Actor::Enemy::spawn(pos, speed, targetPlayer, config.enemySize, config.enemyColor, config.xpReward, 8 * config.healthMultiplier);
+                    Actor::Enemy::spawn(pos, speed, targetPlayer, config.enemySize, config.enemyColor, config.xpReward, 8 * config.healthMultiplier, useFixed, fixedDir);
                 }
             }
         }

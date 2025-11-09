@@ -34,6 +34,8 @@ namespace Actor {
         health = 8;
         maxHealth = 8;
         targetPlayer = nullptr; // Initialize individual target player
+        useFixedDirection = false;
+        fixedDirection = {{0.0f, 0.0f, 0.0f}};
         size = EnemySize::SMALL;
         color = 0xFF0000FF; // Default red color
         xpReward = 1;
@@ -123,7 +125,7 @@ namespace Actor {
         initialized = true;
     }
 
-    Enemy* Enemy::spawn(const T3DVec3& position, float speed, Player* targetPlayer, EnemySize size, uint32_t color, int xpReward, int health) {
+    Enemy* Enemy::spawn(const T3DVec3& position, float speed, Player* targetPlayer, EnemySize size, uint32_t color, int xpReward, int health, bool useFixedDirection, T3DVec3 fixedDirection) {
         if (!initialized) {
             initializePool();
         }
@@ -147,8 +149,14 @@ namespace Actor {
                 enemy->maxHealth = health;
                 enemy->health = health;
                 
-                // Set the target player
-                enemy->targetPlayer = targetPlayer;
+                // Set movement mode and target player accordingly
+                enemy->useFixedDirection = useFixedDirection;
+                enemy->fixedDirection = fixedDirection;
+                if (useFixedDirection) {
+                    enemy->targetPlayer = nullptr;
+                } else {
+                    enemy->targetPlayer = targetPlayer;
+                }
                 
                 enemy->flags &= ~FLAG_DISABLED; // Enable the enemy
                 
@@ -192,38 +200,54 @@ namespace Actor {
             hitTimer -= deltaTime;
         }
         
-        // Check if our target player is still alive, if not, find a new one
-        if (targetPlayer && targetPlayer->getIsDead()) {
-            targetPlayer = Experience::getRandomAlivePlayer();
-        }
-        
-        // If we still don't have a target player, try to get one
-        if (!targetPlayer) {
-            targetPlayer = Experience::getRandomAlivePlayer();
-        }
-        
-        // Get player position from the individual target player reference
-        if (targetPlayer) {
-            T3DVec3 playerPos = targetPlayer->getPosition();
-            
-            // Calculate direction to player
-            T3DVec3 direction;
-            direction.x = playerPos.x - position.x;
-            direction.y = playerPos.y - position.y;
-            direction.z = playerPos.z - position.z;
-            
-            // Normalize direction
-            float length = sqrtf(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
-            if (length > 0.0f) {
-                direction.x /= length;
-                direction.y /= length;
-                direction.z /= length;
-                
-                // Move enemy directly towards player
+        // If this enemy uses a fixed direction, move along it
+        if (useFixedDirection) {
+            // Ensure direction is normalized
+            float lx = fixedDirection.x;
+            float ly = fixedDirection.y;
+            float lz = fixedDirection.z;
+            float len = sqrtf(lx*lx + ly*ly + lz*lz);
+            if (len > 0.0f) {
+                lx /= len; ly /= len; lz /= len;
                 float moveDistance = speed * deltaTime;
-                position.x += direction.x * moveDistance;
-                position.y += direction.y * moveDistance;
-                position.z += direction.z * moveDistance;
+                position.x += lx * moveDistance;
+                position.y += ly * moveDistance;
+                position.z += lz * moveDistance;
+            }
+        } else {
+            // Check if our target player is still alive, if not, find a new one
+            if (targetPlayer && targetPlayer->getIsDead()) {
+                targetPlayer = Experience::getRandomAlivePlayer();
+            }
+            
+            // If we still don't have a target player, try to get one
+            if (!targetPlayer) {
+                targetPlayer = Experience::getRandomAlivePlayer();
+            }
+            
+            // Get player position from the individual target player reference
+            if (targetPlayer) {
+                T3DVec3 playerPos = targetPlayer->getPosition();
+                
+                // Calculate direction to player
+                T3DVec3 direction;
+                direction.x = playerPos.x - position.x;
+                direction.y = playerPos.y - position.y;
+                direction.z = playerPos.z - position.z;
+                
+                // Normalize direction
+                float length = sqrtf(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
+                if (length > 0.0f) {
+                    direction.x /= length;
+                    direction.y /= length;
+                    direction.z /= length;
+                    
+                    // Move enemy directly towards player
+                    float moveDistance = speed * deltaTime;
+                    position.x += direction.x * moveDistance;
+                    position.y += direction.y * moveDistance;
+                    position.z += direction.z * moveDistance;
+                }
             }
         }
         

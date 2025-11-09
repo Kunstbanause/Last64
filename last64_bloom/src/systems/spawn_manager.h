@@ -31,6 +31,7 @@ namespace SpawnManager {
         int allowedSpawnEdges;     // Bitmask of allowed spawn edges
         bool isBossWave;           // Whether this is a boss wave
         int bossCount;             // Number of bosses to spawn (for boss waves)
+        bool linearMovement;       // If true, enemies from this wave will move in a fixed direction instead of chasing players
     };
 
     // Initialize the spawn manager
