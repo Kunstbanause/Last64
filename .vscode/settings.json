@@ -5,7 +5,8 @@
     "files.associations": {
         "deque": "cpp",
         "string": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "t3d.h": "c"
     },
     "kiroAgent.configureMCP": "Disabled"
 }

@@ -32,6 +32,14 @@ int main()
   display_init(RESOLUTION_320x240, DEPTH_16_BPP, 3, GAMMA_NONE, FILTERS_RESAMPLE_ANTIALIAS);
 
   rdpq_init();
+
+  rdpq_font_t *fnt = rdpq_font_load("rom:/fibberish.font64");
+  rdpq_font_style(fnt, 0, &(rdpq_fontstyle_t){.color = (color_t){0xFF, 0xFF, 0xFF, 0xFF}});
+  rdpq_font_style(fnt, 1, &(rdpq_fontstyle_t){.color = (color_t){232, 101, 65, 0xFF}});
+  rdpq_font_style(fnt, 2, &(rdpq_fontstyle_t){.color = (color_t){79, 209, 133, 0xFF}});
+  rdpq_text_register_font(FONT_MAIN, fnt);
+
+  
   joypad_init();
 
   t3d_init((T3DInitParams){});
