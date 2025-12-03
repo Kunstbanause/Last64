@@ -15,6 +15,9 @@ float get_time_s() {
   return (float)((double)get_ticks_us() / 1000000.0);
 }
 
+#define FONT_MAIN 2
+
+
 int main()
 {
   debug_init_isviewer();
@@ -26,6 +29,15 @@ int main()
   display_init(RESOLUTION_320x240, DEPTH_16_BPP, 3, GAMMA_NONE, FILTERS_RESAMPLE_ANTIALIAS);
 
   rdpq_init();
+
+  rdpq_font_t *fnt = rdpq_font_load("rom:/fibberish.font64");
+  rdpq_font_style(fnt, 0, &(rdpq_fontstyle_t){.color = (color_t){0xFF, 0xFF, 0xFF, 0xFF}});
+  rdpq_font_style(fnt, 1, &(rdpq_fontstyle_t){.color = (color_t){232, 101, 65, 0xFF}});
+  rdpq_font_style(fnt, 2, &(rdpq_fontstyle_t){.color = (color_t){79, 209, 133, 0xFF}});
+  rdpq_text_register_font(FONT_MAIN, fnt);
+
+  sprite_t *spriteBox = sprite_load("rom:/textbox.i8.sprite");
+
   joypad_init();
 
   t3d_init((T3DInitParams){});
@@ -88,6 +100,8 @@ int main()
     t3d_model_draw(modelMap);
     t3d_matrix_pop(1);
   rspq_block_t *dplMap = rspq_block_end();
+
+  rspq_block_t *dplTextbox = NULL;
 
   float lastTime = get_time_s() - (1.0f / 60.0f);
   rspq_syncpoint_t syncPoint = 0;
@@ -205,16 +219,54 @@ int main()
     syncPoint = rspq_syncpoint_new();
 
     // ======== Draw (UI) ======== //
-    float posX = 16;
-    float posY = 24;
 
-    rdpq_sync_pipe();
-    rdpq_text_printf(NULL, FONT_BUILTIN_DEBUG_MONO, posX, posY, "[A] Attack: %d", isAttack);
+    float posCenter = display_get_width() / 2;
+    float posY = display_get_height() - 90;
+    float bxWidth = 220.0f;
+    float bxHeight = 72.0f;
+    float posX = posCenter - bxWidth / 2;
 
-    posY = 216;
-    rdpq_text_printf(NULL, FONT_BUILTIN_DEBUG_MONO, posX, posY, "Speed: %.4f", currSpeed); posY += 10;
-    rdpq_text_printf(NULL, FONT_BUILTIN_DEBUG_MONO, posX, posY, "Blend: %.4f", animBlend); posY += 10;
+    if(!dplTextbox)
+    {
+      rspq_block_begin();
 
+      rdpq_sync_pipe();
+      rdpq_sync_tile();
+      rdpq_set_mode_standard();
+      rdpq_mode_combiner(RDPQ_COMBINER1((0,0,0,PRIM), (PRIM,0,TEX0,0)));
+      rdpq_mode_blender(RDPQ_BLENDER_MULTIPLY);
+      rdpq_set_prim_color((color_t){33, 33, 33, 0x99});
+
+      rdpq_sprite_upload(TILE0, spriteBox, NULL);
+
+      // texture is only the corner, draw 4 times for each corner and extend the clamped texture
+      rdpq_texture_rectangle(TILE0, posX,           posY,            posX + bxWidth/2,    posY + bxHeight/2,     0, 0);
+      rdpq_texture_rectangle(TILE0, posX,           posY + bxHeight, posX + bxWidth/2,    posY + bxHeight/2 - 1, 0, 0);
+      rdpq_texture_rectangle(TILE0, posX + bxWidth, posY,            posX + bxWidth/2 -1, posY + bxHeight/2,     0, 0);
+      rdpq_texture_rectangle(TILE0, posX + bxWidth, posY + bxHeight, posX + bxWidth/2 -1, posY + bxHeight/2 - 1, 0, 0);
+
+      // Draw text-box background
+      posY += 18;
+      // text in the textbox
+      rdpq_text_printf(&(rdpq_textparms_t){
+        .align = ALIGN_CENTER, .width = bxWidth, .wrap = WRAP_WORD,
+      }, FONT_MAIN, posX, posY, "^01~ Test Title ~\n");
+
+      rdpq_text_printf(&(rdpq_textparms_t){
+        .align = ALIGN_LEFT, .width = bxWidth, .wrap = WRAP_WORD,
+        .line_spacing = -4
+      }, FONT_MAIN, posX+22, posY + 16,
+        "^02[A Button]^00 Test color text\n"
+        "^02[C]^00 C buttons\n"
+        "^02[Z]^00 Z Button\n"
+      );
+
+      dplTextbox = rspq_block_end();
+    }
+
+    rspq_block_run(dplTextbox);
+
+    rdpq_text_printf(NULL, FONT_MAIN, 24, 24, "FPS: %.2f", display_get_fps());
     rdpq_detach_show();
   }
 
