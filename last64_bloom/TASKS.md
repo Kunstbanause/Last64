@@ -78,6 +78,7 @@
 - [x] HUD: Weapon Icons
 - [x] Music and audio system out of scene so the music can play when the scene restarts
 - [x] last save off value screen
+- [x] Linear movement waves: Comet Style
 
 ### ✅ Phase 11: Upgrades overhaul
 - [x] a/b, slowdown, next to player
@@ -85,6 +86,7 @@
 - [x] SAVING test
 - [x] SAVING useful data: best time, completion flags, total level ups
 - [x] SAVING music setting
+- [ ] Main Menu
 - [ ] Convert level ups to new currency: CREDTIS
 - [ ] Passive upgrades (payed with CREDITS and saved)
 - [x] proper level complete state
