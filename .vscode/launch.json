@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "makeRunDebug",
+      "name": "Last64",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/last64_bloom/build/Last64_Bloom.elf",
@@ -12,7 +12,21 @@
       "stopAtEntry": false,
       "externalConsole": false,
       "MIMode": "gdb",
-      "preLaunchTask": "make-run",
+      "preLaunchTask": "make-run-last64",
+      "postDebugTask": "kill-ares"
+    },
+    {
+      "name": "Ballpit64",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/ballpit64/build/ballpit64.elf",
+      "miDebuggerServerAddress": "127.0.0.1:9123",
+      "miDebuggerPath": "/opt/libdragon/bin/mips64-elf-gdb",
+      "cwd": "${workspaceFolder}/ballpit64",
+      "stopAtEntry": false,
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "preLaunchTask": "make-run-ballpit64",
       "postDebugTask": "kill-ares"
     }
   ]

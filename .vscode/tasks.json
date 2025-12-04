@@ -18,7 +18,7 @@
       }
     },
     {
-      "label": "make-run",
+      "label": "make-run-last64",
       "type": "shell",
       "command": "make run",
       "options": {
@@ -35,6 +35,28 @@
           "activeOnStart": true,
           "beginsPattern": ".*Loaded Last64_Bloom.*",
           "endsPattern": ".*Loading scene.*"
+        }
+      },
+      "isBackground": true
+    },
+    {
+      "label": "make-run-ballpit64",
+      "type": "shell",
+      "command": "make run",
+      "options": {
+        "cwd": "${workspaceFolder}/ballpit64"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "problemMatcher": {
+        "base": "$gcc",
+        "fileLocation": ["relative", "${workspaceFolder}/ballpit64"],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*Loaded ballpit64*",
+          "endsPattern": ".*Loaded ballpit64*"
         }
       },
       "isBackground": true

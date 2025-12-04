@@ -17,6 +17,52 @@ float get_time_s() {
 
 #define FONT_MAIN 2
 
+// Create a reusable textbox popup. Returns an rspq block that can be run
+// or freed. `title` and `body` may contain formatting codes used by rdpq_text.
+static rspq_block_t *create_textbox_popup(sprite_t *spriteBox, int fontId, const char *title, const char *body)
+{
+  float posCenter = display_get_width() / 2;
+  float posY = display_get_height() - 90;
+  float bxWidth = 220.0f;
+  float bxHeight = 72.0f;
+  float posX = posCenter - bxWidth / 2;
+
+  rspq_block_begin();
+
+  rdpq_sync_pipe();
+  rdpq_sync_tile();
+  rdpq_set_mode_standard();
+  rdpq_mode_combiner(RDPQ_COMBINER1((0,0,0,PRIM), (PRIM,0,TEX0,0)));
+  rdpq_mode_blender(RDPQ_BLENDER_MULTIPLY);
+  rdpq_set_prim_color((color_t){33, 33, 33, 0x99});
+
+  rdpq_sprite_upload(TILE0, spriteBox, NULL);
+
+  // texture is only the corner, draw 4 times for each corner and extend the clamped texture
+  rdpq_texture_rectangle(TILE0, posX,           posY,            posX + bxWidth/2,    posY + bxHeight/2,     0, 0);
+  rdpq_texture_rectangle(TILE0, posX,           posY + bxHeight, posX + bxWidth/2,    posY + bxHeight/2 - 1, 0, 0);
+  rdpq_texture_rectangle(TILE0, posX + bxWidth, posY,            posX + bxWidth/2 -1, posY + bxHeight/2,     0, 0);
+  rdpq_texture_rectangle(TILE0, posX + bxWidth, posY + bxHeight, posX + bxWidth/2 -1, posY + bxHeight/2 - 1, 0, 0);
+
+  // Draw text-box background
+  posY += 18;
+
+  if(title && title[0] != '\0') {
+    rdpq_text_printf(&(rdpq_textparms_t){
+      .align = ALIGN_CENTER, .width = bxWidth, .wrap = WRAP_WORD,
+    }, fontId, posX, posY, "%s\n", title);
+  }
+
+  if(body && body[0] != '\0') {
+    rdpq_text_printf(&(rdpq_textparms_t){
+      .align = ALIGN_LEFT, .width = bxWidth, .wrap = WRAP_WORD,
+      .line_spacing = -4
+    }, fontId, posX+22, posY + 16, "%s", body);
+  }
+
+  return rspq_block_end();
+}
+
 
 int main()
 {
@@ -34,6 +80,7 @@ int main()
   rdpq_font_style(fnt, 0, &(rdpq_fontstyle_t){.color = (color_t){0xFF, 0xFF, 0xFF, 0xFF}});
   rdpq_font_style(fnt, 1, &(rdpq_fontstyle_t){.color = (color_t){232, 101, 65, 0xFF}});
   rdpq_font_style(fnt, 2, &(rdpq_fontstyle_t){.color = (color_t){79, 209, 133, 0xFF}});
+  rdpq_font_style(fnt, 3, &(rdpq_fontstyle_t){.color = (color_t){216, 220, 180, 0xFF}});
   rdpq_text_register_font(FONT_MAIN, fnt);
 
   sprite_t *spriteBox = sprite_load("rom:/textbox.i8.sprite");
@@ -102,6 +149,8 @@ int main()
   rspq_block_t *dplMap = rspq_block_end();
 
   rspq_block_t *dplTextbox = NULL;
+  // control whether the popup should be shown; prevents immediate re-creation
+  bool showPopup = false;
 
   float lastTime = get_time_s() - (1.0f / 60.0f);
   rspq_syncpoint_t syncPoint = 0;
@@ -125,6 +174,16 @@ int main()
 
     joypad_inputs_t joypad = joypad_get_inputs(JOYPAD_PORT_1);
     joypad_buttons_t btn = joypad_get_buttons_pressed(JOYPAD_PORT_1);
+
+    // If a popup is showing and the A button is pressed, close the popup
+    if(dplTextbox && btn.a) {
+      rspq_block_free(dplTextbox);
+      dplTextbox = NULL;
+      // prevent it from being re-created immediately
+      showPopup = false;
+      // consume the A press so it doesn't trigger other actions (like attack)
+      btn.a = 0;
+    }
 
     T3DVec3 newDir = {{
        (float)joypad.stick_x * 0.05f, 0,
@@ -226,45 +285,17 @@ int main()
     float bxHeight = 72.0f;
     float posX = posCenter - bxWidth / 2;
 
-    if(!dplTextbox)
+    if(showPopup && !dplTextbox)
     {
-      rspq_block_begin();
-
-      rdpq_sync_pipe();
-      rdpq_sync_tile();
-      rdpq_set_mode_standard();
-      rdpq_mode_combiner(RDPQ_COMBINER1((0,0,0,PRIM), (PRIM,0,TEX0,0)));
-      rdpq_mode_blender(RDPQ_BLENDER_MULTIPLY);
-      rdpq_set_prim_color((color_t){33, 33, 33, 0x99});
-
-      rdpq_sprite_upload(TILE0, spriteBox, NULL);
-
-      // texture is only the corner, draw 4 times for each corner and extend the clamped texture
-      rdpq_texture_rectangle(TILE0, posX,           posY,            posX + bxWidth/2,    posY + bxHeight/2,     0, 0);
-      rdpq_texture_rectangle(TILE0, posX,           posY + bxHeight, posX + bxWidth/2,    posY + bxHeight/2 - 1, 0, 0);
-      rdpq_texture_rectangle(TILE0, posX + bxWidth, posY,            posX + bxWidth/2 -1, posY + bxHeight/2,     0, 0);
-      rdpq_texture_rectangle(TILE0, posX + bxWidth, posY + bxHeight, posX + bxWidth/2 -1, posY + bxHeight/2 - 1, 0, 0);
-
-      // Draw text-box background
-      posY += 18;
-      // text in the textbox
-      rdpq_text_printf(&(rdpq_textparms_t){
-        .align = ALIGN_CENTER, .width = bxWidth, .wrap = WRAP_WORD,
-      }, FONT_MAIN, posX, posY, "^01~ Test Title ~\n");
-
-      rdpq_text_printf(&(rdpq_textparms_t){
-        .align = ALIGN_LEFT, .width = bxWidth, .wrap = WRAP_WORD,
-        .line_spacing = -4
-      }, FONT_MAIN, posX+22, posY + 16,
+      dplTextbox = create_textbox_popup(spriteBox, FONT_MAIN,
+        "^01~ Test Title ~",
         "^02[A Button]^00 Test color text\n"
         "^02[C]^00 C buttons\n"
-        "^02[Z]^00 Z Button\n"
+        "^02[Z]^03 Z Button\n"
       );
-
-      dplTextbox = rspq_block_end();
     }
 
-    rspq_block_run(dplTextbox);
+    if(dplTextbox) rspq_block_run(dplTextbox);
 
     rdpq_text_printf(NULL, FONT_MAIN, 24, 24, "FPS: %.2f", display_get_fps());
     rdpq_detach_show();
