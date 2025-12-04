@@ -168,7 +168,7 @@ int main()
   rspq_syncpoint_t syncPoint = 0;
 
   T3DVec3 moveDir = {{0,0,0}};
-  T3DVec3 playerPos = {{0,0.15f,0}};
+  T3DVec3 playerPos = {{0,0.15f,120.0f}};
 
   // Ball state
   typedef struct Ball {
@@ -400,14 +400,14 @@ int main()
     // Draw ball here while the 3D pipeline is active
     t3d_matrix_push(ballMatFP);
     // small scale so it looks like a sphere/shadow
-    t3d_mat4fp_from_srt_euler(ballMatFP, (float[3]){0.08f,0.08f,0.08f}, (float[3]){0,0,0}, ball.pos.v);
-    rdpq_set_prim_color(RGBA32(255, 200, 80, 255));
+    t3d_mat4fp_from_srt_euler(ballMatFP, (float[3]){0.12f,0.12f,0.12f}, (float[3]){0,0,0}, ball.pos.v);
+    rdpq_set_prim_color(RGBA32(255, 0, 0, 255));
     t3d_model_draw(model); // using 'model' as temporary visual for the ball
     t3d_matrix_pop(1);
 
     // Draw aiming reticle
     T3DMat4FP reticleMat;
-    t3d_mat4fp_from_srt_euler(&reticleMat, (float[3]){0.05f,0.05f,0.05f}, (float[3]){0,0,0}, reticlePos.v);
+    t3d_mat4fp_from_srt_euler(&reticleMat, (float[3]){0.1f,0.1f,0.1f}, (float[3]){0,0,0}, reticlePos.v);
     t3d_matrix_push(&reticleMat);
     rdpq_set_prim_color(RGBA32(255, 255, 0, 255)); // yellow reticle
     t3d_model_draw(modelShadow);
