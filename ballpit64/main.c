@@ -96,8 +96,8 @@ int main()
   t3d_mat4fp_from_srt_euler(mapMatFP, (float[3]){0.3f, 0.3f, 0.3f}, (float[3]){0, 0, 0}, (float[3]){0, 0, -10});
 
   // Static top-down camera location (centered in arena)
-  T3DVec3 camPos = {{0, 140.0f, 40.0f}};   // high above, pulled back slightly
-  T3DVec3 camTarget = {{0, 0, -12.0f}};    // look slightly forward of origin
+  T3DVec3 camPos = {{0, 240.0f, 40.0f}};   // high above, pulled back slightly
+  T3DVec3 camTarget = {{0, 0, -22.0f}};    // look slightly forward of origin
 
   T3DVec3 lightDirVec = {{1.0f, 1.0f, 1.0f}};
   t3d_vec3_norm(&lightDirVec);
@@ -227,7 +227,6 @@ int main()
     if(playerPos.v[2] >  BOX_SIZE)playerPos.v[2] =  BOX_SIZE;
 
     // Camera is static (configured before the main loop)
-
     t3d_viewport_set_projection(&viewport, T3D_DEG_TO_RAD(85.0f), 10.0f, 150.0f);
     t3d_viewport_look_at(&viewport, &camPos, &camTarget, &(T3DVec3){{0,1,0}});
 
@@ -302,7 +301,7 @@ int main()
 
     if(dplTextbox) rspq_block_run(dplTextbox);
 
-    rdpq_text_printf(NULL, FONT_MAIN, 24, 24, "FPS: %.2f", display_get_fps());
+    //rdpq_text_printf(NULL, FONT_MAIN, 24, 24, "FPS: %.2f", display_get_fps());
     rdpq_detach_show();
   }
 
