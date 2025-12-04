@@ -95,8 +95,9 @@ int main()
   T3DMat4FP* mapMatFP = malloc_uncached(sizeof(T3DMat4FP));
   t3d_mat4fp_from_srt_euler(mapMatFP, (float[3]){0.3f, 0.3f, 0.3f}, (float[3]){0, 0, 0}, (float[3]){0, 0, -10});
 
-  T3DVec3 camPos = {{0, 45.0f, 80.0f}};
-  T3DVec3 camTarget = {{0, 0,-10}};
+  // Static top-down camera location (centered in arena)
+  T3DVec3 camPos = {{0, 140.0f, 40.0f}};   // high above, pulled back slightly
+  T3DVec3 camTarget = {{0, 0, -12.0f}};    // look slightly forward of origin
 
   T3DVec3 lightDirVec = {{1.0f, 1.0f, 1.0f}};
   t3d_vec3_norm(&lightDirVec);
@@ -225,12 +226,7 @@ int main()
     if(playerPos.v[2] < -BOX_SIZE)playerPos.v[2] = -BOX_SIZE;
     if(playerPos.v[2] >  BOX_SIZE)playerPos.v[2] =  BOX_SIZE;
 
-    // position the camera behind the player
-    camTarget = playerPos;
-    camTarget.v[2] -= 20;
-    camPos.v[0] = camTarget.v[0];
-    camPos.v[1] = camTarget.v[1] + 45;
-    camPos.v[2] = camTarget.v[2] + 65;
+    // Camera is static (configured before the main loop)
 
     t3d_viewport_set_projection(&viewport, T3D_DEG_TO_RAD(85.0f), 10.0f, 150.0f);
     t3d_viewport_look_at(&viewport, &camPos, &camTarget, &(T3DVec3){{0,1,0}});
@@ -254,9 +250,18 @@ int main()
     t3d_skeleton_update(&skel);
 
     // Update player matrix
+    // Keep yaw fixed so player always faces "up"; apply a small roll for sideways lean.
+    float fixedYaw = T3D_DEG_TO_RAD(180.0f); // rotate model 180 degrees so it faces upward on screen
+    // roll: lean into the lateral direction; scale by current speed for nicer effect
+    float maxLean = 0.45f; // radians (~25deg)
+    float roll = -moveDir.v[0] * maxLean * (currSpeed / 0.51f);
+    // clamp roll
+    if(roll > maxLean) roll = maxLean;
+    if(roll < -maxLean) roll = -maxLean;
+
     t3d_mat4fp_from_srt_euler(modelMatFP,
       (float[3]){0.125f, 0.125f, 0.125f},
-      (float[3]){0.0f, -rotY, 0},
+      (float[3]){0.0f, fixedYaw, roll},
       playerPos.v
     );
 
