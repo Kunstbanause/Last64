@@ -92,6 +92,7 @@ int main()
   T3DViewport viewport = t3d_viewport_create();
 
   T3DMat4FP* modelMatFP = malloc_uncached(sizeof(T3DMat4FP));
+  T3DMat4FP* ballMatFP = malloc_uncached(sizeof(T3DMat4FP));
   T3DMat4FP* mapMatFP = malloc_uncached(sizeof(T3DMat4FP));
   t3d_mat4fp_from_srt_euler(mapMatFP, (float[3]){0.3f, 0.3f, 0.3f}, (float[3]){0, 0, 0}, (float[3]){0, 0, -10});
 
@@ -168,6 +169,21 @@ int main()
 
   T3DVec3 moveDir = {{0,0,0}};
   T3DVec3 playerPos = {{0,0.15f,0}};
+
+  // Ball state
+  typedef struct Ball {
+    T3DVec3 pos;
+    float vx;
+    float vz;
+    float speed;
+  } Ball;
+
+  Ball ball;
+  // initialize ball at player position and shoot upwards (negative z)
+  ball.pos = playerPos;
+  ball.speed = 120.0f;
+  ball.vx = 0.0f;
+  ball.vz = -ball.speed;
 
   float rotY = 0.0f;
   float currSpeed = 0.0f;
@@ -309,6 +325,41 @@ int main()
       playerPos.v
     );
 
+    // ===== Ball physics (2D X/Z) =====
+    // Integrate
+    ball.pos.v[0] += ball.vx * deltaTime;
+    ball.pos.v[2] += ball.vz * deltaTime;
+
+    // Bounce on arena walls (X) and top (Z min). Reset when hitting bottom (Z max)
+    if(ball.pos.v[0] < -BOX_SIZE) {
+      ball.pos.v[0] = -BOX_SIZE;
+      ball.vx = -ball.vx;
+    }
+    if(ball.pos.v[0] > BOX_SIZE) {
+      ball.pos.v[0] = BOX_SIZE;
+      ball.vx = -ball.vx;
+    }
+    if(ball.pos.v[2] < -BOX_SIZE) {
+      ball.pos.v[2] = -BOX_SIZE;
+      ball.vz = -ball.vz;
+    }
+
+    if(ball.pos.v[2] > BOX_SIZE) {
+      // hit bottom: reset to player and immediately shoot again
+      ball.pos = playerPos;
+      // initial shot direction: upward (-Z). add small x component from player's lateral movement
+      float dirx = moveDir.v[0];
+      float dirz = -1.0f;
+      // normalize
+      float len = sqrtf(dirx*dirx + dirz*dirz);
+      if(len == 0.0f) len = 1.0f;
+      ball.vx = (dirx / len) * ball.speed;
+      ball.vz = (dirz / len) * ball.speed;
+    }
+
+    // ===== Draw ball =====
+    // (drawing moved to the 3D draw section after attaching the viewport)
+
     // ======== Draw (3D) ======== //
     rdpq_attach(display_get(), display_get_zbuf());
     t3d_frame_start();
@@ -323,6 +374,14 @@ int main()
 
     rspq_block_run(dplMap);
     rspq_block_run(dplSnake);
+
+    // Draw ball here while the 3D pipeline is active
+    t3d_matrix_push(ballMatFP);
+    // small scale so it looks like a sphere/shadow
+    t3d_mat4fp_from_srt_euler(ballMatFP, (float[3]){0.08f,0.08f,0.08f}, (float[3]){0,0,0}, ball.pos.v);
+    rdpq_set_prim_color(RGBA32(255, 200, 80, 255));
+    t3d_model_draw(model); // using 'model' as temporary visual for the ball
+    t3d_matrix_pop(1);
 
     syncPoint = rspq_syncpoint_new();
 
