@@ -96,8 +96,8 @@ int main()
   t3d_mat4fp_from_srt_euler(mapMatFP, (float[3]){0.3f, 0.3f, 0.3f}, (float[3]){0, 0, 0}, (float[3]){0, 0, -10});
 
   // Static top-down camera location (centered in arena)
-  T3DVec3 camPos = {{0, 240.0f, 40.0f}};   // high above, pulled back slightly
-  T3DVec3 camTarget = {{0, 0, -22.0f}};    // look slightly forward of origin
+  T3DVec3 camPos = {{0, 188.0f, 36.0f}};   // high above, pulled back slightly
+  T3DVec3 camTarget = {{0, 0, 0.0f}};    // look slightly forward of origin
 
   T3DVec3 lightDirVec = {{1.0f, 1.0f, 1.0f}};
   t3d_vec3_norm(&lightDirVec);
@@ -153,6 +153,13 @@ int main()
   // control whether the popup should be shown; prevents immediate re-creation
   bool showPopup = false;
 
+  // Camera tuning variables (editable with controller)
+  float camY = camPos.v[1];
+  float camZ = camPos.v[2];
+  float targetZ = camTarget.v[2];
+  int camEditMode = 0; // 0 = camY, 1 = camZ, 2 = targetZ
+  const char *camEditNames[3] = {"camY", "camZ", "tZ"};
+
   float lastTime = get_time_s() - (1.0f / 60.0f);
   rspq_syncpoint_t syncPoint = 0;
 
@@ -185,6 +192,33 @@ int main()
       // consume the A press so it doesn't trigger other actions (like attack)
       btn.a = 0;
     }
+
+    // --- Camera tuning: use D-Pad left/right to cycle edit mode, C-up/C-down to change value ---
+    if(btn.d_left) {
+      // previous mode
+      camEditMode = (camEditMode + 2) % 3;
+    }
+    if(btn.d_right) {
+      // next mode
+      camEditMode = (camEditMode + 1) % 3;
+    }
+
+    // continuous adjustment while C-buttons are held; scale by deltaTime for smoothness
+    float camAdjustSpeed = 40.0f; // units per second
+    float adjust = 0.0f;
+    if(joypad.btn.c_up) adjust += camAdjustSpeed * deltaTime;
+    if(joypad.btn.c_down) adjust -= camAdjustSpeed * deltaTime;
+
+    if(adjust != 0.0f) {
+      if(camEditMode == 0) camY += adjust;
+      else if(camEditMode == 1) camZ += adjust;
+      else if(camEditMode == 2) targetZ += adjust;
+    }
+
+    // apply tuned values to camera (camera remains static except when edited)
+    camPos.v[1] = camY;
+    camPos.v[2] = camZ;
+    camTarget.v[2] = targetZ;
 
     T3DVec3 newDir = {{
        (float)joypad.stick_x * 0.05f, 0,
@@ -301,7 +335,15 @@ int main()
 
     if(dplTextbox) rspq_block_run(dplTextbox);
 
-    //rdpq_text_printf(NULL, FONT_MAIN, 24, 24, "FPS: %.2f", display_get_fps());
+    rdpq_text_printf(NULL, FONT_MAIN, 24, 24, "FPS: %.2f", display_get_fps());
+    // Camera debug overlay: color the active value with ^02...^00
+    const char *camFmt0 = "CamY: ^02%.1f^00  CamZ: %.1f  TargZ: %.1f";
+    const char *camFmt1 = "CamY: %.1f  CamZ: ^02%.1f^00  TargZ: %.1f";
+    const char *camFmt2 = "CamY: %.1f  CamZ: %.1f  TargZ: ^02%.1f^00";
+    const char *camFmt = camFmt0;
+    if(camEditMode == 1) camFmt = camFmt1;
+    else if(camEditMode == 2) camFmt = camFmt2;
+    rdpq_text_printf(NULL, FONT_MAIN, 24, 40, camFmt, camY, camZ, targetZ);
     rdpq_detach_show();
   }
 
