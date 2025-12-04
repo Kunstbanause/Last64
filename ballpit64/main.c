@@ -198,6 +198,30 @@ int main()
 
   const float BOX_SIZE = 140.0f;
 
+  // Enemy system
+  #define MAX_ENEMIES 64
+  #define GRID_COLS 11
+  
+  typedef struct Enemy {
+    T3DVec3 pos;
+    int health;
+    bool active;
+  } Enemy;
+  
+  Enemy enemies[MAX_ENEMIES];
+  for(int i = 0; i < MAX_ENEMIES; i++) {
+    enemies[i].active = false;
+    enemies[i].health = 2;
+  }
+  
+  float waveTimer = 3.0f; // spawn a wave every 3 seconds
+  float waveTimerMax = 3.0f;
+  
+  // grid dimensions
+  float gridCellSizeX = (BOX_SIZE * 2.0f) / GRID_COLS; // divide full width by grid cols
+  float enemySpawnZ = -BOX_SIZE + 10.0f; // spawn near top
+  float enemySpeed = 30.0f; // units per second moving downward
+
   for(;;)
   {
     // ======== Update ======== //
@@ -266,6 +290,76 @@ int main()
     if(reticlePos.v[0] > BOX_SIZE) reticlePos.v[0] = BOX_SIZE;
     if(reticlePos.v[2] < -BOX_SIZE) reticlePos.v[2] = -BOX_SIZE;
     if(reticlePos.v[2] > BOX_SIZE) reticlePos.v[2] = BOX_SIZE;
+
+    // ===== Enemy wave spawning =====
+    waveTimer -= deltaTime;
+    if(waveTimer <= 0.0f) {
+      waveTimer = waveTimerMax;
+      // Spawn a wave: GRID_COLS enemies in top row, some in lower rows
+      for(int col = 0; col < GRID_COLS; col++) {
+        // Top row always spawns
+        for(int i = 0; i < MAX_ENEMIES; i++) {
+          if(!enemies[i].active) {
+            enemies[i].active = true;
+            enemies[i].health = 2;
+            float gridX = -BOX_SIZE + (col + 0.5f) * gridCellSizeX;
+            float gridZ = enemySpawnZ;  // top row
+            enemies[i].pos = (T3DVec3){{gridX, 0.15f, gridZ}};
+            break;
+          }
+        }
+        
+        // Lower rows have probabilistic chance
+        for(int row = 1; row < 4; row++) {
+          float chance = 1.0f / (1.0f + row * 1.5f); // decreases with row
+          if(rand() % 100 < (int)(chance * 100.0f)) {
+            // Spawn this row too
+            for(int i = 0; i < MAX_ENEMIES; i++) {
+              if(!enemies[i].active) {
+                enemies[i].active = true;
+                enemies[i].health = 2;
+                float gridX = -BOX_SIZE + (col + 0.5f) * gridCellSizeX;
+                float gridZ = enemySpawnZ - row * gridCellSizeX * 0.8f;
+                enemies[i].pos = (T3DVec3){{gridX, 0.15f, gridZ}};
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // ===== Update enemies =====
+    for(int i = 0; i < MAX_ENEMIES; i++) {
+      if(!enemies[i].active) continue;
+      
+      // Move enemy downward (positive Z)
+      enemies[i].pos.v[2] += enemySpeed * deltaTime;
+      
+      // Remove if off screen
+      if(enemies[i].pos.v[2] > BOX_SIZE) {
+        enemies[i].active = false;
+      }
+    }
+
+    // ===== Ball-enemy collision =====
+    for(int i = 0; i < MAX_ENEMIES; i++) {
+      if(!enemies[i].active) continue;
+      
+      float ex = enemies[i].pos.v[0];
+      float ez = enemies[i].pos.v[2];
+      float ballDist = sqrtf((ball.pos.v[0] - ex)*(ball.pos.v[0] - ex) + 
+                              (ball.pos.v[2] - ez)*(ball.pos.v[2] - ez));
+      
+      if(ballDist < 6.0f) { // ball hits enemy
+        enemies[i].health--;
+        if(enemies[i].health <= 0) {
+          enemies[i].active = false;
+        }
+        // bounce ball back (simple reflection)
+        ball.vz = -ball.vz;
+      }
+    }
 
     T3DVec3 newDir = {{
        (float)joypad.stick_x * 0.05f, 0,
@@ -438,11 +532,23 @@ int main()
 
     // Draw aiming reticle
     T3DMat4FP reticleMat;
-    t3d_mat4fp_from_srt_euler(&reticleMat, (float[3]){0.1f,0.1f,0.1f}, (float[3]){0,0,0}, reticlePos.v);
+    t3d_mat4fp_from_srt_euler(&reticleMat, (float[3]){0.05f,0.05f,0.05f}, (float[3]){0,0,0}, reticlePos.v);
     t3d_matrix_push(&reticleMat);
     rdpq_set_prim_color(RGBA32(255, 255, 0, 255)); // yellow reticle
     t3d_model_draw(modelShadow);
     t3d_matrix_pop(1);
+
+    // Draw enemies
+    T3DMat4FP enemyMatFP;
+    for(int i = 0; i < MAX_ENEMIES; i++) {
+      if(!enemies[i].active) continue;
+      
+      t3d_mat4fp_from_srt_euler(&enemyMatFP, (float[3]){0.1f, 0.1f, 0.1f}, (float[3]){0,0,0}, enemies[i].pos.v);
+      t3d_matrix_push(&enemyMatFP);
+      rdpq_set_prim_color(RGBA32(200, 50, 50, 255)); // red enemies
+      t3d_model_draw(modelShadow);
+      t3d_matrix_pop(1);
+    }
 
     syncPoint = rspq_syncpoint_new();
 
