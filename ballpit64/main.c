@@ -153,6 +153,9 @@ int main()
   // control whether the popup should be shown; prevents immediate re-creation
   bool showPopup = false;
 
+  // Start menu open
+  bool startMenuOpen = false;
+
   // Camera tuning variables (editable with controller)
   float camY = camPos.v[1];
   float camZ = camPos.v[2];
@@ -193,29 +196,37 @@ int main()
       btn.a = 0;
     }
 
-    // --- Camera tuning: use D-Pad left/right to cycle edit mode, C-up/C-down to change value ---
-    if(btn.d_left) {
-      // previous mode
-      camEditMode = (camEditMode + 2) % 3;
-    }
-    if(btn.d_right) {
-      // next mode
-      camEditMode = (camEditMode + 1) % 3;
+    // Toggle start menu
+    if(btn.start) {
+      startMenuOpen = !startMenuOpen;
     }
 
-    // continuous adjustment while C-buttons are held; scale by deltaTime for smoothness
-    float camAdjustSpeed = 40.0f; // units per second
-    float adjust = 0.0f;
-    if(joypad.btn.c_up) adjust += camAdjustSpeed * deltaTime;
-    if(joypad.btn.c_down) adjust -= camAdjustSpeed * deltaTime;
+    // Camera tuning only active when menu is open
+    if(startMenuOpen) {
+      // use D-Pad left/right to cycle edit mode, C-up/C-down to change value
+      if(btn.d_left) {
+        // previous mode
+        camEditMode = (camEditMode + 2) % 3;
+      }
+      if(btn.d_right) {
+        // next mode
+        camEditMode = (camEditMode + 1) % 3;
+      }
 
-    if(adjust != 0.0f) {
-      if(camEditMode == 0) camY += adjust;
-      else if(camEditMode == 1) camZ += adjust;
-      else if(camEditMode == 2) targetZ += adjust;
+      // continuous adjustment while C-buttons are held; scale by deltaTime for smoothness
+      float camAdjustSpeed = 40.0f; // units per second
+      float adjust = 0.0f;
+      if(joypad.btn.c_up) adjust += camAdjustSpeed * deltaTime;
+      if(joypad.btn.c_down) adjust -= camAdjustSpeed * deltaTime;
+
+      if(adjust != 0.0f) {
+        if(camEditMode == 0) camY += adjust;
+        else if(camEditMode == 1) camZ += adjust;
+        else if(camEditMode == 2) targetZ += adjust;
+      }
     }
 
-    // apply tuned values to camera (camera remains static except when edited)
+    // apply tuned values to camera (camera uses last tuned values regardless of menu state)
     camPos.v[1] = camY;
     camPos.v[2] = camZ;
     camTarget.v[2] = targetZ;
@@ -336,14 +347,16 @@ int main()
     if(dplTextbox) rspq_block_run(dplTextbox);
 
     rdpq_text_printf(NULL, FONT_MAIN, 24, 24, "FPS: %.2f", display_get_fps());
-    // Camera debug overlay: color the active value with ^02...^00
-    const char *camFmt0 = "CamY: ^02%.1f^00  CamZ: %.1f  TargZ: %.1f";
-    const char *camFmt1 = "CamY: %.1f  CamZ: ^02%.1f^00  TargZ: %.1f";
-    const char *camFmt2 = "CamY: %.1f  CamZ: %.1f  TargZ: ^02%.1f^00";
-    const char *camFmt = camFmt0;
-    if(camEditMode == 1) camFmt = camFmt1;
-    else if(camEditMode == 2) camFmt = camFmt2;
-    rdpq_text_printf(NULL, FONT_MAIN, 24, 40, camFmt, camY, camZ, targetZ);
+    // Camera debug overlay: color the active value with ^02...^00 (shown only when menu open)
+    if(startMenuOpen) {
+      const char *camFmt0 = "CamY: ^02%.1f^00  CamZ: %.1f  TargZ: %.1f";
+      const char *camFmt1 = "CamY: %.1f  CamZ: ^02%.1f^00  TargZ: %.1f";
+      const char *camFmt2 = "CamY: %.1f  CamZ: %.1f  TargZ: ^02%.1f^00";
+      const char *camFmt = camFmt0;
+      if(camEditMode == 1) camFmt = camFmt1;
+      else if(camEditMode == 2) camFmt = camFmt2;
+      rdpq_text_printf(NULL, FONT_MAIN, 24, 40, camFmt, camY, camZ, targetZ);
+    }
     rdpq_detach_show();
   }
 
