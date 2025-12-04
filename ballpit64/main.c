@@ -185,10 +185,16 @@ int main()
   ball.vx = 0.0f;
   ball.vz = -ball.speed;
 
+  // Aiming reticle (world-space X/Z position, relative to camera view)
+  T3DVec3 reticlePos = {{0, 0, -50.0f}}; // start ahead of player
+  float reticleSpeed = 60.0f; // units per second
+
   float rotY = 0.0f;
   float currSpeed = 0.0f;
   float animBlend = 0.0f;
   bool isAttack = false;
+
+  const float BOX_SIZE = 140.0f;
 
   for(;;)
   {
@@ -247,6 +253,18 @@ int main()
     camPos.v[2] = camZ;
     camTarget.v[2] = targetZ;
 
+    // Reticle movement with C-buttons (independent of player movement)
+    if(joypad.btn.c_left) reticlePos.v[0] -= reticleSpeed * deltaTime;
+    if(joypad.btn.c_right) reticlePos.v[0] += reticleSpeed * deltaTime;
+    if(joypad.btn.c_up) reticlePos.v[2] -= reticleSpeed * deltaTime;
+    if(joypad.btn.c_down) reticlePos.v[2] += reticleSpeed * deltaTime;
+
+    // Clamp reticle to arena bounds
+    if(reticlePos.v[0] < -BOX_SIZE) reticlePos.v[0] = -BOX_SIZE;
+    if(reticlePos.v[0] > BOX_SIZE) reticlePos.v[0] = BOX_SIZE;
+    if(reticlePos.v[2] < -BOX_SIZE) reticlePos.v[2] = -BOX_SIZE;
+    if(reticlePos.v[2] > BOX_SIZE) reticlePos.v[2] = BOX_SIZE;
+
     T3DVec3 newDir = {{
        (float)joypad.stick_x * 0.05f, 0,
       -(float)joypad.stick_y * 0.05f
@@ -281,7 +299,6 @@ int main()
     playerPos.v[0] += moveDir.v[0] * currSpeed;
     playerPos.v[2] += moveDir.v[2] * currSpeed;
     // ...and limit position inside the box
-    const float BOX_SIZE = 140.0f;
     if(playerPos.v[0] < -BOX_SIZE)playerPos.v[0] = -BOX_SIZE;
     if(playerPos.v[0] >  BOX_SIZE)playerPos.v[0] =  BOX_SIZE;
     if(playerPos.v[2] < -BOX_SIZE)playerPos.v[2] = -BOX_SIZE;
@@ -345,14 +362,19 @@ int main()
     }
 
     if(ball.pos.v[2] > BOX_SIZE) {
-      // hit bottom: reset to player and immediately shoot again
+      // hit bottom: reset to player and shoot toward reticle
       ball.pos = playerPos;
-      // initial shot direction: upward (-Z). add small x component from player's lateral movement
-      float dirx = moveDir.v[0];
-      float dirz = -1.0f;
+      // direction from player to reticle
+      float dirx = reticlePos.v[0] - playerPos.v[0];
+      float dirz = reticlePos.v[2] - playerPos.v[2];
       // normalize
       float len = sqrtf(dirx*dirx + dirz*dirz);
-      if(len == 0.0f) len = 1.0f;
+      if(len < 0.1f) {
+        // reticle too close or at player; default to straight up
+        dirx = 0.0f;
+        dirz = -1.0f;
+        len = 1.0f;
+      }
       ball.vx = (dirx / len) * ball.speed;
       ball.vz = (dirz / len) * ball.speed;
     }
@@ -383,6 +405,14 @@ int main()
     t3d_model_draw(model); // using 'model' as temporary visual for the ball
     t3d_matrix_pop(1);
 
+    // Draw aiming reticle
+    T3DMat4FP reticleMat;
+    t3d_mat4fp_from_srt_euler(&reticleMat, (float[3]){0.05f,0.05f,0.05f}, (float[3]){0,0,0}, reticlePos.v);
+    t3d_matrix_push(&reticleMat);
+    rdpq_set_prim_color(RGBA32(255, 255, 0, 255)); // yellow reticle
+    t3d_model_draw(modelShadow);
+    t3d_matrix_pop(1);
+
     syncPoint = rspq_syncpoint_new();
 
     // ======== Draw (UI) ======== //
@@ -406,6 +436,7 @@ int main()
     if(dplTextbox) rspq_block_run(dplTextbox);
 
     rdpq_text_printf(NULL, FONT_MAIN, 24, 24, "FPS: %.2f", display_get_fps());
+    rdpq_text_printf(NULL, FONT_MAIN, 24, 56, "Reticle: (%.0f, %.0f)", reticlePos.v[0], reticlePos.v[2]);
     // Camera debug overlay: color the active value with ^02...^00 (shown only when menu open)
     if(startMenuOpen) {
       const char *camFmt0 = "CamY: ^02%.1f^00  CamZ: %.1f  TargZ: %.1f";
