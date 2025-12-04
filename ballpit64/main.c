@@ -214,13 +214,14 @@ int main()
     enemies[i].health = 2;
   }
   
-  float waveTimer = 3.0f; // spawn a wave every 3 seconds
-  float waveTimerMax = 3.0f;
+  float waveTimer = 0.0f; // spawn first wave immediately
+  float waveTimerMax = 12.0f; // 12 seconds between waves
+  bool waveSpawned = false; // track if this wave has been spawned
   
   // grid dimensions
   float gridCellSizeX = (BOX_SIZE * 2.0f) / GRID_COLS; // divide full width by grid cols
   float enemySpawnZ = -BOX_SIZE + 10.0f; // spawn near top
-  float enemySpeed = 30.0f; // units per second moving downward
+  float enemySpeed = 10.0f; // units per second moving downward
 
   for(;;)
   {
@@ -293,8 +294,10 @@ int main()
 
     // ===== Enemy wave spawning =====
     waveTimer -= deltaTime;
-    if(waveTimer <= 0.0f) {
-      waveTimer = waveTimerMax;
+    
+    // Spawn a wave when timer reaches zero (but only once per cycle)
+    if(waveTimer <= 0.0f && !waveSpawned) {
+      waveSpawned = true;
       // Spawn a wave: GRID_COLS enemies in top row, some in lower rows
       for(int col = 0; col < GRID_COLS; col++) {
         // Top row always spawns
@@ -327,6 +330,12 @@ int main()
           }
         }
       }
+    }
+    
+    // Reset wave when timer expires
+    if(waveTimer <= 0.0f && waveSpawned) {
+      waveTimer = waveTimerMax;
+      waveSpawned = false;
     }
 
     // ===== Update enemies =====
