@@ -176,6 +176,7 @@ int main()
     float vx;
     float vz;
     float speed;
+    bool released; // whether ball has left the player and can be caught again
   } Ball;
 
   Ball ball;
@@ -184,6 +185,7 @@ int main()
   ball.speed = 120.0f;
   ball.vx = 0.0f;
   ball.vz = -ball.speed;
+  ball.released = false; // starts unreleased so it can't be immediately caught
 
   // Aiming reticle (world-space X/Z position, relative to camera view)
   T3DVec3 reticlePos = {{0, 0, -50.0f}}; // start ahead of player
@@ -361,9 +363,38 @@ int main()
       ball.vz = -ball.vz;
     }
 
-    if(ball.pos.v[2] > BOX_SIZE) {
+    // Check collision with player (catch ball for faster reshoot)
+    float ballCatchRadius = 8.0f; // distance at which player catches ball
+    float dx = ball.pos.v[0] - playerPos.v[0];
+    float dz = ball.pos.v[2] - playerPos.v[2];
+    float distToBall = sqrtf(dx*dx + dz*dz);
+    
+    // Check if ball has been released (moved far enough from player)
+    if(!ball.released && distToBall > 15.0f) {
+      ball.released = true;
+    }
+    
+    if(ball.released && distToBall < ballCatchRadius) {
+      // caught! reset to player and shoot toward reticle immediately
+      ball.pos = playerPos;
+      ball.released = false; // ball is now unreleased again
+      // direction from player to reticle
+      float dirx = reticlePos.v[0] - playerPos.v[0];
+      float dirz = reticlePos.v[2] - playerPos.v[2];
+      // normalize
+      float len = sqrtf(dirx*dirx + dirz*dirz);
+      if(len < 0.1f) {
+        // reticle too close or at player; default to straight up
+        dirx = 0.0f;
+        dirz = -1.0f;
+        len = 1.0f;
+      }
+      ball.vx = (dirx / len) * ball.speed;
+      ball.vz = (dirz / len) * ball.speed;
+    } else if(ball.pos.v[2] > BOX_SIZE) {
       // hit bottom: reset to player and shoot toward reticle
       ball.pos = playerPos;
+      ball.released = false; // ball is now unreleased again
       // direction from player to reticle
       float dirx = reticlePos.v[0] - playerPos.v[0];
       float dirz = reticlePos.v[2] - playerPos.v[2];
