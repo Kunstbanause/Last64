@@ -189,7 +189,7 @@ int main()
 
   // Aiming reticle (world-space X/Z position, relative to camera view)
   T3DVec3 reticlePos = {{0, 0, -50.0f}}; // start ahead of player
-  float reticleSpeed = 60.0f; // units per second
+  float reticleSpeed = 80.0f; // units per second
 
   float rotY = 0.0f;
   float currSpeed = 0.0f;
@@ -307,7 +307,7 @@ int main()
             enemies[i].health = 2;
             float gridX = -BOX_SIZE + (col + 0.5f) * gridCellSizeX;
             float gridZ = enemySpawnZ;  // top row
-            enemies[i].pos = (T3DVec3){{gridX, 0.15f, gridZ}};
+            enemies[i].pos = (T3DVec3){{gridX, 1.15f, gridZ}};
             break;
           }
         }
@@ -323,7 +323,7 @@ int main()
                 enemies[i].health = 2;
                 float gridX = -BOX_SIZE + (col + 0.5f) * gridCellSizeX;
                 float gridZ = enemySpawnZ - row * gridCellSizeX * 0.8f;
-                enemies[i].pos = (T3DVec3){{gridX, 0.15f, gridZ}};
+                enemies[i].pos = (T3DVec3){{gridX, 1.15f, gridZ}};
                 break;
               }
             }
@@ -533,7 +533,7 @@ int main()
 
     // Draw ball here while the 3D pipeline is active
     t3d_matrix_push(ballMatFP);
-    // small scale so it looks like a sphere/shadow
+    // small scale so it looks like a sphere
     t3d_mat4fp_from_srt_euler(ballMatFP, (float[3]){0.12f,0.12f,0.12f}, (float[3]){0,0,0}, ball.pos.v);
     rdpq_set_prim_color(RGBA32(255, 0, 0, 255));
     t3d_model_draw(model); // using 'model' as temporary visual for the ball
@@ -581,8 +581,14 @@ int main()
 
     if(dplTextbox) rspq_block_run(dplTextbox);
 
-    rdpq_text_printf(NULL, FONT_MAIN, 24, 24, "FPS: %.2f", display_get_fps());
-    rdpq_text_printf(NULL, FONT_MAIN, 24, 56, "Reticle: (%.0f, %.0f)", reticlePos.v[0], reticlePos.v[2]);
+    //rdpq_text_printf(NULL, FONT_MAIN, 24, 24, "FPS: %.2f", display_get_fps());
+    int enemyCount = 0;
+    for(int i = 0; i < MAX_ENEMIES; i++) {
+      if(!enemies[i].active) continue;
+        enemyCount++;
+    }
+    rdpq_text_printf(NULL, FONT_MAIN, 24, 24, "Enemies: %d", enemyCount);
+    //rdpq_text_printf(NULL, FONT_MAIN, 24, 56, "Reticle: (%.0f, %.0f)", reticlePos.v[0], reticlePos.v[2]);
     // Camera debug overlay: color the active value with ^02...^00 (shown only when menu open)
     if(startMenuOpen) {
       const char *camFmt0 = "CamY: ^02%.1f^00  CamZ: %.1f  TargZ: %.1f";
