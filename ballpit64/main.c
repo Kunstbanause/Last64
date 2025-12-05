@@ -6,11 +6,6 @@
 #include <t3d/t3danim.h>
 #include <t3d/t3ddebug.h>
 
-/**
- * Example project showcasing the usage of the animation system.
- * This includes instancing animations, blending animations, and controlling playback.
- */
-
 float get_time_s() {
   return (float)((double)get_ticks_us() / 1000000.0);
 }
@@ -108,6 +103,7 @@ int main()
 
   T3DModel *modelMap = t3d_model_load("rom:/map.t3dm");
   T3DModel *modelShadow = t3d_model_load("rom:/shadow.t3dm");
+  T3DModel *modelEnemy = t3d_model_load("rom:/box.t3dm");
 
   // Model Credits: Quaternius (CC0) https://quaternius.com/packs/easyenemy.html
   T3DModel *model = t3d_model_load("rom:/snake.t3dm");
@@ -162,7 +158,6 @@ int main()
   float camZ = camPos.v[2];
   float targetZ = camTarget.v[2];
   int camEditMode = 0; // 0 = camY, 1 = camZ, 2 = targetZ
-  const char *camEditNames[3] = {"camY", "camZ", "tZ"};
 
   float lastTime = get_time_s() - (1.0f / 60.0f);
   rspq_syncpoint_t syncPoint = 0;
@@ -554,21 +549,14 @@ int main()
       
       t3d_mat4fp_from_srt_euler(&enemyMatFP, (float[3]){0.1f, 0.1f, 0.1f}, (float[3]){0,0,0}, enemies[i].pos.v);
       t3d_matrix_push(&enemyMatFP);
-      rdpq_set_prim_color(RGBA32(200, 50, 50, 255)); // red enemies
-      t3d_model_draw(modelShadow);
+      // rdpq_set_prim_color(RGBA32(255, 255, 255, 255));
+      t3d_model_draw(modelEnemy);
       t3d_matrix_pop(1);
     }
 
     syncPoint = rspq_syncpoint_new();
 
     // ======== Draw (UI) ======== //
-
-    float posCenter = display_get_width() / 2;
-    float posY = display_get_height() - 90;
-    float bxWidth = 220.0f;
-    float bxHeight = 72.0f;
-    float posX = posCenter - bxWidth / 2;
-
     if(showPopup && !dplTextbox)
     {
       dplTextbox = create_textbox_popup(spriteBox, FONT_MAIN,
@@ -611,6 +599,7 @@ int main()
 
   t3d_model_free(model);
   t3d_model_free(modelMap);
+  t3d_model_free(modelEnemy);
   t3d_model_free(modelShadow);
 
   t3d_destroy();
