@@ -151,9 +151,7 @@ namespace Actor {
                 float dx = pp.x - position.x;
                 float dy = pp.y - position.y;
                 float distSq = dx*dx + dy*dy;
-                float pickupR = p->getRadius();
-                // Use player's getRadius as baseline; allow a larger pickup range
-                float effectiveRange = pickupR * 6.0f; // heuristic pickup range multiplier
+                float effectiveRange = p->getPickupRange(); // Use player's pickup range from upgrades
                 if (distSq <= effectiveRange * effectiveRange) {
                     attracted = true;
                     isFleeing = true; // start with a short flee phase
@@ -217,8 +215,8 @@ namespace Actor {
             float n_dx = tp.x - position.x;
             float n_dy = tp.y - position.y;
             float n_dist = sqrtf(n_dx*n_dx + n_dy*n_dy);
-            float radius = targetPlayer->getRadius();
-            if (n_dist <= radius) {
+            float collisionRadius = targetPlayer->getRadius() * 2.0f; // Slightly larger than visual for easier pickup
+            if (n_dist <= collisionRadius) {
                 Experience::addXP(xpValue);
                 
                 // Select sound based on proximity to level up (0-100% maps to xp1-xp8)

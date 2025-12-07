@@ -89,11 +89,13 @@
 - [x] Main Menu, stats menu, upgrade menu
 - [x] Convert total level ups to new currency in main menu: CREDITS, show in top right corner of screen in all main menus
 - [x] Passive upgrades (payed with CREDITS and saved)
+- [ ] More passive upgrades
 - [x] Option to return to main menu, from Start menu
 - [x] Remove purge and save game from start menu (now in stats menu)
 - [ ] Profiling, what are the performance eaters?
 - [ ] Rework background marble effect, use texture scrolling instead of procedural?
 - [ ] Title image behind debug start menu
+- [ ] Larger font for main menu
 - [x] Main menu listen to stick input and all controllers
 - [x] Title Image in main menu
 - [x] proper level complete state
