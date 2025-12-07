@@ -11,7 +11,14 @@ void SFXManager::init()
     wav64_open(&sfx_music1,   "rom:/sfx/music2.wav64");
     // Enable looping for background music so it repeats when it reaches the end
     wav64_set_loop(&sfx_music1, true);
-    wav64_open(&sfx_xp,      "rom:/sfx/xp1.wav64");
+    wav64_open(&sfx_xp[0], "rom:/sfx/xp1.wav64");
+    wav64_open(&sfx_xp[1], "rom:/sfx/xp2.wav64");
+    wav64_open(&sfx_xp[2], "rom:/sfx/xp3.wav64");
+    wav64_open(&sfx_xp[3], "rom:/sfx/xp4.wav64");
+    wav64_open(&sfx_xp[4], "rom:/sfx/xp5.wav64");
+    wav64_open(&sfx_xp[5], "rom:/sfx/xp6.wav64");
+    wav64_open(&sfx_xp[6], "rom:/sfx/xp7.wav64");
+    wav64_open(&sfx_xp[7], "rom:/sfx/xp8.wav64");
     wav64_open(&sfx_hits[0],  "rom:/sfx/hitA01.wav64");
     wav64_open(&sfx_hits[1],  "rom:/sfx/hitA02.wav64");
     wav64_open(&sfx_hits[2],  "rom:/sfx/hitA03.wav64");
@@ -37,8 +44,29 @@ void SFXManager::play(SfxId id)
         case SFX_JOIN:
             mixer_ch_play(1, &sfx_join.wave);
             break;
-        case SFX_XP:
-            mixer_ch_play(1, &sfx_xp.wave);
+        case SFX_XP1:
+            mixer_ch_play(1, &sfx_xp[0].wave);
+            break;
+        case SFX_XP2:
+            mixer_ch_play(1, &sfx_xp[1].wave);
+            break;
+        case SFX_XP3:
+            mixer_ch_play(1, &sfx_xp[2].wave);
+            break;
+        case SFX_XP4:
+            mixer_ch_play(1, &sfx_xp[3].wave);
+            break;
+        case SFX_XP5:
+            mixer_ch_play(1, &sfx_xp[4].wave);
+            break;
+        case SFX_XP6:
+            mixer_ch_play(1, &sfx_xp[5].wave);
+            break;
+        case SFX_XP7:
+            mixer_ch_play(1, &sfx_xp[6].wave);
+            break;
+        case SFX_XP8:
+            mixer_ch_play(1, &sfx_xp[7].wave);
             break;
         case SFX_DEATH:
             mixer_ch_play(1, &sfx_death.wave);
@@ -139,7 +167,14 @@ void SFXManager::stop(SfxId id)
                 mixer_ch_stop(3 + i);
             }
             break;
-        case SFX_XP:
+        case SFX_XP1:
+        case SFX_XP2:
+        case SFX_XP3:
+        case SFX_XP4:
+        case SFX_XP5:
+        case SFX_XP6:
+        case SFX_XP7:
+        case SFX_XP8:
             mixer_ch_stop(1);
             break;
     }

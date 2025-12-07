@@ -10,7 +10,14 @@ public:
         SFX_DEATH,
         SFX_MUSIC1,
         SFX_HIT,
-        SFX_XP
+        SFX_XP1,
+        SFX_XP2,
+        SFX_XP3,
+        SFX_XP4,
+        SFX_XP5,
+        SFX_XP6,
+        SFX_XP7,
+        SFX_XP8
     };
 
     void init();
@@ -33,7 +40,7 @@ private:
     wav64_t sfx_join;
     wav64_t sfx_death;
     wav64_t sfx_music1;
-    wav64_t sfx_xp;
+    wav64_t sfx_xp[8];  // Array of 8 xp sounds
     wav64_t sfx_hits[9];
     static const int sfx_hits_count = sizeof(sfx_hits) / sizeof(sfx_hits[0]);
     int next_hit_channel = 0;

@@ -220,7 +220,16 @@ namespace Actor {
             float radius = targetPlayer->getRadius();
             if (n_dist <= radius) {
                 Experience::addXP(xpValue);
-                gSFXManager.play(SFXManager::SFX_XP);
+                
+                // Select sound based on proximity to level up (0-100% maps to xp1-xp8)
+                float xpPercentage = Experience::getXPPercentage();  // 0.0 to 1.0
+                int soundIndex = (int)(xpPercentage * 7.999f);  // Maps 0.0-1.0 to 0-7
+                if (soundIndex < 0) soundIndex = 0;
+                if (soundIndex > 7) soundIndex = 7;
+                
+                SFXManager::SfxId sfxId = (SFXManager::SfxId)((int)SFXManager::SFX_XP1 + soundIndex);
+                gSFXManager.play(sfxId);
+                
                 // Trigger a small HDR boost to add a juicy glow on pickup
                 // peakValue short, duration ~ 0.45s, peakDuration short
                 HDRBoost::triggerBoost(1.6f, 0.2f, 0.06f);

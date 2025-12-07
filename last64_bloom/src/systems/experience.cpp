@@ -199,6 +199,10 @@ int Experience::getLevel() {
     return currentLevel;
 }
 
+int Experience::getCurrentXP() {
+    return currentXP;
+}
+
 float Experience::getXPPercentage() {
     return (float)currentXP / (float)xpToNextLevel;
 }

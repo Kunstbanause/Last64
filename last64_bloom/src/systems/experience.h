@@ -12,6 +12,7 @@ namespace Experience {
     
     int getLevel();
     int getXToNextLevel();
+    int getCurrentXP();
     float getXPPercentage();
     int getActivePlayerCount();
     Actor::Player* getPlayer(int index);

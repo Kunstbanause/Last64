@@ -195,7 +195,7 @@ int main()
         float randomZ = (float)(rand() % 50) + 5.0f;     // Range from 5 to 55
         T3DVec3 randomPos = {{randomX, randomY, randomZ}};
         uint32_t randomColor = 0xFF000000 | (rand() & 0x00FFFFFF);  // Random color
-        Actor::XPShard::spawn(randomPos, 10, randomColor, 1.0f);
+        Actor::XPShard::spawn(randomPos, 1, randomColor, 1.0f);
       }
       debugf("Spawned %d XP shards for debugging\n", numShards);
     }

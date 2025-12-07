@@ -99,6 +99,7 @@
 - [x] Comet style wave, player needs to dodge
 - [ ] Improved Spawning: Similar to vampire with fill screen instead of basic frequency
 - [x] Debug button that spawns xp shards all over the screen.
+- [ ] Xp pickup sound higher pitch the closer we are to level up
 
 ###  FAILED
 - [ ] Intro with camera movement (FAILED)
