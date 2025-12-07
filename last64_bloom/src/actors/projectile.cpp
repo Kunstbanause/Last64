@@ -10,6 +10,8 @@
 #include <libdragon.h>
 #include <malloc.h>
 
+// Grace zone distance for projectiles off-screen before they're deleted (in units)
+#define PROJECTILE_GRACE_ZONE 100.0f
 
 
 namespace Actor {
@@ -180,8 +182,9 @@ namespace Actor {
         position.y += velocity.y * speed * deltaTime;
         position.z += velocity.z * speed * deltaTime;
 
-        if (position.x < SCREEN_LEFT || position.x > SCREEN_RIGHT ||
-            position.y < SCREEN_TOP || position.y > SCREEN_BOTTOM) {
+        // Check if projectile is too far off-screen (with grace zone)
+        if (position.x < SCREEN_LEFT - PROJECTILE_GRACE_ZONE || position.x > SCREEN_RIGHT + PROJECTILE_GRACE_ZONE ||
+            position.y < SCREEN_TOP - PROJECTILE_GRACE_ZONE || position.y > SCREEN_BOTTOM + PROJECTILE_GRACE_ZONE) {
             deactivate();
             return;
         }
