@@ -175,12 +175,8 @@ namespace Actor {
                 return;
             }
         } else {
-            // idle float/bob effect - subtle vertical oscillation
+            // Just track time for sparkle effect, no movement
             spawnTime += deltaTime;
-            static const float bobSpeed = 2.0f;
-            static const float bobAmount = 1.5f;
-            float bob = sinf(spawnTime * bobSpeed) * bobAmount;
-            position.z = position.z + (bob - sinf((spawnTime - deltaTime) * bobSpeed) * bobAmount);
         }
 
         // Update matrix
@@ -199,23 +195,45 @@ namespace Actor {
         if (flags & FLAG_DISABLED) return;
         if (poolIndex >= MAX_XP_SHARDS) return;
 
-        // Update vertex colors for this shard, brightened toward white with sparkle
+        // Rainbow sparkle effect with bright colors
         int base = poolIndex * 2;
-        // Brighten color by blending toward white
-        uint8_t r = (uint8_t)((((color >> 24) & 0xFF) + 200) / 2);
-        uint8_t g = (uint8_t)((((color >> 16) & 0xFF) + 200) / 2);
-        uint8_t b = (uint8_t)((((color >> 8) & 0xFF) + 200) / 2);
         
-        // Add sparkle pulsing effect
-        float sparkle = 0.5f + 0.5f * sinf(spawnTime * 4.0f);
+        // Cycle through rainbow colors
+        float rainbowPhase = spawnTime * 2.0f;  // Rotate through rainbow
+        float hue = fmodf(rainbowPhase, 6.0f);
+        
+        uint8_t r, g, b;
+        // Simple rainbow: Red -> Yellow -> Green -> Cyan -> Blue -> Magenta -> Red
+        if (hue < 1.0f) {
+            // Red to Yellow
+            r = 255; g = (uint8_t)(255 * hue); b = 0;
+        } else if (hue < 2.0f) {
+            // Yellow to Green
+            r = (uint8_t)(255 * (2.0f - hue)); g = 255; b = 0;
+        } else if (hue < 3.0f) {
+            // Green to Cyan
+            r = 0; g = 255; b = (uint8_t)(255 * (hue - 2.0f));
+        } else if (hue < 4.0f) {
+            // Cyan to Blue
+            r = 0; g = (uint8_t)(255 * (4.0f - hue)); b = 255;
+        } else if (hue < 5.0f) {
+            // Blue to Magenta
+            r = (uint8_t)(255 * (hue - 4.0f)); g = 0; b = 255;
+        } else {
+            // Magenta to Red
+            r = 255; g = 0; b = (uint8_t)(255 * (6.0f - hue));
+        }
+        
+        // Add sparkle pulsing effect on top of rainbow
+        float sparkle = 0.6f + 0.4f * sinf(spawnTime * 8.0f);
         uint8_t rs = (uint8_t)(r * sparkle);
         uint8_t gs = (uint8_t)(g * sparkle);
         uint8_t bs = (uint8_t)(b * sparkle);
-        uint32_t brightColor = (rs << 24) | (gs << 16) | (bs << 8) | 0xFF;
-        sharedVertices[base + 0].rgbaA = brightColor;
-        sharedVertices[base + 0].rgbaB = brightColor;
-        sharedVertices[base + 1].rgbaA = brightColor;
-        sharedVertices[base + 1].rgbaB = brightColor;
+        uint32_t rainbowColor = (rs << 24) | (gs << 16) | (bs << 8) | 0xFF;
+        sharedVertices[base + 0].rgbaA = rainbowColor;
+        sharedVertices[base + 0].rgbaB = rainbowColor;
+        sharedVertices[base + 1].rgbaA = rainbowColor;
+        sharedVertices[base + 1].rgbaB = rainbowColor;
 
         t3d_matrix_push(sharedMatrices[poolIndex]);
         t3d_vert_load(&sharedVertices[base], 0, 4);
