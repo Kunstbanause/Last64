@@ -457,16 +457,34 @@ void SceneLast64::updateScene(float deltaTime)
                 // All cleanup and reset logic will be handled by SceneManager::loadScene(0)
                 // and the SceneLast64 destructor/constructor.
             } else if (menuPressed) {
-                // Return to main menu
+                // Return to main menu with proper cleanup
                 currentGameState = MAIN_MENU;
                 MainMenu::reset();
-                // Reset game state for next round
+                
+                // Reset game state
                 for (int i = 0; i < 4; ++i) {
                     playerJoined[i] = false;
                 }
                 isRoundCurrentlyActive = false;
+                
+                // Clean up all actors
+                Actor::Enemy::cleanup();
+                Actor::Projectile::cleanup();
+                Actor::Shape::cleanup();
+                Actor::XPShard::cleanup();
+                Actor::EnemyDeathVFX::cleanup();
+                
+                // Delete players
+                if (player1) { delete player1; player1 = nullptr; }
+                if (player2) { delete player2; player2 = nullptr; }
+                if (player3) { delete player3; player3 = nullptr; }
+                if (player4) { delete player4; player4 = nullptr; }
+                
+                // Restore normal music volume
+                gSFXManager.setVolume_Music(1.0f, 0.34f);
             }
             // If neither, just stay in GAME_OVER state
+            break;
         }
         case LEVEL_COMPLETE: {
             // Simple display state; wait for player to press A to continue/restart
