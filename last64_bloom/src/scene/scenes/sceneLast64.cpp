@@ -23,6 +23,8 @@
 namespace {
   // Static matrix for scene
   T3DMat4FP* sceneMatFP = nullptr;
+  // Debug menu flag for marble background
+  bool showMarbleBackground = true;
 }
 
 SceneLast64::SceneLast64()
@@ -65,6 +67,9 @@ SceneLast64::SceneLast64()
     
     // Initialize weapon icons
     WeaponIcons::init();
+    
+    // Register debug menu entries
+    DebugMenu::addEntry({"Marble ", DebugMenu::EntryType::BOOL, &showMarbleBackground});
 }
 
 SceneLast64::~SceneLast64()
@@ -447,7 +452,14 @@ void SceneLast64::draw3D(float deltaTime)
 {
     camera.attach();
 
-    drawMarbleBackground(deltaTime);
+    if (showMarbleBackground) {
+        drawMarbleBackground(deltaTime);
+    } else {
+        // Clear screen to black when no background
+        rdpq_set_mode_fill(RGBA32(32, 32, 32, 0xFF));
+        rdpq_fill_rectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        rdpq_set_mode_standard();
+    }
     t3d_screen_clear_depth();
     // rdpq_set_env_color({0xFF, 0xAA, 0xEE, 0xAA}); //slightly see-through soft magenta
 

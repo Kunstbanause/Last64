@@ -279,10 +279,10 @@ void DebugMenu::draw()
 
   int idx = 0;
   for(auto &entry : entries) {
-    if(idx == idxCustom) {
-      Debug::print(posX, posY+8, "Scene:");
-      posY += 12+8;
-    }
+    // if(idx == idxCustom) {
+    //   Debug::print(posX, posY+8, "Scene:");
+    //   posY += 12+8;
+    // }
 
     // Draw entry
     switch(entry.type) {
