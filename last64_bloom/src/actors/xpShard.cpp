@@ -205,34 +205,43 @@ namespace Actor {
         // Bright color sparkle - cycles through only vibrant colors
         int base = poolIndex * 2;
         
-        // Multiple overlapping fast color cycles
-        float cycle1 = spawnTime * 12.0f;  // Fast primary cycle
-        float cycle2 = spawnTime * 7.0f;   // Medium secondary cycle
-        float cycle3 = spawnTime * 19.0f;  // Very fast tertiary cycle
-        
-        // Use modulo to cycle through bright colors only (0-4 range for 4 bright hues)
-        float r_phase = fmodf(cycle1, 4.0f);
-        float g_phase = fmodf(cycle2 + 1.3f, 4.0f);
-        float b_phase = fmodf(cycle3 + 2.6f, 4.0f);
-        
-        // Convert phases to bright RGB components only
-        auto brightHueToComponent = [](float hue) -> uint8_t {
-            // Red(0-1) -> Yellow(1-2) -> Green(2-3) -> Cyan(3-4) -> back to Red
-            if (hue < 1.0f) return 255;  // Red
-            else if (hue < 2.0f) return (uint8_t)(255 * (hue - 1.0f) + 128);  // Towards Yellow
-            else if (hue < 3.0f) return 255;  // Green peak
-            else return (uint8_t)(255 * (4.0f - hue) + 128);  // Cyan towards Blue
+        // Discrete bright color palette (full primary/secondary colors)
+        const uint32_t palette[6] = {
+            0xFF0000FF, // Red
+            0xFFFF00FF, // Yellow
+            0x00FF00FF, // Green
+            0x00FFFFFF, // Cyan
+            0x0000FFFF, // Blue
+            0xFF00FFFF  // Magenta
         };
-        
-        uint8_t r = brightHueToComponent(r_phase);
-        uint8_t g = brightHueToComponent(g_phase);
-        uint8_t b = brightHueToComponent(b_phase);
-        
-        // Pulse brightness between full color and white (toward whiteness)
-        float whitePulse = 0.4f + 0.6f * sinf(spawnTime * 25.0f);
-        uint8_t rs = (uint8_t)(r * (1.0f - whitePulse) + 255 * whitePulse);
-        uint8_t gs = (uint8_t)(g * (1.0f - whitePulse) + 255 * whitePulse);
-        uint8_t bs = (uint8_t)(b * (1.0f - whitePulse) + 255 * whitePulse);
+
+        // Cycle through palette entries at a readable rate (one color per ~0.25s)
+        float colorCycle = spawnTime * 4.0f; // 4 entries per second
+        int idx = (int)fmodf(colorCycle, 6.0f);
+        uint32_t baseColor = palette[idx];
+
+        uint8_t r = (baseColor >> 24) & 0xFF;
+        uint8_t g = (baseColor >> 16) & 0xFF;
+        uint8_t b = (baseColor >> 8) & 0xFF;
+
+        // Small continuous shimmer toward a dim white to keep colors lively but not blown out
+        float shimmer = 0.08f * (0.5f * (sinf(spawnTime * 18.0f) + 1.0f)); // 0..0.08
+        const uint8_t dimWhite = 200;
+        uint8_t cr = (uint8_t)(r * (1.0f - shimmer) + dimWhite * shimmer);
+        uint8_t cg = (uint8_t)(g * (1.0f - shimmer) + dimWhite * shimmer);
+        uint8_t cb = (uint8_t)(b * (1.0f - shimmer) + dimWhite * shimmer);
+
+        // Occasional full-white spike: low-frequency periodic spike with a short fade-out
+        float spikeFreq = 0.4f; // ~2.5s period
+        float spikeWidth = 0.05f; // 5% of period
+        float phase = fmodf(spawnTime * spikeFreq, 1.0f);
+        float spike = 0.0f;
+        if (phase < spikeWidth) spike = 1.0f - (phase / spikeWidth); // fade out quickly
+
+        // Final color mixes base shimmer color with full white during spikes
+        uint8_t rs = (uint8_t)(cr * (1.0f - spike) + 255 * spike);
+        uint8_t gs = (uint8_t)(cg * (1.0f - spike) + 255 * spike);
+        uint8_t bs = (uint8_t)(cb * (1.0f - spike) + 255 * spike);
         uint32_t brightColor = (rs << 24) | (gs << 16) | (bs << 8) | 0xFF;
         sharedVertices[base + 0].rgbaA = brightColor;
         sharedVertices[base + 0].rgbaB = brightColor;
