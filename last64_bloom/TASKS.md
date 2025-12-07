@@ -94,7 +94,7 @@
 - [ ] Profiling, what are the performance eaters?
 - [ ] Rework background marble effect, use texture scrolling instead of procedural?
 - [ ] Title image behind debug start menu
-- [ ] Main menu listen to stick input and all controllers (I have a merged all controller input value somewhere?)
+- [x] Main menu listen to stick input and all controllers
 - [x] Title Image in main menu
 - [x] proper level complete state
 

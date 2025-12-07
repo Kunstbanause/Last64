@@ -72,18 +72,69 @@ namespace MainMenu {
     }
 
     void update(float deltaTime) {
-        // Get input from first player
-        joypad_buttons_t pressed = joypad_get_buttons_pressed(JOYPAD_PORT_1);
+        // Merge input from all controllers (same pattern as main.cpp)
+        joypad_buttons_t pressed = {0};
+        joypad_inputs_t stick = {0};
+        
+        for (int i = JOYPAD_PORT_1; i <= JOYPAD_PORT_4; i++) {
+            joypad_buttons_t b = joypad_get_buttons_pressed((joypad_port_t)i);
+            pressed.a      |= b.a;
+            pressed.b      |= b.b;
+            pressed.z      |= b.z;
+            pressed.start  |= b.start;
+            pressed.d_up   |= b.d_up;
+            pressed.d_down |= b.d_down;
+            pressed.d_left |= b.d_left;
+            pressed.d_right|= b.d_right;
+            
+            // Get analog stick input from any controller
+            joypad_inputs_t inputs = joypad_get_inputs((joypad_port_t)i);
+            if (fabsf(inputs.stick_y) > fabsf(stick.stick_y)) {
+                stick.stick_y = inputs.stick_y;
+            }
+            if (fabsf(inputs.stick_x) > fabsf(stick.stick_x)) {
+                stick.stick_x = inputs.stick_x;
+            }
+        }
+        
+        // Debounce analog stick navigation
+        static float stickDebounce = 0.0f;
+        if (stickDebounce > 0.0f) {
+            stickDebounce -= deltaTime;
+        }
+        
+        bool stickUp = false;
+        bool stickDown = false;
+        bool stickLeft = false;
+        bool stickRight = false;
+        
+        if (stickDebounce <= 0.0f) {
+            const float threshold = 0.5f;
+            if (stick.stick_y > threshold) {
+                stickUp = true;
+                stickDebounce = 0.2f; // 200ms debounce
+            } else if (stick.stick_y < -threshold) {
+                stickDown = true;
+                stickDebounce = 0.2f;
+            }
+            if (stick.stick_x < -threshold) {
+                stickLeft = true;
+                stickDebounce = 0.2f;
+            } else if (stick.stick_x > threshold) {
+                stickRight = true;
+                stickDebounce = 0.2f;
+            }
+        }
 
         switch (currentState) {
             case MAIN_MENU: {
-                if (pressed.d_up) {
+                if (pressed.d_up || stickUp) {
                     currentSelection = (currentSelection - 1 + 3) % 3;
                 }
-                if (pressed.d_down) {
+                if (pressed.d_down || stickDown) {
                     currentSelection = (currentSelection + 1) % 3;
                 }
-                if (pressed.a) {
+                if (pressed.a || pressed.z) {
                     if (currentSelection == 0) {
                         shouldStart = true;
                     } else {
@@ -101,14 +152,14 @@ namespace MainMenu {
                 break;
             }
             case STATS_MENU: {
-                if (pressed.d_down && !showPurgeConfirm) {
+                if ((pressed.d_down || stickDown) && !showPurgeConfirm) {
                     // Move to purge option
                     showPurgeConfirm = true;
                 }
-                if (pressed.d_up && showPurgeConfirm) {
+                if ((pressed.d_up || stickUp) && showPurgeConfirm) {
                     showPurgeConfirm = false;
                 }
-                if (pressed.a && showPurgeConfirm) {
+                if ((pressed.a || pressed.z) && showPurgeConfirm) {
                     // Purge save game
                     SaveGame::purge_save();
                     
@@ -200,10 +251,10 @@ namespace MainMenu {
 
                 // Draw purge option
                 if (showPurgeConfirm) {
-                    rdpq_text_printf(nullptr, FONT_MENU, 50, 240, "^01PURGE SAVE DATA?");
-                    rdpq_text_printf(nullptr, FONT_MENU, 50, 260, "^01Press A to confirm, D-Up to cancel");
+                    rdpq_text_printf(nullptr, FONT_MENU, 50, 180, "^01PURGE SAVE DATA?");
+                    rdpq_text_printf(nullptr, FONT_MENU, 50, 200, "^01Press A to confirm, D-Up to cancel");
                 } else {
-                    rdpq_text_printf(nullptr, FONT_MENU, 50, 240, "Press D-Down for ^01PURGE^00 or ^01B^00 to return");
+                    rdpq_text_printf(nullptr, FONT_MENU, 50, 180, "Press D-Down for ^01PURGE^00 or ^01B^00 to return");
                 }
                 break;
             }
