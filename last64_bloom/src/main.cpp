@@ -34,6 +34,7 @@
 #include "render/hdrBoost.h"
 #include "audio.h"
 #include "memory/savegame.h"
+#include "actors/xpShard.h"
 
 State state{
   .ppConf = {
@@ -183,6 +184,22 @@ int main()
         debugf("Load test value -> %lu (%s)\n", (unsigned long)val, ok ? "OK" : "FAIL");
       }
     }
+
+    // Debug: DPad down to spawn XP shards with random positions across screen
+    static bool lastDPadDown = false;
+    if (combined.d_down && !lastDPadDown) {
+      const int numShards = 20;
+      for (int i = 0; i < numShards; ++i) {
+        float randomX = (float)(rand() % 320) - 160.0f;  // Range from -160 to 160
+        float randomY = (float)(rand() % 240) - 120.0f;  // Range from -120 to 120
+        float randomZ = (float)(rand() % 50) + 5.0f;     // Range from 5 to 55
+        T3DVec3 randomPos = {{randomX, randomY, randomZ}};
+        uint32_t randomColor = 0xFF000000 | (rand() & 0x00FFFFFF);  // Random color
+        Actor::XPShard::spawn(randomPos, 10, randomColor, 1.0f);
+      }
+      debugf("Spawned %d XP shards for debugging\n", numShards);
+    }
+    lastDPadDown = combined.d_down;
 
   float realDelta = display_get_delta_time();
   float deltaTime = realDelta;

@@ -10,7 +10,7 @@ public:
         SFX_DEATH,
         SFX_MUSIC1,
         SFX_HIT,
-        SFX_PICKUP
+        SFX_XP
     };
 
     void init();
@@ -33,6 +33,7 @@ private:
     wav64_t sfx_join;
     wav64_t sfx_death;
     wav64_t sfx_music1;
+    wav64_t sfx_xp;
     wav64_t sfx_hits[9];
     static const int sfx_hits_count = sizeof(sfx_hits) / sizeof(sfx_hits[0]);
     int next_hit_channel = 0;

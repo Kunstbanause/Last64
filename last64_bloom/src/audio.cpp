@@ -11,6 +11,7 @@ void SFXManager::init()
     wav64_open(&sfx_music1,   "rom:/sfx/music2.wav64");
     // Enable looping for background music so it repeats when it reaches the end
     wav64_set_loop(&sfx_music1, true);
+    wav64_open(&sfx_xp,      "rom:/sfx/xp1.wav64");
     wav64_open(&sfx_hits[0],  "rom:/sfx/hitA01.wav64");
     wav64_open(&sfx_hits[1],  "rom:/sfx/hitA02.wav64");
     wav64_open(&sfx_hits[2],  "rom:/sfx/hitA03.wav64");
@@ -36,6 +37,9 @@ void SFXManager::play(SfxId id)
         case SFX_JOIN:
             mixer_ch_play(1, &sfx_join.wave);
             break;
+        case SFX_XP:
+            mixer_ch_play(1, &sfx_xp.wave);
+            break;
         case SFX_DEATH:
             mixer_ch_play(1, &sfx_death.wave);
             break;
@@ -45,9 +49,6 @@ void SFXManager::play(SfxId id)
         case SFX_HIT:
             mixer_ch_play(3 + next_hit_channel, &sfx_hits[rand() % sfx_hits_count].wave);
             next_hit_channel = (next_hit_channel + 1) % HIT_CHANNELS;
-            break;
-        case SFX_PICKUP:
-            mixer_ch_play(1, &sfx_join.wave);  // Reuse join sound for pickup
             break;
     }
 }
@@ -138,7 +139,7 @@ void SFXManager::stop(SfxId id)
                 mixer_ch_stop(3 + i);
             }
             break;
-        case SFX_PICKUP:
+        case SFX_XP:
             mixer_ch_stop(1);
             break;
     }

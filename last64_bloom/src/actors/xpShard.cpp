@@ -220,7 +220,7 @@ namespace Actor {
             float radius = targetPlayer->getRadius();
             if (n_dist <= radius) {
                 Experience::addXP(xpValue);
-                gSFXManager.play(SFXManager::SFX_PICKUP);
+                gSFXManager.play(SFXManager::SFX_XP);
                 // Trigger a small HDR boost to add a juicy glow on pickup
                 // peakValue short, duration ~ 0.45s, peakDuration short
                 HDRBoost::triggerBoost(1.6f, 0.2f, 0.06f);

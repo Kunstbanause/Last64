@@ -98,7 +98,7 @@
 - [ ] bosses are very similar, fast boss?
 - [x] Comet style wave, player needs to dodge
 - [ ] Improved Spawning: Similar to vampire with fill screen instead of basic frequency
-Debug button that spawns xp shards all over the screen.  Also dead players should not be able to pick up xp of course
+- [x] Debug button that spawns xp shards all over the screen.
 
 ###  FAILED
 - [ ] Intro with camera movement (FAILED)
