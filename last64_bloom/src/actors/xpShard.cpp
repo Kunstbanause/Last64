@@ -25,6 +25,7 @@ namespace Actor {
         velocity = {0,0,0};
         xpValue = 0;
         color = 0xFF00FFFF;
+        scale = 1.0f;
         attracted = false;
         targetPlayer = nullptr;
         spawnTime = 0.0f;
@@ -88,7 +89,7 @@ namespace Actor {
         initialized = true;
     }
 
-    XPShard* XPShard::spawn(const T3DVec3& pos, int xpValue_, uint32_t color_) {
+    XPShard* XPShard::spawn(const T3DVec3& pos, int xpValue_, uint32_t color_, float scale_) {
         if (!initialized) initializePool();
         for (uint32_t i = 0; i < MAX_XP_SHARDS; ++i) {
             if (!activeFlags[i]) {
@@ -100,6 +101,7 @@ namespace Actor {
                 s->velocity = {0,0,0};
                 s->xpValue = xpValue_;
                 s->color = color_;
+                s->scale = scale_;
                 s->attracted = false;
                 s->targetPlayer = nullptr;
                 s->spawnTime = 0.0f;
@@ -184,10 +186,12 @@ namespace Actor {
 
         // Update matrix
         if (poolIndex < MAX_XP_SHARDS) {
-            // Scale: double size for better visibility
+            // Scale: base doubled for previous visual; multiply by per-shard scale
+            float baseScale = 2.0f;
+            float finalScale = baseScale * scale;
             t3d_mat4fp_from_srt_euler(
                 sharedMatrices[poolIndex],
-                (T3DVec3){{1.0f, 1.0f, 1.0f}},
+                (T3DVec3){{finalScale, finalScale, finalScale}},
                 (T3DVec3){{0.0f, 0.0f, 0.0f}},
                 position
             );
@@ -198,43 +202,42 @@ namespace Actor {
         if (flags & FLAG_DISABLED) return;
         if (poolIndex >= MAX_XP_SHARDS) return;
 
-        // Erratic chaotic sparkle - constant color shifting like a kaleidoscope
+        // Bright color sparkle - cycles through only vibrant colors
         int base = poolIndex * 2;
         
-        // Multiple overlapping fast color cycles for chaotic effect
+        // Multiple overlapping fast color cycles
         float cycle1 = spawnTime * 12.0f;  // Fast primary cycle
         float cycle2 = spawnTime * 7.0f;   // Medium secondary cycle
         float cycle3 = spawnTime * 19.0f;  // Very fast tertiary cycle
         
-        // Combine cycles with different phase offsets for erratic sparkle
-        float r_phase = fmodf(cycle1, 6.0f);
-        float g_phase = fmodf(cycle2 + 2.0f, 6.0f);
-        float b_phase = fmodf(cycle3 + 4.0f, 6.0f);
+        // Use modulo to cycle through bright colors only (0-4 range for 4 bright hues)
+        float r_phase = fmodf(cycle1, 4.0f);
+        float g_phase = fmodf(cycle2 + 1.3f, 4.0f);
+        float b_phase = fmodf(cycle3 + 2.6f, 4.0f);
         
-        // Convert phases to RGB values with rapid color changes
-        auto hueToComponent = [](float hue) -> uint8_t {
-            if (hue < 1.0f) return (uint8_t)(255 * hue);
-            else if (hue < 2.0f) return (uint8_t)(255 * (2.0f - hue));
-            else if (hue < 3.0f) return 0;
-            else if (hue < 4.0f) return (uint8_t)(255 * (hue - 3.0f));
-            else if (hue < 5.0f) return 255;
-            else return (uint8_t)(255 * (6.0f - hue));
+        // Convert phases to bright RGB components only
+        auto brightHueToComponent = [](float hue) -> uint8_t {
+            // Red(0-1) -> Yellow(1-2) -> Green(2-3) -> Cyan(3-4) -> back to Red
+            if (hue < 1.0f) return 255;  // Red
+            else if (hue < 2.0f) return (uint8_t)(255 * (hue - 1.0f) + 128);  // Towards Yellow
+            else if (hue < 3.0f) return 255;  // Green peak
+            else return (uint8_t)(255 * (4.0f - hue) + 128);  // Cyan towards Blue
         };
         
-        uint8_t r = hueToComponent(r_phase);
-        uint8_t g = hueToComponent(g_phase);
-        uint8_t b = hueToComponent(b_phase);
+        uint8_t r = brightHueToComponent(r_phase);
+        uint8_t g = brightHueToComponent(g_phase);
+        uint8_t b = brightHueToComponent(b_phase);
         
-        // Rapid brightness pulsing for extra sparkle
-        float sparkle = 0.5f + 0.5f * sinf(spawnTime * 25.0f);
-        uint8_t rs = (uint8_t)(r * sparkle);
-        uint8_t gs = (uint8_t)(g * sparkle);
-        uint8_t bs = (uint8_t)(b * sparkle);
-        uint32_t chaosColor = (rs << 24) | (gs << 16) | (bs << 8) | 0xFF;
-        sharedVertices[base + 0].rgbaA = chaosColor;
-        sharedVertices[base + 0].rgbaB = chaosColor;
-        sharedVertices[base + 1].rgbaA = chaosColor;
-        sharedVertices[base + 1].rgbaB = chaosColor;
+        // Pulse brightness between full color and white (toward whiteness)
+        float whitePulse = 0.4f + 0.6f * sinf(spawnTime * 25.0f);
+        uint8_t rs = (uint8_t)(r * (1.0f - whitePulse) + 255 * whitePulse);
+        uint8_t gs = (uint8_t)(g * (1.0f - whitePulse) + 255 * whitePulse);
+        uint8_t bs = (uint8_t)(b * (1.0f - whitePulse) + 255 * whitePulse);
+        uint32_t brightColor = (rs << 24) | (gs << 16) | (bs << 8) | 0xFF;
+        sharedVertices[base + 0].rgbaA = brightColor;
+        sharedVertices[base + 0].rgbaB = brightColor;
+        sharedVertices[base + 1].rgbaA = brightColor;
+        sharedVertices[base + 1].rgbaB = brightColor;
 
         t3d_matrix_push(sharedMatrices[poolIndex]);
         t3d_vert_load(&sharedVertices[base], 0, 4);

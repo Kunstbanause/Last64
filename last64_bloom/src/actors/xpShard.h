@@ -22,6 +22,7 @@ namespace Actor {
         uint32_t poolIndex;
         int xpValue;
         uint32_t color;
+        float scale;
         bool attracted;
         Base* targetPlayer;
         float spawnTime;
@@ -36,7 +37,7 @@ namespace Actor {
         static void initialize();
         static void cleanup();
 
-        static XPShard* spawn(const T3DVec3& pos, int xpValue, uint32_t color = 0xFF00FFFF);
+        static XPShard* spawn(const T3DVec3& pos, int xpValue, uint32_t color = 0xFF00FFFF, float scale = 1.0f);
         static void updateAll(float deltaTime);
         static void drawAll(float deltaTime);
         static XPShard* getShard(uint32_t index) { return &shardPool[index]; }

@@ -365,7 +365,10 @@ namespace Actor {
         EnemyDeathVFX::spawn(position, vfxSize, color);
 
         // Spawn an XP shard holding this enemy's xp reward instead of awarding immediately
-        Actor::XPShard::spawn(position, xpReward, color);
+        // If this was a large enemy (boss), spawn a much larger shard (4x current size)
+        float shardScale = 1.0f;
+        if (size == EnemySize::LARGE) shardScale = 4.0f;
+        Actor::XPShard::spawn(position, xpReward, color, shardScale);
         deactivate();
     }
 
