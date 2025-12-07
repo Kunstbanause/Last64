@@ -27,6 +27,8 @@ namespace Actor {
         color = 0xFF00FFFF;
         scale = 1.0f;
         attracted = false;
+        isFleeing = false;
+        fleeTimer = 0.0f;
         targetPlayer = nullptr;
         spawnTime = 0.0f;
         attractionTime = 0.0f;
@@ -103,6 +105,8 @@ namespace Actor {
                 s->color = color_;
                 s->scale = scale_;
                 s->attracted = false;
+                s->isFleeing = false;
+                s->fleeTimer = 0.0f;
                 s->targetPlayer = nullptr;
                 s->spawnTime = 0.0f;
                 s->attractionTime = 0.0f;
@@ -151,32 +155,69 @@ namespace Actor {
                 float effectiveRange = pickupR * 6.0f; // heuristic pickup range multiplier
                 if (distSq <= effectiveRange * effectiveRange) {
                     attracted = true;
+                    isFleeing = true; // start with a short flee phase
+                    fleeTimer = 0.0f;
                     targetPlayer = p;
                     break;
                 }
             }
         }
 
-        // Movement: if attracted, home towards the target player with accelerating speed
+        // Movement: if attracted, first flee briefly then home towards the target player
         if (attracted && targetPlayer) {
-            attractionTime += deltaTime;
             T3DVec3 tp = targetPlayer->getPosition();
+            // Use 2D distances only (x,y)
             float dx = tp.x - position.x;
             float dy = tp.y - position.y;
-            float dz = tp.z - position.z;
-            float dist = sqrtf(dx*dx + dy*dy + dz*dz);
-            if (dist > 0.0f) {
-                // Start at slow and accelerate over time
-                float speed = 50.0f + (attractionTime * 100.0f);
-                position.x += dx / dist * speed * deltaTime;
-                position.y += dy / dist * speed * deltaTime;
-                position.z += dz / dist * speed * deltaTime;
+            float dist = sqrtf(dx*dx + dy*dy);
+
+            if (isFleeing) {
+                // Flee for a short duration with a quick initial speed that eases out
+                fleeTimer += deltaTime;
+                const float fleeDuration = 0.22f; // seconds
+                const float fleeSpeedStart = 80.0f;
+                const float fleeSpeedEnd = 50.0f; // slow into homing
+                float ft = fleeTimer / fleeDuration;
+                if (ft > 1.0f) ft = 1.0f;
+                // Interpolate speed down as fleeing time progresses
+                float fleeSpeed = fleeSpeedStart * (1.0f - ft) + fleeSpeedEnd * ft;
+
+                // Compute away direction in 2D (x,y). If zero-length, nudge on X.
+                float ax = position.x - tp.x;
+                float ay = position.y - tp.y;
+                float adist = sqrtf(ax*ax + ay*ay);
+                if (adist <= 0.001f) { ax = 1.0f; ay = 0.0f; adist = 1.0f; }
+                position.x += (ax / adist) * fleeSpeed * deltaTime;
+                position.y += (ay / adist) * fleeSpeed * deltaTime;
+
+                if (fleeTimer >= fleeDuration) {
+                    isFleeing = false;
+                    attractionTime = 0.0f; // reset homing timer
+                }
+            } else {
+                // Homing: relaxed ease-in curve for pickup
+                attractionTime += deltaTime;
+                const float homingMin = 120.0f;
+                const float homingMax = 220.0f;
+                const float accelTime = 1.4f; // time to reach max
+                float tt = attractionTime / accelTime;
+                if (tt > 1.0f) tt = 1.0f;
+                // ease-in quadratic (slow start, accelerate)
+                float ease = tt * tt;
+                float speed = homingMin + (homingMax - homingMin) * ease;
+
+                if (dist > 0.0f) {
+                    position.x += dx / dist * speed * deltaTime;
+                    position.y += dy / dist * speed * deltaTime;
+                }
             }
 
-            // Check collision with player
+            // After movement, check collision with player
+            float n_dx = tp.x - position.x;
+            float n_dy = tp.y - position.y;
+            float n_dist = sqrtf(n_dx*n_dx + n_dy*n_dy);
             float radius = targetPlayer->getRadius();
-            if (dist <= radius) {
-                // Award XP and deactivate
+            if (n_dist <= radius) {
                 Experience::addXP(xpValue);
                 gSFXManager.play(SFXManager::SFX_PICKUP);
                 deactivate();

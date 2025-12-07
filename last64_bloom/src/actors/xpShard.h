@@ -24,6 +24,8 @@ namespace Actor {
         uint32_t color;
         float scale;
         bool attracted;
+        bool isFleeing;
+        float fleeTimer;
         Base* targetPlayer;
         float spawnTime;
         float attractionTime;
