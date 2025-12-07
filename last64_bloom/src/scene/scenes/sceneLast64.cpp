@@ -459,13 +459,13 @@ void SceneLast64::drawMarbleBackground(float deltaTime)
             // Pattern: single oscillation
             float pattern = 0.5f + 0.5f * sinf(px_new * 3.5f + py_new * 2.8f + phase * 0.7f);
 
-            // Single-hue palette (dark red/burgundy)
-            uint8_t base_r = 80;
-            uint8_t base_g = 20;
-            uint8_t base_b = 30;
-            uint8_t accent_r = 180;
-            uint8_t accent_g = 50;
-            uint8_t accent_b = 70;
+            // Balanced palette (dark gray with moderate reddish tint)
+            uint8_t base_r = 55;
+            uint8_t base_g = 25;
+            uint8_t base_b = 28;
+            uint8_t accent_r = 110;
+            uint8_t accent_g = 45;
+            uint8_t accent_b = 55;
 
             uint8_t r = base_r + (uint8_t)((accent_r - base_r) * pattern);
             uint8_t g = base_g + (uint8_t)((accent_g - base_g) * pattern);
