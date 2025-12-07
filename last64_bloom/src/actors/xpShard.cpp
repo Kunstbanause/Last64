@@ -216,7 +216,7 @@ namespace Actor {
         };
 
         // Cycle through palette entries at a readable rate (one color per ~0.25s)
-        float colorCycle = spawnTime * 4.0f; // 4 entries per second
+        float colorCycle = spawnTime * 12.0f; // 4 entries per second
         int idx = (int)fmodf(colorCycle, 6.0f);
         uint32_t baseColor = palette[idx];
 
