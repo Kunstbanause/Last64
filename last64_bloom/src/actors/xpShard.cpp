@@ -28,6 +28,7 @@ namespace Actor {
         attracted = false;
         targetPlayer = nullptr;
         spawnTime = 0.0f;
+        attractionTime = 0.0f;
         flags |= FLAG_DISABLED;
     }
 
@@ -102,6 +103,7 @@ namespace Actor {
                 s->attracted = false;
                 s->targetPlayer = nullptr;
                 s->spawnTime = 0.0f;
+                s->attractionTime = 0.0f;
                 s->flags &= ~FLAG_DISABLED;
                 return s;
             }
@@ -128,6 +130,9 @@ namespace Actor {
     void XPShard::update(float deltaTime) {
         if (flags & FLAG_DISABLED) return;
 
+        // Always update spawn time for sparkle effect
+        spawnTime += deltaTime;
+
         // If not attracted, check nearby players
         if (!attracted) {
             int active = Experience::getActivePlayerCount();
@@ -150,16 +155,17 @@ namespace Actor {
             }
         }
 
-        // Movement: if attracted, home towards the target player quickly
+        // Movement: if attracted, home towards the target player with accelerating speed
         if (attracted && targetPlayer) {
+            attractionTime += deltaTime;
             T3DVec3 tp = targetPlayer->getPosition();
             float dx = tp.x - position.x;
             float dy = tp.y - position.y;
             float dz = tp.z - position.z;
             float dist = sqrtf(dx*dx + dy*dy + dz*dz);
             if (dist > 0.0f) {
-                // Move faster when attracted
-                float speed = 80.0f; // fast homing speed
+                // Start at slow and accelerate over time
+                float speed = 50.0f + (attractionTime * 100.0f);
                 position.x += dx / dist * speed * deltaTime;
                 position.y += dy / dist * speed * deltaTime;
                 position.z += dz / dist * speed * deltaTime;
@@ -174,9 +180,6 @@ namespace Actor {
                 deactivate();
                 return;
             }
-        } else {
-            // Just track time for sparkle effect, no movement
-            spawnTime += deltaTime;
         }
 
         // Update matrix
@@ -195,45 +198,43 @@ namespace Actor {
         if (flags & FLAG_DISABLED) return;
         if (poolIndex >= MAX_XP_SHARDS) return;
 
-        // Rainbow sparkle effect with bright colors
+        // Erratic chaotic sparkle - constant color shifting like a kaleidoscope
         int base = poolIndex * 2;
         
-        // Cycle through rainbow colors
-        float rainbowPhase = spawnTime * 2.0f;  // Rotate through rainbow
-        float hue = fmodf(rainbowPhase, 6.0f);
+        // Multiple overlapping fast color cycles for chaotic effect
+        float cycle1 = spawnTime * 12.0f;  // Fast primary cycle
+        float cycle2 = spawnTime * 7.0f;   // Medium secondary cycle
+        float cycle3 = spawnTime * 19.0f;  // Very fast tertiary cycle
         
-        uint8_t r, g, b;
-        // Simple rainbow: Red -> Yellow -> Green -> Cyan -> Blue -> Magenta -> Red
-        if (hue < 1.0f) {
-            // Red to Yellow
-            r = 255; g = (uint8_t)(255 * hue); b = 0;
-        } else if (hue < 2.0f) {
-            // Yellow to Green
-            r = (uint8_t)(255 * (2.0f - hue)); g = 255; b = 0;
-        } else if (hue < 3.0f) {
-            // Green to Cyan
-            r = 0; g = 255; b = (uint8_t)(255 * (hue - 2.0f));
-        } else if (hue < 4.0f) {
-            // Cyan to Blue
-            r = 0; g = (uint8_t)(255 * (4.0f - hue)); b = 255;
-        } else if (hue < 5.0f) {
-            // Blue to Magenta
-            r = (uint8_t)(255 * (hue - 4.0f)); g = 0; b = 255;
-        } else {
-            // Magenta to Red
-            r = 255; g = 0; b = (uint8_t)(255 * (6.0f - hue));
-        }
+        // Combine cycles with different phase offsets for erratic sparkle
+        float r_phase = fmodf(cycle1, 6.0f);
+        float g_phase = fmodf(cycle2 + 2.0f, 6.0f);
+        float b_phase = fmodf(cycle3 + 4.0f, 6.0f);
         
-        // Add sparkle pulsing effect on top of rainbow
-        float sparkle = 0.6f + 0.4f * sinf(spawnTime * 8.0f);
+        // Convert phases to RGB values with rapid color changes
+        auto hueToComponent = [](float hue) -> uint8_t {
+            if (hue < 1.0f) return (uint8_t)(255 * hue);
+            else if (hue < 2.0f) return (uint8_t)(255 * (2.0f - hue));
+            else if (hue < 3.0f) return 0;
+            else if (hue < 4.0f) return (uint8_t)(255 * (hue - 3.0f));
+            else if (hue < 5.0f) return 255;
+            else return (uint8_t)(255 * (6.0f - hue));
+        };
+        
+        uint8_t r = hueToComponent(r_phase);
+        uint8_t g = hueToComponent(g_phase);
+        uint8_t b = hueToComponent(b_phase);
+        
+        // Rapid brightness pulsing for extra sparkle
+        float sparkle = 0.5f + 0.5f * sinf(spawnTime * 25.0f);
         uint8_t rs = (uint8_t)(r * sparkle);
         uint8_t gs = (uint8_t)(g * sparkle);
         uint8_t bs = (uint8_t)(b * sparkle);
-        uint32_t rainbowColor = (rs << 24) | (gs << 16) | (bs << 8) | 0xFF;
-        sharedVertices[base + 0].rgbaA = rainbowColor;
-        sharedVertices[base + 0].rgbaB = rainbowColor;
-        sharedVertices[base + 1].rgbaA = rainbowColor;
-        sharedVertices[base + 1].rgbaB = rainbowColor;
+        uint32_t chaosColor = (rs << 24) | (gs << 16) | (bs << 8) | 0xFF;
+        sharedVertices[base + 0].rgbaA = chaosColor;
+        sharedVertices[base + 0].rgbaB = chaosColor;
+        sharedVertices[base + 1].rgbaA = chaosColor;
+        sharedVertices[base + 1].rgbaB = chaosColor;
 
         t3d_matrix_push(sharedMatrices[poolIndex]);
         t3d_vert_load(&sharedVertices[base], 0, 4);

@@ -25,6 +25,7 @@ namespace Actor {
         bool attracted;
         Base* targetPlayer;
         float spawnTime;
+        float attractionTime;
 
         static void initializePool();
 
