@@ -80,7 +80,10 @@
 - [ ] Profiling, what are the performance eaters?
 - [ ] Rework background marble effect, use texture scrolling instead of procedural?
 - [ ] Title image behind debug start menu
-- [ ] Larger font for main menu
+- [x] Larger font for main menu
+- [ ] Use full screen for arena, no black bars
+- [ ] Reduce height of xp bar
+- [ ] XP Bar effects
 - [x] Main menu listen to stick input and all controllers
 - [x] Title Image in main menu
 - [x] proper level complete state

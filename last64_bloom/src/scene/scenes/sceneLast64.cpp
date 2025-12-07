@@ -339,6 +339,8 @@ void SceneLast64::updateScene(float deltaTime)
                     playerJoined[i] = false;
                 }
                 isRoundCurrentlyActive = false;
+                roundTimer = 0.0f; // Reset round timer
+                Experience::initialize(); // Reset XP bar and level
                 
                 // Clean up all actors immediately
                 Actor::Enemy::cleanup();
@@ -477,6 +479,8 @@ void SceneLast64::updateScene(float deltaTime)
                     playerJoined[i] = false;
                 }
                 isRoundCurrentlyActive = false;
+                roundTimer = 0.0f; // Reset round timer
+                Experience::initialize(); // Reset XP bar and level
                 
                 // Clean up all actors
                 Actor::Enemy::cleanup();
