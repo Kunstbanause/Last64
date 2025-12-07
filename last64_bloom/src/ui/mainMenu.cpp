@@ -15,6 +15,7 @@ namespace MainMenu {
     static bool shouldStart = false;
     static rdpq_font_t* font = nullptr;
     static bool initialized = false;
+    static sprite_t* titleSprite = nullptr;
     
     // Purge confirmation
     static bool showPurgeConfirm = false;
@@ -38,6 +39,10 @@ namespace MainMenu {
             rdpq_font_style(font, 3, &style3);
             
             rdpq_text_register_font(FONT_MENU, font);
+            
+            // Load title sprite
+            titleSprite = sprite_load("rom://small.sprite");
+            
             initialized = true;
         }
         reset();
@@ -45,6 +50,11 @@ namespace MainMenu {
 
     void cleanup() {
         // Don't free the font or unregister it - let it persist across scene reloads
+        // Free title sprite if loaded
+        if (titleSprite) {
+            sprite_free(titleSprite);
+            titleSprite = nullptr;
+        }
         // Just reset the menu state
     }
 
@@ -108,18 +118,35 @@ namespace MainMenu {
     }
 
     void draw() {
-        // Set text rendering mode
-        rdpq_text_printf(nullptr, FONT_MENU, 160, 30, "LAST 64 BLOOM");
+        // Render title sprite if loaded (only in main menu)
+        if (currentState == MAIN_MENU && titleSprite) {
+            // Set up RDP for sprite rendering with transparency
+            rdpq_sync_pipe();
+            rdpq_sync_tile();
+            rdpq_sync_load();
+            
+            rdpq_set_mode_standard();
+            rdpq_mode_combiner(RDPQ_COMBINER_TEX);
+            rdpq_mode_blender(RDPQ_BLENDER_MULTIPLY);
+            rdpq_mode_alphacompare(1);  // Enable alpha threshold
+            rdpq_mode_antialias(AA_NONE);
+            
+            // Center the sprite
+            int x = (SCREEN_WIDTH - titleSprite->width) / 2;
+            int y = 0;  // Top of screen with some padding
+            
+            rdpq_sprite_blit(titleSprite, x, y, NULL);
+        }
 
         switch (currentState) {
             case MAIN_MENU: {
-                rdpq_text_printf(nullptr, FONT_MENU, 100, 80, "1) ^01Start Level");
-                rdpq_text_printf(nullptr, FONT_MENU, 100, 110, "2) ^02Upgrades Menu");
-                rdpq_text_printf(nullptr, FONT_MENU, 100, 140, "3) ^03Stats Menu");
+                rdpq_text_printf(nullptr, FONT_MENU, 100, 120, "Start Level");
+                rdpq_text_printf(nullptr, FONT_MENU, 100, 140, "Upgrades");
+                rdpq_text_printf(nullptr, FONT_MENU, 100, 160, "Stats");
 
                 // Draw selection indicator
-                int yPos = 80 + (currentSelection * 30);
-                rdpq_text_printf(nullptr, FONT_MENU, 70, yPos, ">");
+                int yPos = 120 + (currentSelection * 20);
+                rdpq_text_printf(nullptr, FONT_MENU, 90, yPos, ">");
                 break;
             }
             case UPGRADES_MENU: {
