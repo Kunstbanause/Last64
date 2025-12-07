@@ -404,12 +404,17 @@ void SceneLast64::updateScene(float deltaTime)
         }
 
         case GAME_OVER: {
-            // Check for START button press to restart
+            // Check for A to restart or B to return to main menu
             bool restartPressed = false;
+            bool menuPressed = false;
             for (int i = 0; i < 4; ++i) {
-                joypad_inputs_t inputs = joypad_get_inputs((joypad_port_t)(JOYPAD_PORT_1 + i));
-                if (inputs.btn.a || inputs.btn.z) {
+                joypad_buttons_t pressed = joypad_get_buttons_pressed((joypad_port_t)(JOYPAD_PORT_1 + i));
+                if (pressed.a || pressed.z) {
                     restartPressed = true;
+                    break;
+                }
+                if (pressed.b) {
+                    menuPressed = true;
                     break;
                 }
             }
@@ -420,8 +425,17 @@ void SceneLast64::updateScene(float deltaTime)
                 gSFXManager.setVolume_Music(1.0f, 0.34f); // Set Volume to normal
                 // All cleanup and reset logic will be handled by SceneManager::loadScene(0)
                 // and the SceneLast64 destructor/constructor.
+            } else if (menuPressed) {
+                // Return to main menu
+                currentGameState = MAIN_MENU;
+                MainMenu::reset();
+                // Reset game state for next round
+                for (int i = 0; i < 4; ++i) {
+                    playerJoined[i] = false;
+                }
+                isRoundCurrentlyActive = false;
             }
-            // If not restarting, just stay in GAME_OVER state
+            // If neither, just stay in GAME_OVER state
         }
         case LEVEL_COMPLETE: {
             // Simple display state; wait for player to press A to continue/restart
@@ -730,9 +744,10 @@ void SceneLast64::draw2D(float deltaTime)
             break;
         }
         case GAME_OVER: {
-            // Display "Game Over" message
+            // Display "Game Over" message with restart and menu options
             Debug::printf(120, 100, "Game Over");
-            Debug::printf(100, 120, "Press A to restart");
+            Debug::printf(80, 130, "Press A to restart");
+            Debug::printf(80, 150, "Press B for main menu");
             break;
         }
         case LEVEL_COMPLETE: {
