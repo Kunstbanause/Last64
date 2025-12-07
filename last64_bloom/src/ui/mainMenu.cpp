@@ -162,7 +162,7 @@ namespace MainMenu {
                 // Display save game stats
                 uint32_t totalLevelUps = SaveGame::get_total_level_ups();
                 uint32_t bestTime = SaveGame::get_best_time();
-                uint16_t flags = SaveGame::get_level_complete_flags();
+                //uint16_t flags = SaveGame::get_level_complete_flags();
                 
                 char buffer[256];
                 snprintf(buffer, sizeof(buffer), "Total Level Ups: %lu", (unsigned long)totalLevelUps);
@@ -177,8 +177,8 @@ namespace MainMenu {
                     rdpq_text_printf(nullptr, FONT_MENU, 50, 160, buffer);
                 }
 
-                snprintf(buffer, sizeof(buffer), "Levels Complete: 0x%04x", (unsigned)flags);
-                rdpq_text_printf(nullptr, FONT_MENU, 50, 190, buffer);
+                // snprintf(buffer, sizeof(buffer), "Levels Complete: 0x%04x", (unsigned)flags);
+                // rdpq_text_printf(nullptr, FONT_MENU, 50, 190, buffer);
 
                 // Draw purge option
                 if (showPurgeConfirm) {
