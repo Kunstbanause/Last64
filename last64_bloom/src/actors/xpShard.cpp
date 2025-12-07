@@ -27,6 +27,7 @@ namespace Actor {
         color = 0xFF00FFFF;
         attracted = false;
         targetPlayer = nullptr;
+        spawnTime = 0.0f;
         flags |= FLAG_DISABLED;
     }
 
@@ -100,6 +101,7 @@ namespace Actor {
                 s->color = color_;
                 s->attracted = false;
                 s->targetPlayer = nullptr;
+                s->spawnTime = 0.0f;
                 s->flags &= ~FLAG_DISABLED;
                 return s;
             }
@@ -173,11 +175,12 @@ namespace Actor {
                 return;
             }
         } else {
-            // idle float/bob effect
-            static const float bobSpeed = 1.8f;
-            static const float bobAmount = 2.0f;
-            float bob = sinf((float)flags + (float)bobSpeed) * bobAmount * deltaTime; // simple variation
-            position.z += bob;
+            // idle float/bob effect - subtle vertical oscillation
+            spawnTime += deltaTime;
+            static const float bobSpeed = 2.0f;
+            static const float bobAmount = 1.5f;
+            float bob = sinf(spawnTime * bobSpeed) * bobAmount;
+            position.z = position.z + (bob - sinf((spawnTime - deltaTime) * bobSpeed) * bobAmount);
         }
 
         // Update matrix
@@ -196,13 +199,19 @@ namespace Actor {
         if (flags & FLAG_DISABLED) return;
         if (poolIndex >= MAX_XP_SHARDS) return;
 
-        // Update vertex colors for this shard, brightened toward white
+        // Update vertex colors for this shard, brightened toward white with sparkle
         int base = poolIndex * 2;
         // Brighten color by blending toward white
-        uint8_t r = (uint8_t)((((color >> 24) & 0xFF) + 12) / 2);
-        uint8_t g = (uint8_t)((((color >> 16) & 0xFF) + 12) / 2);
-        uint8_t b = (uint8_t)((((color >> 8) & 0xFF) + 12) / 2);
-        uint32_t brightColor = (r << 24) | (g << 16) | (b << 8) | 0xFF;
+        uint8_t r = (uint8_t)((((color >> 24) & 0xFF) + 200) / 2);
+        uint8_t g = (uint8_t)((((color >> 16) & 0xFF) + 200) / 2);
+        uint8_t b = (uint8_t)((((color >> 8) & 0xFF) + 200) / 2);
+        
+        // Add sparkle pulsing effect
+        float sparkle = 0.5f + 0.5f * sinf(spawnTime * 4.0f);
+        uint8_t rs = (uint8_t)(r * sparkle);
+        uint8_t gs = (uint8_t)(g * sparkle);
+        uint8_t bs = (uint8_t)(b * sparkle);
+        uint32_t brightColor = (rs << 24) | (gs << 16) | (bs << 8) | 0xFF;
         sharedVertices[base + 0].rgbaA = brightColor;
         sharedVertices[base + 0].rgbaB = brightColor;
         sharedVertices[base + 1].rgbaA = brightColor;

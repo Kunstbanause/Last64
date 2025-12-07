@@ -24,6 +24,7 @@ namespace Actor {
         uint32_t color;
         bool attracted;
         Base* targetPlayer;
+        float spawnTime;
 
         static void initializePool();
 
