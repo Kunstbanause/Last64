@@ -399,45 +399,47 @@ void SceneLast64::drawMarbleBackground(float deltaTime)
     rdpq_mode_persp(false);
     rdpq_mode_filter(FILTER_BILINEAR);
 
-    // Brighter base so gameplay silhouettes stay visible
-    rdpq_set_mode_fill(RGBA32(24, 28, 38, 0xFF));
-    rdpq_fill_rectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-
-    const int cellW = 16;
+    // Simplified grid with single-iteration distortion, similar-hue palette
+    const int cellW = 12;
     const int cellH = 8;
-    float phase = marbleTime * 0.5f;
+    float phase = marbleTime * 0.45f;
 
     for (int y = 0; y < SCREEN_HEIGHT; y += cellH) {
         for (int x = 0; x < SCREEN_WIDTH; x += cellW) {
-            float ny = (float)y / (float)SCREEN_HEIGHT;
-            float nx = (float)x / (float)SCREEN_WIDTH;
+            float px = (float)x / (float)SCREEN_WIDTH;
+            float py = (float)y / (float)SCREEN_HEIGHT;
 
-            // Mix x/y to bend veins; larger cells mean fewer draw calls for performance
-            float swirl = sinf(nx * 8.0f + ny * 11.0f + phase * 0.65f) + cosf(nx * 13.0f - ny * 14.0f + phase * 0.45f);
-            float veins = sinf((nx * 20.0f + ny * 24.0f) + swirl * 1.2f + phase * 0.5f);
-            float t = 0.55f + 0.45f * veins;
+            // Single distortion pass (minimal math)
+            float angle = phase * 0.2f + sinf(py * 3.0f) * 0.3f;
+            float c = cosf(angle);
+            float s = sinf(angle);
+            float px_new = px * c - py * s;
+            float py_new = px * s + py * c;
 
-            // Keep good visibility but don't overwhelm
-            float drift = 0.06f * sinf(phase * 0.28f);
-            float mix = 0.32f + t * (0.24f + drift);
+            // Simple turbulence
+            px_new += sinf(py_new * 2.5f + phase * 0.6f) * 0.08f;
+            py_new += cosf(px_new * 2.0f + phase * 0.5f) * 0.08f;
 
-            float baseR = 24.0f;
-            float baseG = 28.0f;
-            float baseB = 38.0f;
-            float accentR = 40.0f;
-            float accentG = 56.0f;
-            float accentB = 78.0f;
+            // Pattern: single oscillation
+            float pattern = 0.5f + 0.5f * sinf(px_new * 3.5f + py_new * 2.8f + phase * 0.7f);
 
-            uint8_t r = (uint8_t)fminf(fmaxf(baseR + accentR * mix, 0.0f), 255.0f);
-            uint8_t g = (uint8_t)fminf(fmaxf(baseG + accentG * mix, 0.0f), 255.0f);
-            uint8_t b = (uint8_t)fminf(fmaxf(baseB + accentB * mix, 0.0f), 255.0f);
+            // Single-hue palette (dark red/burgundy)
+            uint8_t base_r = 80;
+            uint8_t base_g = 20;
+            uint8_t base_b = 30;
+            uint8_t accent_r = 180;
+            uint8_t accent_g = 50;
+            uint8_t accent_b = 70;
+
+            uint8_t r = base_r + (uint8_t)((accent_r - base_r) * pattern);
+            uint8_t g = base_g + (uint8_t)((accent_g - base_g) * pattern);
+            uint8_t b = base_b + (uint8_t)((accent_b - base_b) * pattern);
 
             rdpq_set_mode_fill(RGBA32(r, g, b, 0xFF));
             rdpq_fill_rectangle(x, y, x + cellW, y + cellH);
         }
     }
 
-    // Restore to a clean standard state so the 3D pass starts from expected defaults
     rdpq_set_mode_standard();
 }
 
