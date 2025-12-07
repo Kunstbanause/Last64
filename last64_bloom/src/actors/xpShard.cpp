@@ -215,8 +215,8 @@ namespace Actor {
             0xFF00FFFF  // Magenta
         };
 
-        // Cycle through palette entries at a readable rate (one color per ~0.25s)
-        float colorCycle = spawnTime * 12.0f; // 4 entries per second
+        // Cycle through palette entries at a quick rate
+        float colorCycle = spawnTime * 60.0f; // x entries per second
         int idx = (int)fmodf(colorCycle, 6.0f);
         uint32_t baseColor = palette[idx];
 
