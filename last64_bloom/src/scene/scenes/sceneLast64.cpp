@@ -29,9 +29,13 @@ namespace {
 bool showMarbleBackground = true;
 bool marbleBackgroundChanged = false;
 
+// Flag to track if a round is active (for debug features like XP spawn)
+bool isRoundCurrentlyActive = false;
+
 SceneLast64::SceneLast64()
 {
     currentGameState = WAITING_FOR_PLAYERS;
+    isRoundCurrentlyActive = false; // Reset round state on scene init
     for (int i = 0; i < 4; ++i) {
         playerJoined[i] = false;
     }
@@ -174,6 +178,7 @@ void SceneLast64::updateScene(float deltaTime)
             }
             if (anyPlayerJoined && currentGameState == WAITING_FOR_PLAYERS) {
                 currentGameState = ROUND_ACTIVE;
+                isRoundCurrentlyActive = true;
                 // Re-initialize Enemy and Projectile systems for a new round
                 Actor::Enemy::initialize();
                 Actor::Projectile::initialize();
@@ -260,6 +265,25 @@ void SceneLast64::updateScene(float deltaTime)
                     roundTimer = (currentWave + 1) * SpawnManager::getWaveTimeMax() + 1.0f; // Jump to just after the next wave starts
                     break; // Only trigger once per frame
                 }
+                // Debug input: DPad down to spawn XP shards (only when debug menu is not visible)
+                if (pressed.d_down && !Debug::isMenuVisible()) {
+                    const int numShards = 20;
+                    // Get first active player position as spawn center
+                    Actor::Player* player = Experience::getPlayer(0);
+                    T3DVec3 centerPos = player ? player->getPosition() : T3DVec3{{0.0f, 0.0f, 0.0f}};
+                    
+                    for (int j = 0; j < numShards; ++j) {
+                        // Spawn in a radius around player/center
+                        float randomX = centerPos.x + ((float)(rand() % 200) - 100.0f);  // ±100 units
+                        float randomY = centerPos.y + ((float)(rand() % 200) - 100.0f);  // ±100 units
+                        float randomZ = 5.0f + (float)(rand() % 20);  // Height: 5-25 units
+                        T3DVec3 randomPos = {{randomX, randomY, randomZ}};
+                        uint32_t randomColor = 0xFF000000 | (rand() & 0x00FFFFFF);  // Random color
+                        Actor::XPShard::spawn(randomPos, 1, randomColor, 1.0f);
+                    }
+                    debugf("Spawned %d XP shards around player\n", numShards);
+                    break; // Only trigger once per frame
+                }
             }
 
             // Update players (this will also update their weapons)
@@ -277,6 +301,7 @@ void SceneLast64::updateScene(float deltaTime)
             // Check for level complete: final wave survived and no active enemies
             if (SpawnManager::isFinalWaveCleared()) {
                 currentGameState = LEVEL_COMPLETE;
+                isRoundCurrentlyActive = false;
                 // Save best time and mark level complete
                 SaveGame::maybe_update_best_time((uint32_t)roundTimer);
                 SaveGame::set_level_complete(0); // level index 0 for now
@@ -345,6 +370,7 @@ void SceneLast64::updateScene(float deltaTime)
 
             if (alivePlayers == 0 && activePlayerCount > 0) { // Ensure at least one player was active before game over
                 currentGameState = GAME_OVER;
+                isRoundCurrentlyActive = false;
                 // Stop background music when game is over
                 gSFXManager.setVolume_Music(0.45f, 0.1f); // Lower volume
                 // gSFXManager.play(SFXManager::SFX_GAME_OVER); // Assuming a game over sound effect

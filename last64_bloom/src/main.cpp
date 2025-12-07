@@ -185,27 +185,6 @@ int main()
       }
     }
 
-    // Debug: DPad down to spawn XP shards with random positions across screen
-    static bool lastDPadDown = false;
-    if (combined.d_down && !lastDPadDown) {
-      const int numShards = 20;
-      // Get first active player position as spawn center
-      Actor::Player* player = Experience::getPlayer(0);
-      T3DVec3 centerPos = player ? player->getPosition() : T3DVec3{{0.0f, 0.0f, 0.0f}};
-      
-      for (int i = 0; i < numShards; ++i) {
-        // Spawn in a radius around player/center
-        float randomX = centerPos.x + ((float)(rand() % 200) - 100.0f);  // ±100 units
-        float randomY = centerPos.y + ((float)(rand() % 200) - 100.0f);  // ±100 units
-        float randomZ = 5.0f + (float)(rand() % 20);  // Height: 5-25 units
-        T3DVec3 randomPos = {{randomX, randomY, randomZ}};
-        uint32_t randomColor = 0xFF000000 | (rand() & 0x00FFFFFF);  // Random color
-        Actor::XPShard::spawn(randomPos, 1, randomColor, 1.0f);
-      }
-      debugf("Spawned %d XP shards around player\n", numShards);
-    }
-    lastDPadDown = combined.d_down;
-
   float realDelta = display_get_delta_time();
   float deltaTime = realDelta;
     // "Pause"

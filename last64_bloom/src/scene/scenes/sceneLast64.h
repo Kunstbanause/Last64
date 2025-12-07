@@ -48,6 +48,7 @@ class SceneLast64 : public Scene
   public:                                                                                                                                                                                                                                               
     void draw2D(float deltaTime) final;                                                                                                                                                                                                                 
     bool isRestartRequested() const { return restartRequested; }
+    bool isRoundActive() const { return currentGameState == ROUND_ACTIVE; }
 
     SceneLast64();                                                                                                                                                                                                                                      
     ~SceneLast64();                                                                                                                                                                                                                                     

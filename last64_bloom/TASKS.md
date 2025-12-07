@@ -100,6 +100,8 @@
 - [ ] Improved Spawning: Similar to vampire with fill screen instead of basic frequency
 - [x] Debug button that spawns xp shards all over the screen.
 - [x] Xp pickup sound higher pitch the closer we are to level up
+- [x] Marble background (toggle in debug menu)
+- [ ] projectiles off screen are immediately depleted with no grace zone
 
 ###  FAILED
 - [ ] Intro with camera movement (FAILED)
