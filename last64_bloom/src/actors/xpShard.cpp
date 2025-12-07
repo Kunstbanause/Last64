@@ -211,7 +211,7 @@ namespace Actor {
             0xFFFF00FF, // Yellow
             0x00FF00FF, // Green
             0x00FFFFFF, // Cyan
-            0x0000FFFF, // Blue
+            0x40C0FFFF, // Light Sky Blue (brighter than the previous dark blue)
             0xFF00FFFF  // Magenta
         };
 
