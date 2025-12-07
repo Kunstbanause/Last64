@@ -8,6 +8,8 @@ namespace HDRBoost {
     void initialize(float defaultHDRFactor);
     void update(float deltaTime);
     void triggerBoost();
+    // Trigger a parameterized boost: peak value, total duration, and peak duration (time at peak before fading)
+    void triggerBoost(float peakValue, float duration, float peakDuration);
     float getCurrentHDRFactor();
     void setDefaultHDRFactor(float defaultFactor);
 }

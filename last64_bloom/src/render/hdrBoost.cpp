@@ -7,9 +7,10 @@ namespace {
     float currentHDRFactor = 0.8f;  // Current HDR factor
     float targetHDRFactor = 0.8f;   // Target HDR factor
     float hdrBoostTimer = 0.0f;     // Timer for the boost
-    constexpr float HDR_BOOST_DURATION = 5.0f;  // Total duration of the effect
-    constexpr float HDR_PEAK_DURATION = 0.1f;   // Duration to stay at peak
-    constexpr float HDR_PEAK_VALUE = 5.0f;      // Peak HDR value
+    // Defaults; converted to variables so triggerBoost can set custom values
+    float HDR_BOOST_DURATION = 5.0f;  // Total duration of the effect
+    float HDR_PEAK_DURATION = 0.1f;   // Duration to stay at peak
+    float HDR_PEAK_VALUE = 5.0f;      // Peak HDR value
 }
 
 void HDRBoost::initialize(float defaultHDRFactor) {
@@ -55,6 +56,15 @@ void HDRBoost::update(float deltaTime) {
 }
 
 void HDRBoost::triggerBoost() {
+    // Use default configured peak/duration values
+    targetHDRFactor = HDR_PEAK_VALUE;
+    hdrBoostTimer = HDR_BOOST_DURATION;
+}
+
+void HDRBoost::triggerBoost(float peakValue, float duration, float peakDuration) {
+    HDR_PEAK_VALUE = peakValue;
+    HDR_BOOST_DURATION = duration;
+    HDR_PEAK_DURATION = peakDuration;
     targetHDRFactor = HDR_PEAK_VALUE;
     hdrBoostTimer = HDR_BOOST_DURATION;
 }
