@@ -35,7 +35,18 @@ bool isRoundCurrentlyActive = false;
 
 SceneLast64::SceneLast64()
 {
-    currentGameState = MAIN_MENU;
+    // Check if this is a restart (players were already playing) vs first launch
+    // If we're restarting from game over, skip main menu and go to waiting for players
+    static bool isFirstLaunch = true;
+    
+    if (isFirstLaunch) {
+        currentGameState = MAIN_MENU;
+        isFirstLaunch = false;
+    } else {
+        // This is a restart - skip main menu
+        currentGameState = WAITING_FOR_PLAYERS;
+    }
+    
     isRoundCurrentlyActive = false; // Reset round state on scene init
     MainMenu::initialize();  // Initialize the main menu
     for (int i = 0; i < 4; ++i) {
