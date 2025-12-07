@@ -87,8 +87,8 @@
 - [x] SAVING useful data: best time, completion flags, total level ups
 - [x] SAVING music setting
 - [x] Main Menu, stats menu, upgrade menu
-- [ ] Convert level ups to new currency: CREDITS
-- [ ] Passive upgrades (payed with CREDITS and saved)
+- [x] Convert total level ups to new currency in main menu: CREDITS, show in top right corner of screen in all main menus
+- [x] Passive upgrades (payed with CREDITS and saved)
 - [x] Option to return to main menu, from Start menu
 - [x] Remove purge and save game from start menu (now in stats menu)
 - [ ] Profiling, what are the performance eaters?

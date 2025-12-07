@@ -42,4 +42,16 @@ uint32_t get_total_level_ups();
 uint32_t get_best_time();
 uint16_t get_level_complete_flags();
 
+// Credits system
+uint32_t get_total_credits();      // Total credits earned (level_ups * 10)
+uint32_t get_credits_spent();      // Credits spent on upgrades
+uint32_t get_credits_available();  // Available to spend (total - spent)
+void spend_credits(uint32_t amount);
+void reset_credits_spent();        // Reset spent credits (refund all)
+
+// Permanent upgrades
+uint8_t get_pickup_range_level();  // Pickup range upgrade level
+void set_pickup_range_level(uint8_t level);
+float get_pickup_range_multiplier(); // Returns 1.0 + (level * 0.1)
+
 }

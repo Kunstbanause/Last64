@@ -14,6 +14,12 @@ namespace MainMenu {
         UPGRADES_MENU,
         STATS_MENU
     };
+    
+    enum UpgradeOption {
+        UPGRADE_PICKUP_RANGE,
+        UPGRADE_RESET_CREDITS,
+        UPGRADE_COUNT
+    };
 
     void initialize();
     void cleanup();

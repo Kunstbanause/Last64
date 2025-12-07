@@ -7,6 +7,7 @@
 #include "../systems/weapon_registry.h"
 #include "../render/colors.h"
 #include "../main.h"
+#include "../memory/savegame.h"
 #include <t3d/t3d.h>
 #include <libdragon.h>
 #include <cmath>
@@ -325,4 +326,10 @@ void Actor::Player::removeWeapon(Actor::WeaponBase* weapon) {
     if (weapon) {
         weapons.erase(std::remove(weapons.begin(), weapons.end(), weapon), weapons.end());
     }
+}
+
+float Actor::Player::getPickupRange() const {
+    float baseRange = 24.0f;
+    float multiplier = SaveGame::get_pickup_range_multiplier();
+    return baseRange * multiplier;
 }

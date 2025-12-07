@@ -35,13 +35,19 @@ static bool s_last_action_was_load = false;
 // Layout (all big-endian as used before):
 // offset 0 (block 1) : total_level_ups (4 bytes)
 // offset 4            : best_time_seconds (4 bytes)
-// offset 8            : level_complete_flags (2 bytes)
+// offset 8 (block 2) : level_complete_flags (2 bytes)
+// offset 10           : music_enabled (1 byte)
+// offset 11           : marble_enabled (1 byte)
+// offset 12 (block 3) : credits_spent (4 bytes)
+// offset 16           : pickup_range_level (1 byte)
 
 static uint32_t s_total_level_ups = 0;
 static uint32_t s_best_time = 0xFFFFFFFF;
 static uint16_t s_level_complete_flags = 0;
 static bool s_music_enabled = true;
 static bool s_marble_enabled = true;
+static uint32_t s_credits_spent = 0;
+static uint8_t s_pickup_range_level = 0;
 
 static void load_structured_state() {
   if (!eeprom_present()) return;
@@ -58,6 +64,12 @@ static void load_structured_state() {
   s_music_enabled = buf2[2] != 0;
   // byte 3 in block2 stores marble background enabled flag (1 = enabled)
   s_marble_enabled = buf2[3] != 0;
+  // bytes 4-7 in block2 store credits_spent
+  s_credits_spent = ((uint32_t)buf2[4] << 24) | ((uint32_t)buf2[5] << 16) | ((uint32_t)buf2[6] << 8) | ((uint32_t)buf2[7]);
+  // read block 3 for pickup_range_level
+  uint8_t buf3[8];
+  eeprom_read(3, buf3);
+  s_pickup_range_level = buf3[0];
 }
 
 static void save_structured_state() {
@@ -75,9 +87,20 @@ static void save_structured_state() {
   buf[6] = (s_best_time >> 8) & 0xFFu;
   buf[7] = (s_best_time) & 0xFFu;
   uint8_t res1 = eeprom_write(1, buf);
-  uint8_t buf2[8] = { (uint8_t)((s_level_complete_flags >> 8) & 0xFFu), (uint8_t)(s_level_complete_flags & 0xFFu), (uint8_t)(s_music_enabled ? 1 : 0), (uint8_t)(s_marble_enabled ? 1 : 0),0,0,0,0 };
+  uint8_t buf2[8] = { 
+    (uint8_t)((s_level_complete_flags >> 8) & 0xFFu), 
+    (uint8_t)(s_level_complete_flags & 0xFFu), 
+    (uint8_t)(s_music_enabled ? 1 : 0), 
+    (uint8_t)(s_marble_enabled ? 1 : 0),
+    (uint8_t)((s_credits_spent >> 24) & 0xFFu),
+    (uint8_t)((s_credits_spent >> 16) & 0xFFu),
+    (uint8_t)((s_credits_spent >> 8) & 0xFFu),
+    (uint8_t)(s_credits_spent & 0xFFu)
+  };
   uint8_t res2 = eeprom_write(2, buf2);
-  if (res1 == 0 && res2 == 0) {
+  uint8_t buf3[8] = { s_pickup_range_level, 0, 0, 0, 0, 0, 0, 0 };
+  uint8_t res3 = eeprom_write(3, buf3);
+  if (res1 == 0 && res2 == 0 && res3 == 0) {
     if (s_best_time == 0xFFFFFFFF) {
       debugf("SaveGame: structured write OK - LevelUps:%lu Best:--:-- Flags:0x%04x\n", (unsigned long)s_total_level_ups, (unsigned)s_level_complete_flags);
     } else {
@@ -183,6 +206,46 @@ bool is_music_enabled() { return s_music_enabled; }
 void set_marble_enabled(bool enabled) { s_marble_enabled = enabled; save_structured_state(); }
 bool is_marble_enabled() { return s_marble_enabled; }
 
+// Credits system implementation
+uint32_t get_total_credits() {
+  return s_total_level_ups * 10;
+}
+
+uint32_t get_credits_spent() {
+  return s_credits_spent;
+}
+
+uint32_t get_credits_available() {
+  uint32_t total = get_total_credits();
+  if (s_credits_spent > total) return 0; // Safety check
+  return total - s_credits_spent;
+}
+
+void spend_credits(uint32_t amount) {
+  s_credits_spent += amount;
+  save_structured_state();
+}
+
+void reset_credits_spent() {
+  s_credits_spent = 0;
+  save_structured_state();
+  debugf("SaveGame: credits reset\n");
+}
+
+// Permanent upgrades
+uint8_t get_pickup_range_level() {
+  return s_pickup_range_level;
+}
+
+void set_pickup_range_level(uint8_t level) {
+  s_pickup_range_level = level;
+  save_structured_state();
+}
+
+float get_pickup_range_multiplier() {
+  return 1.0f + (s_pickup_range_level * 0.1f);
+}
+
 void purge_save() {
   if (!eeprom_present()) return;
   // Reset in-memory state first
@@ -191,6 +254,8 @@ void purge_save() {
   s_level_complete_flags = 0;
   s_music_enabled = true;
   s_marble_enabled = true;
+  s_credits_spent = 0;
+  s_pickup_range_level = 0;
   // Write the default state to EEPROM using save_structured_state
   // This ensures the default values (music=true, marble=true) are properly written
   save_structured_state();

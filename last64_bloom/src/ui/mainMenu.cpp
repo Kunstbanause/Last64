@@ -18,6 +18,7 @@ namespace MainMenu {
     // Menu state
     static MenuState currentState = MAIN_MENU;
     static int currentSelection = 0;
+    static int upgradeSelection = 0;  // Selection in upgrades menu
     static bool shouldStart = false;
     static rdpq_font_t* font = nullptr;
     static bool initialized = false;
@@ -67,6 +68,7 @@ namespace MainMenu {
     void reset() {
         currentState = MAIN_MENU;
         currentSelection = 0;
+        upgradeSelection = 0;
         shouldStart = false;
         showPurgeConfirm = false;
     }
@@ -144,11 +146,35 @@ namespace MainMenu {
                 break;
             }
             case UPGRADES_MENU: {
+                if (pressed.d_up || stickUp) {
+                    upgradeSelection = (upgradeSelection - 1 + UPGRADE_COUNT) % UPGRADE_COUNT;
+                }
+                if (pressed.d_down || stickDown) {
+                    upgradeSelection = (upgradeSelection + 1) % UPGRADE_COUNT;
+                }
+                if (pressed.a || pressed.z) {
+                    if (upgradeSelection == UPGRADE_PICKUP_RANGE) {
+                        // Purchase pickup range upgrade (10 credits per level)
+                        uint32_t available = SaveGame::get_credits_available();
+                        uint8_t currentLevel = SaveGame::get_pickup_range_level();
+                        const uint32_t upgradeCost = 10;
+                        
+                        if (available >= upgradeCost && currentLevel < 10) { // Max 10 levels
+                            SaveGame::spend_credits(upgradeCost);
+                            SaveGame::set_pickup_range_level(currentLevel + 1);
+                            debugf("MainMenu: Purchased pickup range upgrade (level %d)\n", currentLevel + 1);
+                        }
+                    } else if (upgradeSelection == UPGRADE_RESET_CREDITS) {
+                        // Reset all spent credits (refund)
+                        SaveGame::reset_credits_spent();
+                        SaveGame::set_pickup_range_level(0); // Reset upgrades too
+                        debugf("MainMenu: Reset all upgrades\n");
+                    }
+                }
                 if (pressed.b) {
                     currentState = MAIN_MENU;
                     currentSelection = 1;
                 }
-                // Placeholder for upgrades menu interaction
                 break;
             }
             case STATS_MENU: {
@@ -187,6 +213,12 @@ namespace MainMenu {
     }
 
     void draw() {
+        // Draw CREDITS in top right corner for all menu states
+        uint32_t creditsAvailable = SaveGame::get_credits_available();
+        char creditsBuffer[32];
+        snprintf(creditsBuffer, sizeof(creditsBuffer), "CREDITS: %lu", (unsigned long)creditsAvailable);
+        rdpq_text_printf(nullptr, FONT_MENU, SCREEN_WIDTH - 120, 10, creditsBuffer);
+        
         // Render title sprite if loaded (only in main menu)
         if (currentState == MAIN_MENU && titleSprite) {
             // Set up RDP for sprite rendering with transparency
@@ -220,9 +252,37 @@ namespace MainMenu {
             }
             case UPGRADES_MENU: {
                 rdpq_text_printf(nullptr, FONT_MENU, 50, 80, "UPGRADES");
-                rdpq_text_printf(nullptr, FONT_MENU, 50, 130, "Permanent Passive Upgrades");
-                rdpq_text_printf(nullptr, FONT_MENU, 50, 160, "(Placeholder)");
-                rdpq_text_printf(nullptr, FONT_MENU, 50, 200, "Press ^01B^00 to return");
+                
+                uint32_t available = SaveGame::get_credits_available();
+                uint8_t pickupLevel = SaveGame::get_pickup_range_level();
+                
+                char buffer[256];
+                
+                // Pickup Range Upgrade
+                int yPos = 120;
+                if (upgradeSelection == UPGRADE_PICKUP_RANGE) {
+                    rdpq_text_printf(nullptr, FONT_MENU, 40, yPos, ">");
+                }
+                snprintf(buffer, sizeof(buffer), "Pickup Range +10%% (Lv %d/10)", pickupLevel);
+                rdpq_text_printf(nullptr, FONT_MENU, 50, yPos, buffer);
+                if (pickupLevel >= 10) {
+                    rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^02MAX^00");
+                } else if (available >= 10) {
+                    rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^0210 CR^00");
+                } else {
+                    rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^0110 CR^00");
+                }
+                
+                // Reset Credits
+                yPos += 20;
+                if (upgradeSelection == UPGRADE_RESET_CREDITS) {
+                    rdpq_text_printf(nullptr, FONT_MENU, 40, yPos, ">");
+                }
+                rdpq_text_printf(nullptr, FONT_MENU, 50, yPos, "Reset All Upgrades (Refund)");
+                
+                // Instructions
+                rdpq_text_printf(nullptr, FONT_MENU, 50, 200, "Press ^02A^00 to purchase/reset");
+                rdpq_text_printf(nullptr, FONT_MENU, 50, 220, "Press ^01B^00 to return");
                 break;
             }
             case STATS_MENU: {

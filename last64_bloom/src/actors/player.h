@@ -67,8 +67,8 @@ namespace Actor {
         // AABB collision methods
         float getRadius() const override;
         void getAABBSize(float& width, float& height) const override;
-        // Pickup range for collectibles (shards)
-        float getPickupRange() const { return 24.0f; }
+        // Pickup range for collectibles (shards) - applies multiplier from upgrades
+        float getPickupRange() const;
         
         // Color getter
         uint32_t getColor() const { return playerColor; }
