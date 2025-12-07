@@ -1,18 +1,3 @@
-## 🛠️ Implemented Features
-
-### Weapons
-- **Projectile Weapon**: Basic weapon that fires projectiles in a straight line
-- **Homing Weapon**: Fires projectiles that home in on nearby enemies
-- **Circular Weapon**: Fires projectiles in a circular pattern around the player
-- **Spiral Weapon**: Spawns projectiles tha circle around the player
-
-### Upgrades
-- **Weapon Upgrades**: Each weapon can be upgraded to increase its effectiveness
-- **New Weapons**: Players can acquire new weapon types as they level up
-- **Random Selection**: When leveling up, a random weapon is upgraded (if any can be upgraded) or a new random weapon type is acquired (if not already owned)
-
-## 🛠️ Development Milestones
-
 ### ✅Phase 0: Files and Compile
 - [x] Create the needed files, incl. a makefile in order to compile
 - [x] Render a single box
@@ -108,6 +93,17 @@
 - [x] Comet style wave, player needs to dodge
 - [ ] Improved Spawning: Similar to vampire with fill screen instead of basic frequency
 - [x] Debug button that spawns xp shards all over the screen.
+- [x] Xp pickup sound higher pitch the closer we are to level up
+- [x] Marble background (toggle in debug menu)
+- [x] projectiles off screen are immediately depleted with no grace zone
+
+### ✅ Phase 13: Passive Upgrades System
+- [x] Pickup Range upgrade (+10% per level, max 10 levels, 10 credits each)
+- [x] Damage upgrade (+5% per level, max 20 levels, 20 credits each)
+- [x] Projectile Count upgrade (+1 per level, max 5 levels, 50 credits each)
+- [x] Applied damage multiplier to all weapon types
+- [x] Applied projectile count bonus to multi-projectile weapons
+- [x] Reset all upgrades option with full refund
 - [x] Xp pickup sound higher pitch the closer we are to level up
 - [x] Marble background (toggle in debug menu)
 - [x] projectiles off screen are immediately depleted with no grace zone

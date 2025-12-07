@@ -164,10 +164,34 @@ namespace MainMenu {
                             SaveGame::set_pickup_range_level(currentLevel + 1);
                             debugf("MainMenu: Purchased pickup range upgrade (level %d)\n", currentLevel + 1);
                         }
+                    } else if (upgradeSelection == UPGRADE_DAMAGE) {
+                        // Purchase damage upgrade (20 credits per level, expensive!)
+                        uint32_t available = SaveGame::get_credits_available();
+                        uint8_t currentLevel = SaveGame::get_damage_level();
+                        const uint32_t upgradeCost = 20;
+                        
+                        if (available >= upgradeCost && currentLevel < 20) { // Max 20 levels for +100% damage
+                            SaveGame::spend_credits(upgradeCost);
+                            SaveGame::set_damage_level(currentLevel + 1);
+                            debugf("MainMenu: Purchased damage upgrade (level %d)\n", currentLevel + 1);
+                        }
+                    } else if (upgradeSelection == UPGRADE_PROJECTILE_COUNT) {
+                        // Purchase projectile count upgrade (50 credits per level, very expensive!)
+                        uint32_t available = SaveGame::get_credits_available();
+                        uint8_t currentLevel = SaveGame::get_projectile_count_level();
+                        const uint32_t upgradeCost = 50;
+                        
+                        if (available >= upgradeCost && currentLevel < 5) { // Max 5 levels
+                            SaveGame::spend_credits(upgradeCost);
+                            SaveGame::set_projectile_count_level(currentLevel + 1);
+                            debugf("MainMenu: Purchased projectile count upgrade (level %d)\n", currentLevel + 1);
+                        }
                     } else if (upgradeSelection == UPGRADE_RESET_CREDITS) {
                         // Reset all spent credits (refund)
                         SaveGame::reset_credits_spent();
                         SaveGame::set_pickup_range_level(0); // Reset upgrades too
+                        SaveGame::set_damage_level(0);
+                        SaveGame::set_projectile_count_level(0);
                         debugf("MainMenu: Reset all upgrades\n");
                     }
                 }
@@ -255,11 +279,13 @@ namespace MainMenu {
                 
                 uint32_t available = SaveGame::get_credits_available();
                 uint8_t pickupLevel = SaveGame::get_pickup_range_level();
+                uint8_t damageLevel = SaveGame::get_damage_level();
+                uint8_t projectileLevel = SaveGame::get_projectile_count_level();
                 
                 char buffer[256];
                 
                 // Pickup Range Upgrade
-                int yPos = 120;
+                int yPos = 110;
                 if (upgradeSelection == UPGRADE_PICKUP_RANGE) {
                     rdpq_text_printf(nullptr, FONT_MENU, 40, yPos, ">");
                 }
@@ -273,8 +299,38 @@ namespace MainMenu {
                     rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^0110 CR^00");
                 }
                 
-                // Reset Credits
+                // Damage Upgrade
                 yPos += 20;
+                if (upgradeSelection == UPGRADE_DAMAGE) {
+                    rdpq_text_printf(nullptr, FONT_MENU, 40, yPos, ">");
+                }
+                snprintf(buffer, sizeof(buffer), "Damage +5%% (Lv %d/20)", damageLevel);
+                rdpq_text_printf(nullptr, FONT_MENU, 50, yPos, buffer);
+                if (damageLevel >= 20) {
+                    rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^02MAX^00");
+                } else if (available >= 20) {
+                    rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^0220 CR^00");
+                } else {
+                    rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^0120 CR^00");
+                }
+                
+                // Projectile Count Upgrade
+                yPos += 20;
+                if (upgradeSelection == UPGRADE_PROJECTILE_COUNT) {
+                    rdpq_text_printf(nullptr, FONT_MENU, 40, yPos, ">");
+                }
+                snprintf(buffer, sizeof(buffer), "Projectile Count +1 (Lv %d/5)", projectileLevel);
+                rdpq_text_printf(nullptr, FONT_MENU, 50, yPos, buffer);
+                if (projectileLevel >= 5) {
+                    rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^02MAX^00");
+                } else if (available >= 50) {
+                    rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^0250 CR^00");
+                } else {
+                    rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^0150 CR^00");
+                }
+                
+                // Reset Credits
+                yPos += 25;
                 if (upgradeSelection == UPGRADE_RESET_CREDITS) {
                     rdpq_text_printf(nullptr, FONT_MENU, 40, yPos, ">");
                 }

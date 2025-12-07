@@ -52,6 +52,12 @@ namespace Actor {
         int getMaxUpgradeLevel() const { return maxUpgradeLevel; }
         WeaponType getWeaponType() const { return weaponType; }
         
+        // Get damage with global multiplier applied
+        int getFinalDamage() const;
+        
+        // Get projectile count bonus from upgrades
+        int getProjectileCountBonus() const;
+        
         T3DVec3 getSpawnOffset() const { return spawnOffset; }
         void setSpawnOffset(const T3DVec3& offset) { spawnOffset = offset; }
     };

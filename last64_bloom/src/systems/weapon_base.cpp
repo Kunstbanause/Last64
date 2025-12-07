@@ -3,6 +3,7 @@
 * @license MIT
 */
 #include "weapon_base.h"
+#include "../memory/savegame.h"
 
 namespace Actor {
     WeaponBase::WeaponBase(WeaponType type) : Base() {
@@ -36,5 +37,14 @@ namespace Actor {
             // Default implementation does nothing
             // This should be overridden by subclasses to implement specific upgrade behavior
         }
+    }
+
+    int WeaponBase::getFinalDamage() const {
+        float multiplier = SaveGame::get_damage_multiplier();
+        return (int)(damage * multiplier);
+    }
+
+    int WeaponBase::getProjectileCountBonus() const {
+        return SaveGame::get_projectile_count_bonus();
     }
 }

@@ -72,9 +72,9 @@ namespace Actor {
         }};
         
         // Fire projectiles in a circular pattern
-        for (int i = 0; i < projectileCount + upgradeLevel; i++) {
+        for (int i = 0; i < projectileCount + upgradeLevel + getProjectileCountBonus(); i++) {
             // Calculate angle for this projectile
-            float angle = (2.0f * M_PI * i) / (projectileCount + upgradeLevel);
+            float angle = (2.0f * M_PI * i) / (projectileCount + upgradeLevel + getProjectileCountBonus());
             
             // Calculate direction vector
             T3DVec3 fireDirection = {{
@@ -88,7 +88,7 @@ namespace Actor {
             if (player) {
                 projectileColor = player->getColor();
             }
-            Projectile::spawn(spawnPos, fireDirection, projectileSpeed, projectileSlowdown, projectileLifetime, damage, projectileColor, 1.3f);
+            Projectile::spawn(spawnPos, fireDirection, projectileSpeed, projectileSlowdown, projectileLifetime, getFinalDamage(), projectileColor, 1.3f);
         }
     }
 

@@ -17,6 +17,8 @@ namespace MainMenu {
     
     enum UpgradeOption {
         UPGRADE_PICKUP_RANGE,
+        UPGRADE_DAMAGE,
+        UPGRADE_PROJECTILE_COUNT,
         UPGRADE_RESET_CREDITS,
         UPGRADE_COUNT
     };

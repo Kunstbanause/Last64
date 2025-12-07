@@ -70,7 +70,7 @@ namespace Actor {
         
         // Calculate the number of projectiles to fire based on upgrade level
         // Limit to a maximum of 6 projectiles to prevent memory issues
-        int totalProjectiles = projectilesPerBurst + upgradeLevel;
+        int totalProjectiles = projectilesPerBurst + upgradeLevel + getProjectileCountBonus();
         if (totalProjectiles > 6) {
             totalProjectiles = 6;
         }
@@ -93,7 +93,7 @@ namespace Actor {
             if (player) {
                 projectileColor = player->getColor();
             }
-            Projectile::spawn(spawnPos, spreadDirection, projectileSpeed, projectileSlowdown, projectileLifetime, damage, projectileColor, 0.7f);
+            Projectile::spawn(spawnPos, spreadDirection, projectileSpeed, projectileSlowdown, projectileLifetime, getFinalDamage(), projectileColor, 0.7f);
         }
     }
 

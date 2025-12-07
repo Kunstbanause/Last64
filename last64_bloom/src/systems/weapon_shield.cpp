@@ -65,7 +65,7 @@ namespace Actor {
                 0.0f, // No speed
                 0.0f, // No slowdown
                 shieldLifetime,
-                damage,
+                getFinalDamage(),
                 projectileColor,
                 shieldSize
             );

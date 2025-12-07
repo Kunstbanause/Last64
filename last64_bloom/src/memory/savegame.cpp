@@ -48,6 +48,8 @@ static bool s_music_enabled = true;
 static bool s_marble_enabled = true;
 static uint32_t s_credits_spent = 0;
 static uint8_t s_pickup_range_level = 0;
+static uint8_t s_damage_level = 0;
+static uint8_t s_projectile_count_level = 0;
 
 static void load_structured_state() {
   if (!eeprom_present()) return;
@@ -70,6 +72,8 @@ static void load_structured_state() {
   uint8_t buf3[8];
   eeprom_read(3, buf3);
   s_pickup_range_level = buf3[0];
+  s_damage_level = buf3[1];
+  s_projectile_count_level = buf3[2];
 }
 
 static void save_structured_state() {
@@ -98,7 +102,7 @@ static void save_structured_state() {
     (uint8_t)(s_credits_spent & 0xFFu)
   };
   uint8_t res2 = eeprom_write(2, buf2);
-  uint8_t buf3[8] = { s_pickup_range_level, 0, 0, 0, 0, 0, 0, 0 };
+  uint8_t buf3[8] = { s_pickup_range_level, s_damage_level, s_projectile_count_level, 0, 0, 0, 0, 0 };
   uint8_t res3 = eeprom_write(3, buf3);
   if (res1 == 0 && res2 == 0 && res3 == 0) {
     if (s_best_time == 0xFFFFFFFF) {
@@ -246,6 +250,34 @@ float get_pickup_range_multiplier() {
   return 1.0f + (s_pickup_range_level * 0.1f);
 }
 
+// Damage upgrade implementation
+uint8_t get_damage_level() {
+  return s_damage_level;
+}
+
+void set_damage_level(uint8_t level) {
+  s_damage_level = level;
+  save_structured_state();
+}
+
+float get_damage_multiplier() {
+  return 1.0f + (s_damage_level * 0.05f); // 5% per level
+}
+
+// Projectile count upgrade implementation
+uint8_t get_projectile_count_level() {
+  return s_projectile_count_level;
+}
+
+void set_projectile_count_level(uint8_t level) {
+  s_projectile_count_level = level;
+  save_structured_state();
+}
+
+int get_projectile_count_bonus() {
+  return (int)s_projectile_count_level; // Flat bonus
+}
+
 void purge_save() {
   if (!eeprom_present()) return;
   // Reset in-memory state first
@@ -256,6 +288,8 @@ void purge_save() {
   s_marble_enabled = true;
   s_credits_spent = 0;
   s_pickup_range_level = 0;
+  s_damage_level = 0;
+  s_projectile_count_level = 0;
   // Write the default state to EEPROM using save_structured_state
   // This ensures the default values (music=true, marble=true) are properly written
   save_structured_state();

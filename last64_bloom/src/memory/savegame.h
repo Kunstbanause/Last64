@@ -54,4 +54,12 @@ uint8_t get_pickup_range_level();  // Pickup range upgrade level
 void set_pickup_range_level(uint8_t level);
 float get_pickup_range_multiplier(); // Returns 1.0 + (level * 0.1)
 
+uint8_t get_damage_level();        // Damage upgrade level
+void set_damage_level(uint8_t level);
+float get_damage_multiplier();     // Returns 1.0 + (level * 0.05) - 5% per level
+
+uint8_t get_projectile_count_level(); // Projectile count upgrade level
+void set_projectile_count_level(uint8_t level);
+int get_projectile_count_bonus();  // Returns level (flat bonus)
+
 }

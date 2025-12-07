@@ -124,7 +124,7 @@ namespace Actor {
     
     void WeaponSpiral::fire(const T3DVec3& position, const T3DVec3& direction) {
         // Create orbiting projectiles around the player
-        int projectileCount = std::min(baseProjectileCount + upgradeLevel, 4);
+        int projectileCount = std::min(baseProjectileCount + upgradeLevel + getProjectileCountBonus(), 8); // Increased max to 8 for upgrades
         
         for (int i = 0; i < projectileCount; i++) {
             // Skip if we've reached the maximum
@@ -156,7 +156,7 @@ namespace Actor {
                 0.0f, 
                 0.0f, 
                 projectileLifetime, 
-                damage, 
+                getFinalDamage(), 
                 projectileColor,
                 1.3f
             );
