@@ -49,44 +49,31 @@ namespace Actor {
     void XPShard::initializePool() {
         if (initialized) return;
 
-        // We'll store 6 vertices per shard. Each T3DVertPacked contains 2 vertices,
-        // so we allocate 3 structs per shard (6 total vertices).
+        // We'll store 4 vertices per shard for a small diamond (square on corner).
+        // Each T3DVertPacked contains 2 vertices, so we allocate 2 structs per shard.
         T3DVec3 normalVec = {{0.0f,0.0f,1.0f}};
         uint16_t norm = t3d_vert_pack_normal(&normalVec);
-        sharedVertices = (T3DVertPacked*)malloc_uncached(sizeof(T3DVertPacked) * MAX_XP_SHARDS * 3);
+        sharedVertices = (T3DVertPacked*)malloc_uncached(sizeof(T3DVertPacked) * MAX_XP_SHARDS * 2);
 
         for (int i = 0; i < MAX_XP_SHARDS; ++i) {
-            int base = i * 3;
-            // Define a vertical-elongated hexagon centered at origin.
-            // Vertex order (clockwise): v0 top-left, v1 top-right, v2 mid-right,
-            // v3 bottom-right, v4 bottom-left, v5 mid-left
-            // We'll fill pairs: [v0,v1], [v2,v3], [v4,v5]
-            // v0
+            int base = i * 2;
+            // Define a small diamond (square rotated 45°) centered at origin.
+            // Vertices form a diamond: top, right, bottom, left
+            // v0 (top), v1 (right)
             sharedVertices[base+0] = (T3DVertPacked){};
-            sharedVertices[base+0].posA[0] = -3; sharedVertices[base+0].posA[1] = 6; sharedVertices[base+0].posA[2] = 0;
+            sharedVertices[base+0].posA[0] = 0; sharedVertices[base+0].posA[1] = 1; sharedVertices[base+0].posA[2] = 0;
             sharedVertices[base+0].normA = norm;
-            // v1
-            sharedVertices[base+0].posB[0] = 3; sharedVertices[base+0].posB[1] = 6; sharedVertices[base+0].posB[2] = 0;
+            sharedVertices[base+0].posB[0] = 1; sharedVertices[base+0].posB[1] = 0; sharedVertices[base+0].posB[2] = 0;
             sharedVertices[base+0].normB = norm;
             sharedVertices[base+0].rgbaA = 0xFF00FFFF; sharedVertices[base+0].rgbaB = 0xFF00FFFF;
 
-            // v2
+            // v2 (bottom), v3 (left)
             sharedVertices[base+1] = (T3DVertPacked){};
-            sharedVertices[base+1].posA[0] = 6; sharedVertices[base+1].posA[1] = 0; sharedVertices[base+1].posA[2] = 0;
+            sharedVertices[base+1].posA[0] = 0; sharedVertices[base+1].posA[1] = -1; sharedVertices[base+1].posA[2] = 0;
             sharedVertices[base+1].normA = norm;
-            // v3
-            sharedVertices[base+1].posB[0] = 3; sharedVertices[base+1].posB[1] = -6; sharedVertices[base+1].posB[2] = 0;
+            sharedVertices[base+1].posB[0] = -1; sharedVertices[base+1].posB[1] = 0; sharedVertices[base+1].posB[2] = 0;
             sharedVertices[base+1].normB = norm;
             sharedVertices[base+1].rgbaA = 0xFF00FFFF; sharedVertices[base+1].rgbaB = 0xFF00FFFF;
-
-            // v4
-            sharedVertices[base+2] = (T3DVertPacked){};
-            sharedVertices[base+2].posA[0] = -3; sharedVertices[base+2].posA[1] = -6; sharedVertices[base+2].posA[2] = 0;
-            sharedVertices[base+2].normA = norm;
-            // v5
-            sharedVertices[base+2].posB[0] = -6; sharedVertices[base+2].posB[1] = 0; sharedVertices[base+2].posB[2] = 0;
-            sharedVertices[base+2].normB = norm;
-            sharedVertices[base+2].rgbaA = 0xFF00FFFF; sharedVertices[base+2].rgbaB = 0xFF00FFFF;
         }
 
         sharedMatrices = (T3DMat4FP**)malloc(sizeof(T3DMat4FP*) * MAX_XP_SHARDS);
@@ -170,7 +157,7 @@ namespace Actor {
             float dist = sqrtf(dx*dx + dy*dy + dz*dz);
             if (dist > 0.0f) {
                 // Move faster when attracted
-                float speed = 220.0f; // fast homing speed
+                float speed = 80.0f; // fast homing speed
                 position.x += dx / dist * speed * deltaTime;
                 position.y += dy / dist * speed * deltaTime;
                 position.z += dz / dist * speed * deltaTime;
@@ -195,10 +182,10 @@ namespace Actor {
 
         // Update matrix
         if (poolIndex < MAX_XP_SHARDS) {
-            // Scale: make shard taller than wide
+            // Scale: double size for better visibility
             t3d_mat4fp_from_srt_euler(
                 sharedMatrices[poolIndex],
-                (T3DVec3){{1.0f, 1.6f, 1.0f}},
+                (T3DVec3){{1.0f, 1.0f, 1.0f}},
                 (T3DVec3){{0.0f, 0.0f, 0.0f}},
                 position
             );
@@ -209,20 +196,23 @@ namespace Actor {
         if (flags & FLAG_DISABLED) return;
         if (poolIndex >= MAX_XP_SHARDS) return;
 
-        // Update vertex colors for this shard
-        int base = poolIndex * 3;
-        for (int i = 0; i < 3; ++i) {
-            sharedVertices[base + i].rgbaA = color;
-            sharedVertices[base + i].rgbaB = color;
-        }
+        // Update vertex colors for this shard, brightened toward white
+        int base = poolIndex * 2;
+        // Brighten color by blending toward white
+        uint8_t r = (uint8_t)((((color >> 24) & 0xFF) + 12) / 2);
+        uint8_t g = (uint8_t)((((color >> 16) & 0xFF) + 12) / 2);
+        uint8_t b = (uint8_t)((((color >> 8) & 0xFF) + 12) / 2);
+        uint32_t brightColor = (r << 24) | (g << 16) | (b << 8) | 0xFF;
+        sharedVertices[base + 0].rgbaA = brightColor;
+        sharedVertices[base + 0].rgbaB = brightColor;
+        sharedVertices[base + 1].rgbaA = brightColor;
+        sharedVertices[base + 1].rgbaB = brightColor;
 
         t3d_matrix_push(sharedMatrices[poolIndex]);
-        t3d_vert_load(&sharedVertices[base], 0, 6);
-        // Triangulate hexagon: fan from vertex 0
-        t3d_tri_draw(0, 1, 2);
-        t3d_tri_draw(0, 2, 3);
-        t3d_tri_draw(0, 3, 4);
-        t3d_tri_draw(0, 4, 5);
+        t3d_vert_load(&sharedVertices[base], 0, 4);
+        // Triangulate diamond: v0=top, v1=right, v2=bottom, v3=left
+        t3d_tri_draw(0, 1, 2);  // top-right-bottom
+        t3d_tri_draw(0, 2, 3);  // top-bottom-left
         t3d_tri_sync();
         t3d_matrix_pop(1);
     }
