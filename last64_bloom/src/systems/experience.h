@@ -27,6 +27,11 @@ namespace Experience {
     void tickSlowMotionRealtime(float realDelta);
     float getSlowMotionRemaining();
     float getSlowMotionScale();
+    // Per-frame tick for experience system (call from main loop)
+    void tick(float deltaTime);
+
+    // XP bar flash intensity (0..1)
+    float getXPBarFlash();
 
     // Pending upgrade choice helpers (two choices shown to player)
     bool hasPendingChoice(Actor::Player* player);

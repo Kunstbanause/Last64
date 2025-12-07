@@ -297,6 +297,9 @@ int main()
     #endif
 
     state.activeScene->draw2D(deltaTime);
+
+    // Tick experience system for UI flash animations
+    Experience::tick(deltaTime);
     
     if (showMenu) {
       // Draw color test strip RGBA32
@@ -322,9 +325,22 @@ int main()
 
     rdpq_set_scissor(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    // Use fill mode with color
+    // Use fill mode with color for the XP bar body
     rdpq_set_mode_fill(RGBA32(100, 200, 255, 255)); // Light blue color
     rdpq_fill_rectangle(0, SCREEN_HEIGHT - (barHeight * 2), barWidth, SCREEN_HEIGHT);
+
+    // Draw a short white flash at the leading edge when XP is collected
+    float flash = Experience::getXPBarFlash();
+    if (flash > 0.001f) {
+      // Flash width scales with bar width but caps to a reasonable size
+      int flashWidth = (int)(16 + (barWidth * 0.05f));
+      if (flashWidth > 64) flashWidth = 64;
+      int fx0 = barWidth - flashWidth;
+      if (fx0 < 0) fx0 = 0;
+      uint8_t a = (uint8_t)(255.0f * (flash));
+      rdpq_set_mode_fill(RGBA32(255,255,255,a));
+      rdpq_fill_rectangle(fx0, SCREEN_HEIGHT - (barHeight * 2), barWidth, SCREEN_HEIGHT);
+    }
     rdpq_detach_show();
 
     #if RSPQ_PROFILE

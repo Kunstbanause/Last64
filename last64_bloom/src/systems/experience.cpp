@@ -31,6 +31,10 @@ namespace {
         const float slowMotionScale = 0.25f; // 25% speed in slow motion
 }
 
+    // XP bar flash state
+    static float xpFlashTimer = 0.0f;
+    static const float xpFlashDuration = 0.35f;
+
 void Experience::initialize() {
     currentXP = 0;
     xpToNextLevel = 10;
@@ -94,6 +98,8 @@ void Experience::removePlayer(Actor::Player* player) {
 
 void Experience::addXP(int amount) {
     currentXP += amount;
+    // Trigger a short XP bar flash so the player can glance the pickup
+    xpFlashTimer = xpFlashDuration;
     if (currentXP >= xpToNextLevel) {
         currentLevel++;
         currentXP -= xpToNextLevel;
@@ -171,6 +177,22 @@ void Experience::addXP(int amount) {
             }
         }
     }
+}
+
+void Experience::tick(float deltaTime) {
+    if (xpFlashTimer > 0.0f) {
+        xpFlashTimer -= deltaTime;
+        if (xpFlashTimer < 0.0f) xpFlashTimer = 0.0f;
+    }
+    if (slowMotionRemaining > 0.0f) {
+        slowMotionRemaining -= deltaTime;
+        if (slowMotionRemaining < 0.0f) slowMotionRemaining = 0.0f;
+    }
+}
+
+float Experience::getXPBarFlash() {
+    if (xpFlashTimer <= 0.0f) return 0.0f;
+    return xpFlashTimer / xpFlashDuration; // 0..1
 }
 
 int Experience::getLevel() {

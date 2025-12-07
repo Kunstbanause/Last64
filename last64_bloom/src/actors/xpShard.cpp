@@ -256,38 +256,54 @@ namespace Actor {
             0xFF00FFFF  // Magenta
         };
 
-        // Cycle through palette entries at a quick rate
-        float colorCycle = spawnTime * 60.0f; // x entries per second
-        int idx = (int)fmodf(colorCycle, 6.0f);
-        uint32_t baseColor = palette[idx];
+        // Smooth per-vertex color interpolation across the palette for a candy-like sparkle
+        const int paletteCount = 6;
+        float cycleSpeed = 1.6f; // revolutions per second across the palette
+        float pos = spawnTime * cycleSpeed; // continuous position
+        float idxf = fmodf(pos, (float)paletteCount);
 
-        uint8_t r = (baseColor >> 24) & 0xFF;
-        uint8_t g = (baseColor >> 16) & 0xFF;
-        uint8_t b = (baseColor >> 8) & 0xFF;
-
-        // Small continuous shimmer toward a dim white to keep colors lively but not blown out
-        float shimmer = 0.08f * (0.5f * (sinf(spawnTime * 18.0f) + 1.0f)); // 0..0.08
+        // shimmer and spike parameters
+        float shimmer = 0.06f * (0.5f * (sinf(spawnTime * 16.0f) + 1.0f));
         const uint8_t dimWhite = 200;
-        uint8_t cr = (uint8_t)(r * (1.0f - shimmer) + dimWhite * shimmer);
-        uint8_t cg = (uint8_t)(g * (1.0f - shimmer) + dimWhite * shimmer);
-        uint8_t cb = (uint8_t)(b * (1.0f - shimmer) + dimWhite * shimmer);
-
-        // Occasional full-white spike: low-frequency periodic spike with a short fade-out
-        float spikeFreq = 0.4f; // ~2.5s period
-        float spikeWidth = 0.05f; // 5% of period
+        float spikeFreq = 0.35f; // ~2.86s period
+        float spikeWidth = 0.06f; // proportion of period
         float phase = fmodf(spawnTime * spikeFreq, 1.0f);
         float spike = 0.0f;
-        if (phase < spikeWidth) spike = 1.0f - (phase / spikeWidth); // fade out quickly
+        if (phase < spikeWidth) spike = 1.0f - (phase / spikeWidth);
 
-        // Final color mixes base shimmer color with full white during spikes
-        uint8_t rs = (uint8_t)(cr * (1.0f - spike) + 255 * spike);
-        uint8_t gs = (uint8_t)(cg * (1.0f - spike) + 255 * spike);
-        uint8_t bs = (uint8_t)(cb * (1.0f - spike) + 255 * spike);
-        uint32_t brightColor = (rs << 24) | (gs << 16) | (bs << 8) | 0xFF;
-        sharedVertices[base + 0].rgbaA = brightColor;
-        sharedVertices[base + 0].rgbaB = brightColor;
-        sharedVertices[base + 1].rgbaA = brightColor;
-        sharedVertices[base + 1].rgbaB = brightColor;
+        // Compute per-vertex colors (4 verts) by sampling slightly offset positions across the palette
+        for (int v = 0; v < 4; ++v) {
+            float samplePos = idxf + ((float)v) * 0.25f; // offset across vertices
+            samplePos = fmodf(samplePos, (float)paletteCount);
+            int aIdx = (int)floorf(samplePos);
+            int bIdx = (aIdx + 1) % paletteCount;
+            float t = samplePos - (float)aIdx;
+            uint32_t cA = palette[aIdx];
+            uint32_t cB = palette[bIdx];
+            uint8_t rA = (cA >> 24) & 0xFF; uint8_t gA = (cA >> 16) & 0xFF; uint8_t bA = (cA >> 8) & 0xFF;
+            uint8_t rB = (cB >> 24) & 0xFF; uint8_t gB = (cB >> 16) & 0xFF; uint8_t bB = (cB >> 8) & 0xFF;
+            // linear interp between adjacent palette colors
+            float rf = rA * (1.0f - t) + rB * t;
+            float gf = gA * (1.0f - t) + gB * t;
+            float bf = bA * (1.0f - t) + bB * t;
+
+            // shimmer toward dim white
+            uint8_t cr = (uint8_t)(rf * (1.0f - shimmer) + dimWhite * shimmer);
+            uint8_t cg = (uint8_t)(gf * (1.0f - shimmer) + dimWhite * shimmer);
+            uint8_t cb = (uint8_t)(bf * (1.0f - shimmer) + dimWhite * shimmer);
+
+            // apply occasional full-white spike
+            uint8_t vr = (uint8_t)(cr * (1.0f - spike) + 255 * spike);
+            uint8_t vg = (uint8_t)(cg * (1.0f - spike) + 255 * spike);
+            uint8_t vb = (uint8_t)(cb * (1.0f - spike) + 255 * spike);
+
+            uint32_t vcolor = (vr << 24) | (vg << 16) | (vb << 8) | 0xFF;
+            // Map vertices: base+0 contains posA (v0) and posB (v1)
+            if (v == 0) { sharedVertices[base + 0].rgbaA = vcolor; }
+            if (v == 1) { sharedVertices[base + 0].rgbaB = vcolor; }
+            if (v == 2) { sharedVertices[base + 1].rgbaA = vcolor; }
+            if (v == 3) { sharedVertices[base + 1].rgbaB = vcolor; }
+        }
 
         t3d_matrix_push(sharedMatrices[poolIndex]);
         t3d_vert_load(&sharedVertices[base], 0, 4);
