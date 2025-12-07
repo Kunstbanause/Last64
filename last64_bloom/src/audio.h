@@ -9,7 +9,8 @@ public:
         SFX_JOIN,
         SFX_DEATH,
         SFX_MUSIC1,
-        SFX_HIT
+        SFX_HIT,
+        SFX_PICKUP
     };
 
     void init();

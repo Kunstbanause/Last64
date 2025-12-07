@@ -6,6 +6,7 @@
 #include "../../actors/player.h"
 #include "../../actors/enemy.h"
 #include "../../actors/projectile.h"
+#include "../../actors/xpShard.h"
 #include "../../systems/experience.h"
 #include "../../systems/spawn_manager.h"
 #include "../../systems/waves.h"
@@ -57,6 +58,7 @@ SceneLast64::SceneLast64()
     Actor::Enemy::initialize();
     Actor::Projectile::initialize();
     Actor::Shape::initialize();
+    Actor::XPShard::initialize();
     Actor::EnemyDeathVFX::initialize();
     SpawnManager::initialize();
     
@@ -73,6 +75,7 @@ SceneLast64::~SceneLast64()
     Actor::Enemy::cleanup();
     Actor::Projectile::cleanup();
     Actor::Shape::cleanup();
+    Actor::XPShard::cleanup();
     Actor::EnemyDeathVFX::cleanup();
     Experience::shutdown();
     SpawnManager::deinitialize();
@@ -164,6 +167,7 @@ void SceneLast64::updateScene(float deltaTime)
                 Actor::Enemy::initialize();
                 Actor::Projectile::initialize();
                 Actor::Shape::initialize();
+                Actor::XPShard::initialize();
                 // Initialize Experience system
                 Experience::initialize();
                 // Add all currently joined players to the Experience system
@@ -277,6 +281,9 @@ void SceneLast64::updateScene(float deltaTime)
             
             // Update all shapes
             Actor::Shape::updateAll(deltaTime);
+
+            // Update all XP shards
+            Actor::XPShard::updateAll(deltaTime);
 
             // Update all enemy death VFX
             Actor::EnemyDeathVFX::updateAll(deltaTime);
@@ -406,6 +413,9 @@ void SceneLast64::draw3D(float deltaTime)
     
     // Draw all shapes
     Actor::Shape::drawAll(deltaTime);
+    
+    // Draw all XP shards
+    Actor::XPShard::drawAll(deltaTime);
     
     // Draw all enemy death VFX
     Actor::EnemyDeathVFX::drawAll(deltaTime);

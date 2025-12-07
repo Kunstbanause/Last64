@@ -218,6 +218,12 @@ Actor::Player* Experience::getRandomAlivePlayer() {
     return nullptr;
 }
 
+Actor::Player* Experience::getPlayer(int index) {
+    if (index < 0) return nullptr;
+    if (index >= activePlayerCount) return nullptr;
+    return activePlayers[index];
+}
+
 // Helper: find index of player in activePlayers or -1
 static int findPlayerIndex(Actor::Player* player) {
     for (int i = 0; i < activePlayerCount; ++i) {

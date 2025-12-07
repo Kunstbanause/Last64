@@ -5,6 +5,7 @@
 #include "enemy.h"
 #include "player.h"
 #include "../systems/experience.h"
+#include "xpShard.h"
 #include "../render/hdrBoost.h"
 #include "../main.h"
 #include <t3d/t3d.h>
@@ -362,8 +363,9 @@ namespace Actor {
         }
         
         EnemyDeathVFX::spawn(position, vfxSize, color);
-        
-        Experience::addXP(xpReward);
+
+        // Spawn an XP shard holding this enemy's xp reward instead of awarding immediately
+        Actor::XPShard::spawn(position, xpReward, color);
         deactivate();
     }
 

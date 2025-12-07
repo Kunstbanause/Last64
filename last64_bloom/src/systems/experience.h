@@ -14,6 +14,7 @@ namespace Experience {
     int getXToNextLevel();
     float getXPPercentage();
     int getActivePlayerCount();
+    Actor::Player* getPlayer(int index);
     
     // Get number of alive players
     int getAlivePlayerCount();

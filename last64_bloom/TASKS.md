@@ -96,7 +96,7 @@
 - [ ] Shield with alpha / transparency / Dithering
 - [ ] Rework shield to hit multiple targets, no downtime just cooldown
 - [ ] bosses are very similar, fast boss?
-- [ ] Comet style wave, player needs to dodge
+- [x] Comet style wave, player needs to dodge
 - [ ] Improved Spawning: Similar to vampire with fill screen instead of basic frequency
 
 ###  FAILED

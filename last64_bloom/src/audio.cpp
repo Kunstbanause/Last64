@@ -46,6 +46,9 @@ void SFXManager::play(SfxId id)
             mixer_ch_play(3 + next_hit_channel, &sfx_hits[rand() % sfx_hits_count].wave);
             next_hit_channel = (next_hit_channel + 1) % HIT_CHANNELS;
             break;
+        case SFX_PICKUP:
+            mixer_ch_play(1, &sfx_join.wave);  // Reuse join sound for pickup
+            break;
     }
 }
 
@@ -134,6 +137,9 @@ void SFXManager::stop(SfxId id)
             for (int i = 0; i < HIT_CHANNELS; i++) {
                 mixer_ch_stop(3 + i);
             }
+            break;
+        case SFX_PICKUP:
+            mixer_ch_stop(1);
             break;
     }
 }
