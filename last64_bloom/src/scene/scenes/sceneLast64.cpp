@@ -16,6 +16,7 @@
 #include "../../render/colors.h"
 #include "../../render/colorTest.h"
 #include "../../debugMenu.h"
+#include "../../ui/mainMenu.h"
 #include <libdragon.h>
 #include <t3d/t3d.h>
 #include <cmath>
@@ -34,8 +35,9 @@ bool isRoundCurrentlyActive = false;
 
 SceneLast64::SceneLast64()
 {
-    currentGameState = WAITING_FOR_PLAYERS;
+    currentGameState = MAIN_MENU;
     isRoundCurrentlyActive = false; // Reset round state on scene init
+    MainMenu::initialize();  // Initialize the main menu
     for (int i = 0; i < 4; ++i) {
         playerJoined[i] = false;
     }
@@ -98,6 +100,9 @@ SceneLast64::~SceneLast64()
     // Clean up weapon icons
     WeaponIcons::destroy();
     
+    // Clean up main menu
+    MainMenu::cleanup();
+    
     // Clean up scene matrix
     if (sceneMatFP) {
         free_uncached(sceneMatFP);
@@ -119,6 +124,17 @@ void SceneLast64::updateScene(float deltaTime)
     camera.attach();
     
     switch (currentGameState) {
+        case MAIN_MENU: {
+            // Update main menu
+            MainMenu::update(deltaTime);
+            
+            // Check if player wants to start the game
+            if (MainMenu::shouldStartGame()) {
+                currentGameState = WAITING_FOR_PLAYERS;
+                MainMenu::reset();
+            }
+            break;
+        }
         case WAITING_FOR_PLAYERS: {
             // Check for player input to join
             for (int i = 0; i < 4; ++i) {
@@ -545,6 +561,11 @@ void SceneLast64::draw3D(float deltaTime)
 void SceneLast64::draw2D(float deltaTime)
 {
     switch (currentGameState) {
+        case MAIN_MENU: {
+            // Draw main menu
+            MainMenu::draw();
+            break;
+        }
         case WAITING_FOR_PLAYERS: {
             // Display "Press A to join" in two columns: players 1-2 on the left, 3-4 on the right
             Debug::printf(25, 10, "Player 1 to 4: Press (A) to join");

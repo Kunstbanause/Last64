@@ -19,6 +19,7 @@ class SceneLast64 : public Scene
 {                                                                                                                                                                                                                                                       
   private:                                                                                                                                                                                                                                              
   enum GameState {
+    MAIN_MENU,
     WAITING_FOR_PLAYERS,
     ROUND_ACTIVE,
     LEVEL_COMPLETE,

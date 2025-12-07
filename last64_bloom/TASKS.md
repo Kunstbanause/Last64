@@ -87,7 +87,7 @@
 - [x] SAVING useful data: best time, completion flags, total level ups
 - [x] SAVING music setting
 - [ ] Main Menu
-- [ ] Convert level ups to new currency: CREDTIS
+- [ ] Convert level ups to new currency: CREDITS
 - [ ] Passive upgrades (payed with CREDITS and saved)
 - [x] proper level complete state
 
@@ -101,7 +101,7 @@
 - [x] Debug button that spawns xp shards all over the screen.
 - [x] Xp pickup sound higher pitch the closer we are to level up
 - [x] Marble background (toggle in debug menu)
-- [ ] projectiles off screen are immediately depleted with no grace zone
+- [x] projectiles off screen are immediately depleted with no grace zone
 
 ###  FAILED
 - [ ] Intro with camera movement (FAILED)
