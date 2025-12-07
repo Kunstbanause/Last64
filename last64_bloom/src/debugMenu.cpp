@@ -40,9 +40,9 @@ namespace
   // Marble background toggle state and changed flag
   bool marbleEnabledVar = true;
   bool marbleChangedFlag = false;
-  // Purge save flag and changed flag
-  bool purgeSaveVar = false;
-  bool purgeSaveChanged = false;
+  // Return to main menu flag and changed flag
+  bool returnToMainMenuVar = false;
+  bool returnToMainMenuChanged = false;
 
   // Helper function to find the index of the scene entry
   int findSceneEntryIndex() {
@@ -124,7 +124,7 @@ void DebugMenu::reset()
   entries.push_back({"Auto    ", EntryType::BOOL, &state.autoExposure});
   entries.push_back({"        ", EntryType::NONE, nullptr}); // Separator
   entries.push_back({"Music   ", EntryType::BOOL, &musicEnabledVar});
-  entries.push_back({"PurgeS  ", EntryType::BOOL, &purgeSaveVar});
+  entries.push_back({"MainMenu", EntryType::BOOL, &returnToMainMenuVar});
 
   changedFlags.resize(entries.size());
   
@@ -141,10 +141,10 @@ void DebugMenu::reset()
       break;
     }
   }
-  // Wire purge flag
+  // Wire return to main menu flag
   for (size_t i = 0; i < entries.size(); ++i) {
-    if (entries[i].value == &purgeSaveVar) {
-      changedFlags[i] = &purgeSaveChanged;
+    if (entries[i].value == &returnToMainMenuVar) {
+      changedFlags[i] = &returnToMainMenuChanged;
       break;
     }
   }
@@ -250,19 +250,8 @@ void DebugMenu::draw()
     marbleBackgroundChanged = false;
   }
 
-  // If purge was toggled, perform purge immediately and reset the toggle
-  if (purgeSaveChanged) {
-    if (purgeSaveVar) {
-      SaveGame::purge_save();
-      // Reload settings from purged save (all defaults)
-      musicEnabledVar = SaveGame::is_music_enabled();
-      gSFXManager.setMusicEnabled(musicEnabledVar);
-      marbleEnabledVar = SaveGame::is_marble_enabled();
-      showMarbleBackground = SaveGame::is_marble_enabled();
-      purgeSaveVar = false;
-    }
-    purgeSaveChanged = false;
-  }
+  // Return to main menu is handled by checking isReturnToMainMenuRequested()
+  // Don't reset the flag here - let the scene consume it
 
   float posX = 20;
   float posY = 30;
@@ -358,4 +347,23 @@ void DebugMenu::draw()
     posY += 8;
     ++idx;
   }
+}
+
+bool DebugMenu::isReturnToMainMenuRequested() {
+  if (returnToMainMenuChanged && returnToMainMenuVar) {
+    returnToMainMenuVar = false;
+    returnToMainMenuChanged = false;
+    return true;
+  }
+  return false;
+}
+
+void DebugMenu::reloadSettings() {
+  // Reload music state from savegame
+  musicEnabledVar = SaveGame::is_music_enabled();
+  gSFXManager.setMusicEnabled(musicEnabledVar);
+  
+  // Reload marble background state from savegame
+  marbleEnabledVar = SaveGame::is_marble_enabled();
+  showMarbleBackground = marbleEnabledVar;
 }

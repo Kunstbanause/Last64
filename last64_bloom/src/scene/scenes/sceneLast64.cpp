@@ -314,6 +314,19 @@ void SceneLast64::updateScene(float deltaTime)
             // Update spawn manager
             SpawnManager::update(deltaTime, roundTimer);
 
+            // Check if return to main menu was requested from debug menu
+            if (DebugMenu::isReturnToMainMenuRequested()) {
+                currentGameState = MAIN_MENU;
+                MainMenu::reset();
+                // Reset game state
+                for (int i = 0; i < 4; ++i) {
+                    playerJoined[i] = false;
+                }
+                isRoundCurrentlyActive = false;
+                // Don't continue processing this frame
+                break;
+            }
+
             // Check for level complete: final wave survived and no active enemies
             if (SpawnManager::isFinalWaveCleared()) {
                 currentGameState = LEVEL_COMPLETE;

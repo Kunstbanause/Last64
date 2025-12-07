@@ -89,11 +89,12 @@
 - [x] Main Menu, stats menu, upgrade menu
 - [ ] Convert level ups to new currency: CREDITS
 - [ ] Passive upgrades (payed with CREDITS and saved)
-- [ ] Option to return to main menu, from Start menu
-- [ ] Remove purge and save game from start menu (now in stats menu)
+- [x] Option to return to main menu, from Start menu
+- [x] Remove purge and save game from start menu (now in stats menu)
 - [ ] Profiling, what are the performance eaters?
 - [ ] Rework background marble effect, use texture scrolling instead of procedural?
-- [ ] Title Image in main menu
+- [ ] Title image behind debug start menu
+- [x] Title Image in main menu
 - [x] proper level complete state
 
 ### ✅ Phase 12: MORE

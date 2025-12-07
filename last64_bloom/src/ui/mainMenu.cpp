@@ -5,8 +5,14 @@
 #include "mainMenu.h"
 #include "../main.h"
 #include "../memory/savegame.h"
+#include "../audio.h"
+#include "../debugMenu.h"
 #include <libdragon.h>
 #include <cstdio>
+
+// External flags from scenes
+extern bool showMarbleBackground;
+extern bool marbleBackgroundChanged;
 
 namespace MainMenu {
     // Menu state
@@ -105,6 +111,18 @@ namespace MainMenu {
                 if (pressed.a && showPurgeConfirm) {
                     // Purge save game
                     SaveGame::purge_save();
+                    
+                    // Reload settings from purged save (all defaults)
+                    bool musicEnabled = SaveGame::is_music_enabled();
+                    gSFXManager.setMusicEnabled(musicEnabled);
+                    
+                    // Reload marble background setting
+                    showMarbleBackground = SaveGame::is_marble_enabled();
+                    marbleBackgroundChanged = false;
+                    
+                    // Reload debug menu settings to sync toggles
+                    DebugMenu::reloadSettings();
+                    
                     showPurgeConfirm = false;
                 }
                 if (pressed.b) {
