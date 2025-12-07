@@ -86,9 +86,14 @@
 - [x] SAVING test
 - [x] SAVING useful data: best time, completion flags, total level ups
 - [x] SAVING music setting
-- [ ] Main Menu
+- [x] Main Menu, stats menu, upgrade menu
 - [ ] Convert level ups to new currency: CREDITS
 - [ ] Passive upgrades (payed with CREDITS and saved)
+- [ ] Option to return to main menu, from Start menu
+- [ ] Remove purge and save game from start menu (now in stats menu)
+- [ ] Profiling, what are the performance eaters?
+- [ ] Rework background marble effect, use texture scrolling instead of procedural?
+- [ ] Title Image in main menu
 - [x] proper level complete state
 
 ### ✅ Phase 12: MORE
@@ -107,6 +112,7 @@
 - [ ] Intro with camera movement (FAILED)
 - [ ] Colored debug text? (failed)
 - [ ] Player Light (Failed, there is not shading, depth, etc)
+- [ ] Main menu in main.cpp instead of sceneLast64.cpp
 
 ## 🛠️ KNOWN ISSUES
 - [x] All the geometry is black (not showing the configured color). Something with the custom code nerated geometry or render pipeline is not correct.
