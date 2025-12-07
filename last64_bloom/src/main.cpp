@@ -64,6 +64,10 @@ bool Debug::isMenuVisible() {
     return showMenu; 
 }
 
+void Debug::setMenuVisible(bool visible) {
+    showMenu = visible;
+}
+
 surface_t* fb = NULL;
 
 // Define the global SFX manager here so it lives for the lifetime of the program

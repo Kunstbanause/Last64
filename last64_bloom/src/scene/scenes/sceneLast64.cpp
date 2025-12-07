@@ -316,13 +316,31 @@ void SceneLast64::updateScene(float deltaTime)
 
             // Check if return to main menu was requested from debug menu
             if (DebugMenu::isReturnToMainMenuRequested()) {
+                // Close the debug menu immediately
+                Debug::setMenuVisible(false);
+                
+                // Transition to main menu
                 currentGameState = MAIN_MENU;
                 MainMenu::reset();
-                // Reset game state
+                
+                // Reset game state and end round immediately
                 for (int i = 0; i < 4; ++i) {
                     playerJoined[i] = false;
                 }
                 isRoundCurrentlyActive = false;
+                
+                // Clean up all actors immediately
+                Actor::Enemy::cleanup();
+                Actor::Projectile::cleanup();
+                Actor::Shape::cleanup();
+                Actor::XPShard::cleanup();
+                Actor::EnemyDeathVFX::cleanup();
+                
+                if (player1) { delete player1; player1 = nullptr; }
+                if (player2) { delete player2; player2 = nullptr; }
+                if (player3) { delete player3; player3 = nullptr; }
+                if (player4) { delete player4; player4 = nullptr; }
+                
                 // Don't continue processing this frame
                 break;
             }

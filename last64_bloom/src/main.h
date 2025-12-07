@@ -29,4 +29,5 @@ extern State state;
 
 namespace Debug {
     bool isMenuVisible();
+    void setMenuVisible(bool visible);
 }
