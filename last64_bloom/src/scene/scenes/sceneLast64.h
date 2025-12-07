@@ -29,6 +29,7 @@ class SceneLast64 : public Scene
     bool playerJoined[4];
     float roundTimer;
     float exposure; // HDR exposure value
+    float marbleTime;
 
     // Player instances                                                                                                                                                                                                                                
     Actor::Player* player1;                                                                                                                                                                                                                             
@@ -42,6 +43,7 @@ class SceneLast64 : public Scene
                                                                                                                                                                                                                                                         
     void updateScene(float deltaTime) final;                                                                                                                                                                                                            
     void draw3D(float deltaTime) final;                                                                                                                                                                                                                 
+    void drawMarbleBackground(float deltaTime);
 
   public:                                                                                                                                                                                                                                               
     void draw2D(float deltaTime) final;                                                                                                                                                                                                                 

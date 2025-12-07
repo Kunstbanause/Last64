@@ -34,6 +34,7 @@ SceneLast64::SceneLast64()
     activePlayerCount = 0;
     roundTimer = 0.0f;
     exposure = 30.0f; // Set exposure for HDR effect
+    marbleTime = 0.0f;
     restartRequested = false; // Scene restart flag for game over
 
     // Set up camera
@@ -388,11 +389,63 @@ void SceneLast64::updateScene(float deltaTime)
     }
 }
 
+void SceneLast64::drawMarbleBackground(float deltaTime)
+{
+    marbleTime += deltaTime;
+
+    rdpq_set_scissor(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    rdpq_set_mode_standard();
+    rdpq_mode_zbuf(false, false);
+    rdpq_mode_persp(false);
+    rdpq_mode_filter(FILTER_BILINEAR);
+
+    // Brighter base so gameplay silhouettes stay visible
+    rdpq_set_mode_fill(RGBA32(24, 28, 38, 0xFF));
+    rdpq_fill_rectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+    const int cellW = 16;
+    const int cellH = 8;
+    float phase = marbleTime * 0.5f;
+
+    for (int y = 0; y < SCREEN_HEIGHT; y += cellH) {
+        for (int x = 0; x < SCREEN_WIDTH; x += cellW) {
+            float ny = (float)y / (float)SCREEN_HEIGHT;
+            float nx = (float)x / (float)SCREEN_WIDTH;
+
+            // Mix x/y to bend veins; larger cells mean fewer draw calls for performance
+            float swirl = sinf(nx * 8.0f + ny * 11.0f + phase * 0.65f) + cosf(nx * 13.0f - ny * 14.0f + phase * 0.45f);
+            float veins = sinf((nx * 20.0f + ny * 24.0f) + swirl * 1.2f + phase * 0.5f);
+            float t = 0.55f + 0.45f * veins;
+
+            // Keep good visibility but don't overwhelm
+            float drift = 0.06f * sinf(phase * 0.28f);
+            float mix = 0.32f + t * (0.24f + drift);
+
+            float baseR = 24.0f;
+            float baseG = 28.0f;
+            float baseB = 38.0f;
+            float accentR = 40.0f;
+            float accentG = 56.0f;
+            float accentB = 78.0f;
+
+            uint8_t r = (uint8_t)fminf(fmaxf(baseR + accentR * mix, 0.0f), 255.0f);
+            uint8_t g = (uint8_t)fminf(fmaxf(baseG + accentG * mix, 0.0f), 255.0f);
+            uint8_t b = (uint8_t)fminf(fmaxf(baseB + accentB * mix, 0.0f), 255.0f);
+
+            rdpq_set_mode_fill(RGBA32(r, g, b, 0xFF));
+            rdpq_fill_rectangle(x, y, x + cellW, y + cellH);
+        }
+    }
+
+    // Restore to a clean standard state so the 3D pass starts from expected defaults
+    rdpq_set_mode_standard();
+}
+
 void SceneLast64::draw3D(float deltaTime)
 {
     camera.attach();
-    
-    t3d_screen_clear_color(RGBA32(32, 32, 32, 0xFF)); // Dark grey background
+
+    drawMarbleBackground(deltaTime);
     t3d_screen_clear_depth();
     // rdpq_set_env_color({0xFF, 0xAA, 0xEE, 0xAA}); //slightly see-through soft magenta
 
