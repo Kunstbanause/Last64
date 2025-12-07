@@ -23,9 +23,11 @@
 namespace {
   // Static matrix for scene
   T3DMat4FP* sceneMatFP = nullptr;
-  // Debug menu flag for marble background
-  bool showMarbleBackground = true;
 }
+
+// Debug menu flag for marble background (extern so debugMenu can access)
+bool showMarbleBackground = true;
+bool marbleBackgroundChanged = false;
 
 SceneLast64::SceneLast64()
 {
@@ -68,8 +70,11 @@ SceneLast64::SceneLast64()
     // Initialize weapon icons
     WeaponIcons::init();
     
+    // Initialize marble background from save game
+    showMarbleBackground = SaveGame::is_marble_enabled();
+    
     // Register debug menu entries
-    DebugMenu::addEntry({"Marble ", DebugMenu::EntryType::BOOL, &showMarbleBackground});
+    DebugMenu::addEntry({"Marble ", DebugMenu::EntryType::BOOL, &showMarbleBackground}, &marbleBackgroundChanged);
 }
 
 SceneLast64::~SceneLast64()

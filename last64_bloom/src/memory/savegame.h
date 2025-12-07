@@ -30,6 +30,10 @@ void set_level_complete(int levelIndex);
 void set_music_enabled(bool enabled);
 bool is_music_enabled();
 
+// Marble background setting
+void set_marble_enabled(bool enabled);
+bool is_marble_enabled();
+
 // Purge all save data (for testing)
 void purge_save();
 

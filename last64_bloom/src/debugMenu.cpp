@@ -10,6 +10,10 @@
 #include "memory/savegame.h"
 #include "audio.h"
 
+// External flags from scenes
+extern bool showMarbleBackground;
+extern bool marbleBackgroundChanged;
+
 namespace
 {
   constinit int menuSel{};
@@ -33,6 +37,9 @@ namespace
   // Music toggle state and changed flag
   bool musicEnabledVar = true;
   bool musicChangedFlag = false;
+  // Marble background toggle state and changed flag
+  bool marbleEnabledVar = true;
+  bool marbleChangedFlag = false;
   // Purge save flag and changed flag
   bool purgeSaveVar = false;
   bool purgeSaveChanged = false;
@@ -148,6 +155,9 @@ void DebugMenu::reset()
   // Initialize music state from savegame
   musicEnabledVar = SaveGame::is_music_enabled();
   gSFXManager.setMusicEnabled(musicEnabledVar);
+  
+  // Initialize marble background state from savegame
+  marbleEnabledVar = SaveGame::is_marble_enabled();
 }
 
 void DebugMenu::addEntry(const Entry& entry, bool *changedFlag) {
@@ -227,11 +237,28 @@ void DebugMenu::draw()
   gSFXManager.setMusicEnabled(musicEnabledVar);
     musicChangedFlag = false;
   }
+  
+  // If marble toggle was changed, persist immediately
+  if (marbleChangedFlag) {
+    SaveGame::set_marble_enabled(marbleEnabledVar);
+    marbleChangedFlag = false;
+  }
+  
+  // If marble background was changed from scene, persist immediately
+  if (marbleBackgroundChanged) {
+    SaveGame::set_marble_enabled(showMarbleBackground);
+    marbleBackgroundChanged = false;
+  }
 
   // If purge was toggled, perform purge immediately and reset the toggle
   if (purgeSaveChanged) {
     if (purgeSaveVar) {
       SaveGame::purge_save();
+      // Reload settings from purged save (all defaults)
+      musicEnabledVar = SaveGame::is_music_enabled();
+      gSFXManager.setMusicEnabled(musicEnabledVar);
+      marbleEnabledVar = SaveGame::is_marble_enabled();
+      showMarbleBackground = SaveGame::is_marble_enabled();
       purgeSaveVar = false;
     }
     purgeSaveChanged = false;

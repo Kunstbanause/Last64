@@ -41,6 +41,7 @@ static uint32_t s_total_level_ups = 0;
 static uint32_t s_best_time = 0xFFFFFFFF;
 static uint16_t s_level_complete_flags = 0;
 static bool s_music_enabled = true;
+static bool s_marble_enabled = true;
 
 static void load_structured_state() {
   if (!eeprom_present()) return;
@@ -55,6 +56,8 @@ static void load_structured_state() {
   s_level_complete_flags = ((uint16_t)buf2[0] << 8) | (uint16_t)buf2[1];
   // byte 2 in block2 stores music enabled flag (1 = enabled)
   s_music_enabled = buf2[2] != 0;
+  // byte 3 in block2 stores marble background enabled flag (1 = enabled)
+  s_marble_enabled = buf2[3] != 0;
 }
 
 static void save_structured_state() {
@@ -72,7 +75,7 @@ static void save_structured_state() {
   buf[6] = (s_best_time >> 8) & 0xFFu;
   buf[7] = (s_best_time) & 0xFFu;
   uint8_t res1 = eeprom_write(1, buf);
-  uint8_t buf2[8] = { (uint8_t)((s_level_complete_flags >> 8) & 0xFFu), (uint8_t)(s_level_complete_flags & 0xFFu), (uint8_t)(s_music_enabled ? 1 : 0),0,0,0,0,0 };
+  uint8_t buf2[8] = { (uint8_t)((s_level_complete_flags >> 8) & 0xFFu), (uint8_t)(s_level_complete_flags & 0xFFu), (uint8_t)(s_music_enabled ? 1 : 0), (uint8_t)(s_marble_enabled ? 1 : 0),0,0,0,0 };
   uint8_t res2 = eeprom_write(2, buf2);
   if (res1 == 0 && res2 == 0) {
     if (s_best_time == 0xFFFFFFFF) {
@@ -177,18 +180,23 @@ uint16_t get_level_complete_flags() { return s_level_complete_flags; }
 void set_music_enabled(bool enabled) { s_music_enabled = enabled; save_structured_state(); }
 bool is_music_enabled() { return s_music_enabled; }
 
+void set_marble_enabled(bool enabled) { s_marble_enabled = enabled; save_structured_state(); }
+bool is_marble_enabled() { return s_marble_enabled; }
+
 void purge_save() {
   if (!eeprom_present()) return;
-  // Zero out blocks 0..2 used by our save format
-  uint8_t zeros[8] = {0};
-  eeprom_write(0, zeros);
-  eeprom_write(1, zeros);
-  eeprom_write(2, zeros);
-  // Reset in-memory state
+  // Reset in-memory state first
   s_total_level_ups = 0;
   s_best_time = 0xFFFFFFFF;
   s_level_complete_flags = 0;
   s_music_enabled = true;
+  s_marble_enabled = true;
+  // Write the default state to EEPROM using save_structured_state
+  // This ensures the default values (music=true, marble=true) are properly written
+  save_structured_state();
+  // Also clear block 0 (test value)
+  uint8_t zeros[8] = {0};
+  eeprom_write(0, zeros);
   debugf("SaveGame: purge complete\n");
 }
 
