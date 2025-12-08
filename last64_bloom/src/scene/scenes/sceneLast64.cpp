@@ -797,11 +797,11 @@ void SceneLast64::draw3D(float deltaTime)
     // Set up rendering state
     //t3d_state_set_drawflags((enum T3DDrawFlags)(T3D_FLAG_SHADED | T3D_FLAG_DEPTH));
     
-    // Draw arena border in 3D space
-    drawArenaBorder();
-    
     // Set combiner mode to use vertex colors (SHADE) instead of textures
     rdpq_mode_combiner(RDPQ_COMBINER_SHADE);
+    
+    // Draw arena border in 3D space
+    drawArenaBorder();
     
     // Draw all shapes
     Actor::Shape::drawAll(deltaTime);

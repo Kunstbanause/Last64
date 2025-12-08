@@ -45,21 +45,24 @@ namespace SpawnManager {
     int edge = edges[rand() % edges.size()];
     if (outEdge) *outEdge = edge;
         
+        // Spawn enemies just outside the visible arena (10 units beyond the border)
+        constexpr float SPAWN_OFFSET = 10.0f;
+        
         switch (edge) {
             case 0: // Top
                 spawnX = SCREEN_LEFT + (rand() % (int)SCREEN_WIDTH);
-                spawnY = SCREEN_TOP;
+                spawnY = SCREEN_TOP - SPAWN_OFFSET;
                 break;
             case 1: // Right
-                spawnX = SCREEN_RIGHT;
+                spawnX = SCREEN_RIGHT + SPAWN_OFFSET;
                 spawnY = SCREEN_TOP + (rand() % (int)SCREEN_HEIGHT);
                 break;
             case 2: // Bottom
                 spawnX = SCREEN_LEFT + (rand() % (int)SCREEN_WIDTH);
-                spawnY = SCREEN_BOTTOM;
+                spawnY = SCREEN_BOTTOM + SPAWN_OFFSET;
                 break;
             case 3: // Left
-                spawnX = SCREEN_LEFT;
+                spawnX = SCREEN_LEFT - SPAWN_OFFSET;
                 spawnY = SCREEN_TOP + (rand() % (int)SCREEN_HEIGHT);
                 break;
             default:
