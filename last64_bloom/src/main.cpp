@@ -396,7 +396,8 @@ int main()
 
     static float xpBarTime = 0.0f;
     xpBarTime += deltaTime;
-    int yBase = SCREEN_HEIGHT - (barHeight * 2);
+    // Anchor to bottom of the screen
+    int yBase = SCREEN_HEIGHT - barHeight;
 
     // Base dark blood body
     rdpq_set_prim_color(RGBA32(80, 8, 12, 170));
