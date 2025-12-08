@@ -20,6 +20,7 @@
 #include "../../utils/profiler.h"
 #include <libdragon.h>
 #include <t3d/t3d.h>
+#include <rdpq_mode.h>
 #include <cmath>
 
 namespace {
@@ -104,8 +105,12 @@ SceneLast64::SceneLast64()
     borderMatrix = (T3DMat4FP*)malloc_uncached(sizeof(T3DMat4FP));
     t3d_mat4fp_identity(borderMatrix);
     
-    // Very dark grey color for border (doesn't blow out in HDR)
-    uint32_t borderColor = 0x303030FF;  // Very dark grey to avoid HDR bloom
+    // Soft translucent white border (uses alpha; blender set when drawing)
+    const uint8_t borderR = 255;
+    const uint8_t borderG = 255;
+    const uint8_t borderB = 255;
+    const uint8_t borderA = 85;   // ~33% alpha
+    uint32_t borderColor = (borderR << 24) | (borderG << 16) | (borderB << 8) | borderA;
     T3DVec3 normalVec = {{0.0f, 0.0f, 1.0f}};
     uint16_t norm = t3d_vert_pack_normal(&normalVec);
     
@@ -800,8 +805,11 @@ void SceneLast64::draw3D(float deltaTime)
     // Set combiner mode to use vertex colors (SHADE) instead of textures
     rdpq_mode_combiner(RDPQ_COMBINER_SHADE);
     
-    // Draw arena border in 3D space
+    // Draw arena border in 3D space with alpha blending
+    rdpq_mode_push();
+    rdpq_mode_blender(RDPQ_BLENDER_MULTIPLY);
     drawArenaBorder();
+    rdpq_mode_pop();
     
     // Draw all shapes
     Actor::Shape::drawAll(deltaTime);
