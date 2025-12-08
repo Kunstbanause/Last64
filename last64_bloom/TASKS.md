@@ -83,8 +83,9 @@
 - [ ] Title image behind debug start menu
 - [x] Larger font for main menu
 - [x] Use full screen for arena, no black bars
-- [ ] Reduce height of xp bar
-- [ ] XP Bar effects
+- [x] Reduce height of xp bar
+- [x] XP Bar effects
+- [x] XP transparency!!!!
 - [x] Main menu listen to stick input and all controllers
 - [x] Title Image in main menu
 - [x] proper level complete state
