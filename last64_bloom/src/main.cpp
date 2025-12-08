@@ -207,7 +207,7 @@ int main()
     // Tick Experience slow-motion realtime timer (counts down in real seconds)
     Experience::tickSlowMotionRealtime(realDelta);
     if (Experience::getSlowMotionRemaining() > 0.0f) {
-      // deltaTime *= Experience::getSlowMotionScale();
+      deltaTime *= Experience::getSlowMotionScale();
     }
     // Advance audio fades
     gSFXManager.update(deltaTime);
