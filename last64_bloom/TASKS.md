@@ -82,7 +82,7 @@
 - [ ] Rework background marble effect, use texture scrolling instead of procedural?
 - [ ] Title image behind debug start menu
 - [x] Larger font for main menu
-- [ ] Use full screen for arena, no black bars
+- [x] Use full screen for arena, no black bars
 - [ ] Reduce height of xp bar
 - [ ] XP Bar effects
 - [x] Main menu listen to stick input and all controllers

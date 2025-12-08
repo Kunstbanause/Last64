@@ -56,7 +56,15 @@ filesystem/%.t3dm: assets/%.glb
 
 $(BUILD_DIR)/$(PROJECT_NAME).dfs: $(assets_conv)
 $(BUILD_DIR)/$(PROJECT_NAME).elf: $(src:%.cpp=$(BUILD_DIR)/%.o) $(BUILD_DIR)/src/rsp/rsp_fx.o
-# Only rebuild files that actually include colors.h
+
+# Rebuild files that include main.h (arena and screen constants)
+$(BUILD_DIR)/src/actors/player.o: src/main.h
+$(BUILD_DIR)/src/actors/enemy.o: src/main.h
+$(BUILD_DIR)/src/actors/projectile.o: src/main.h
+$(BUILD_DIR)/src/scene/scenes/sceneLast64.o: src/main.h
+$(BUILD_DIR)/src/systems/spawn_manager.o: src/main.h
+
+# Rebuild files that include colors.h
 $(BUILD_DIR)/src/main.o: src/render/colors.h
 $(BUILD_DIR)/src/scene/scenes/sceneLast64.o: src/render/colors.h
 $(BUILD_DIR)/src/render/colorTest.o: src/render/colors.h

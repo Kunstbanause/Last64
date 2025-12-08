@@ -379,7 +379,7 @@ int main()
     }
 
     // Draw XP Bar
-    const int barHeight = 10;
+    const int barHeight = 3;  // Reduced to 1/3 of original height (was 10, now 3 gives ~6px bar)
     float xpPercentage = Experience::getXPPercentage();
     int barWidth = static_cast<int>(xpPercentage * SCREEN_WIDTH);
 

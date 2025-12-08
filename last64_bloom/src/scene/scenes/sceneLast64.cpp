@@ -104,8 +104,8 @@ SceneLast64::SceneLast64()
     borderMatrix = (T3DMat4FP*)malloc_uncached(sizeof(T3DMat4FP));
     t3d_mat4fp_identity(borderMatrix);
     
-    // White color for border
-    uint32_t borderColor = 0xFFFFFFFF;
+    // Very dark grey color for border (doesn't blow out in HDR)
+    uint32_t borderColor = 0x303030FF;  // Very dark grey to avoid HDR bloom
     T3DVec3 normalVec = {{0.0f, 0.0f, 1.0f}};
     uint16_t norm = t3d_vert_pack_normal(&normalVec);
     
