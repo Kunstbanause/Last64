@@ -14,6 +14,15 @@ constexpr float SCREEN_LEFT = 0.0f;
 constexpr float SCREEN_BOTTOM = (float)SCREEN_HEIGHT;
 constexpr float SCREEN_RIGHT = (float)SCREEN_WIDTH;
 
+// Arena/Map boundaries (gameplay area)
+// These define the actual playable area where players can move
+constexpr float ARENA_TOP = 0.0f;
+constexpr float ARENA_LEFT = 0.0f;
+constexpr float ARENA_BOTTOM = (float)SCREEN_HEIGHT;
+constexpr float ARENA_RIGHT = (float)SCREEN_WIDTH;
+constexpr float ARENA_WIDTH = ARENA_RIGHT - ARENA_LEFT;
+constexpr float ARENA_HEIGHT = ARENA_BOTTOM - ARENA_TOP;
+
 class Scene;
 
 struct State

@@ -50,20 +50,20 @@ namespace SpawnManager {
         
         switch (edge) {
             case 0: // Top
-                spawnX = SCREEN_LEFT + (rand() % (int)SCREEN_WIDTH);
-                spawnY = SCREEN_TOP - SPAWN_OFFSET;
+                spawnX = ARENA_LEFT + (rand() % (int)ARENA_WIDTH);
+                spawnY = ARENA_TOP - SPAWN_OFFSET;
                 break;
             case 1: // Right
-                spawnX = SCREEN_RIGHT + SPAWN_OFFSET;
-                spawnY = SCREEN_TOP + (rand() % (int)SCREEN_HEIGHT);
+                spawnX = ARENA_RIGHT + SPAWN_OFFSET;
+                spawnY = ARENA_TOP + (rand() % (int)ARENA_HEIGHT);
                 break;
             case 2: // Bottom
-                spawnX = SCREEN_LEFT + (rand() % (int)SCREEN_WIDTH);
-                spawnY = SCREEN_BOTTOM + SPAWN_OFFSET;
+                spawnX = ARENA_LEFT + (rand() % (int)ARENA_WIDTH);
+                spawnY = ARENA_BOTTOM + SPAWN_OFFSET;
                 break;
             case 3: // Left
-                spawnX = SCREEN_LEFT - SPAWN_OFFSET;
-                spawnY = SCREEN_TOP + (rand() % (int)SCREEN_HEIGHT);
+                spawnX = ARENA_LEFT - SPAWN_OFFSET;
+                spawnY = ARENA_TOP + (rand() % (int)ARENA_HEIGHT);
                 break;
             default:
                 spawnX = 0;

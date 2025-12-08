@@ -183,8 +183,8 @@ namespace Actor {
         position.z += velocity.z * speed * deltaTime;
 
         // Check if projectile is too far off-screen (with grace zone)
-        if (position.x < SCREEN_LEFT - PROJECTILE_GRACE_ZONE || position.x > SCREEN_RIGHT + PROJECTILE_GRACE_ZONE ||
-            position.y < SCREEN_TOP - PROJECTILE_GRACE_ZONE || position.y > SCREEN_BOTTOM + PROJECTILE_GRACE_ZONE) {
+        if (position.x < ARENA_LEFT - PROJECTILE_GRACE_ZONE || position.x > ARENA_RIGHT + PROJECTILE_GRACE_ZONE ||
+            position.y < ARENA_TOP - PROJECTILE_GRACE_ZONE || position.y > ARENA_BOTTOM + PROJECTILE_GRACE_ZONE) {
             deactivate();
             return;
         }

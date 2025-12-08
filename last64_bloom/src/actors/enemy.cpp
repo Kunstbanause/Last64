@@ -256,8 +256,8 @@ namespace Actor {
         // Deactivate enemies that go too far off-screen
         // Allow some buffer zone so enemies can spawn and enter from outside the arena
         constexpr float OFF_SCREEN_BUFFER = 30.0f;
-        if (position.x < SCREEN_LEFT - OFF_SCREEN_BUFFER || position.x > SCREEN_RIGHT + OFF_SCREEN_BUFFER || 
-            position.y < SCREEN_TOP - OFF_SCREEN_BUFFER || position.y > SCREEN_BOTTOM + OFF_SCREEN_BUFFER) {
+        if (position.x < ARENA_LEFT - OFF_SCREEN_BUFFER || position.x > ARENA_RIGHT + OFF_SCREEN_BUFFER || 
+            position.y < ARENA_TOP - OFF_SCREEN_BUFFER || position.y > ARENA_BOTTOM + OFF_SCREEN_BUFFER) {
             deactivate();
             return;
         }

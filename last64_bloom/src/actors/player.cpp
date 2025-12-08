@@ -213,10 +213,10 @@ namespace Actor {
         float newY = position.y + moveY * moveSpeed;
         
         // Check boundaries
-        if (newX >= SCREEN_LEFT && newX <= SCREEN_RIGHT) {
+        if (newX >= ARENA_LEFT && newX <= ARENA_RIGHT) {
             position.x = newX;
         }
-        if (newY >= SCREEN_TOP && newY <= SCREEN_BOTTOM) {
+        if (newY >= ARENA_TOP && newY <= ARENA_BOTTOM) {
             position.y = newY;
         }
         // Z position stays constant (we're moving on the X/Y plane)

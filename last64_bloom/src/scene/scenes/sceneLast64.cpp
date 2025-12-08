@@ -68,8 +68,8 @@ SceneLast64::SceneLast64()
     camera.near = 5.0f;
     camera.far = 500.0f; // Increased to accommodate larger scene
     // Position camera to look at the center of the screen from a reasonable distance
-    camera.pos = {(float)(SCREEN_RIGHT/2.0f), (float)(SCREEN_BOTTOM/2.0f), 200.0f};
-    camera.target = {(float)(SCREEN_RIGHT/2.0f), (float)(SCREEN_BOTTOM/2.0f), 0.0f};
+    camera.pos = {(float)(ARENA_RIGHT/2.0f), (float)(ARENA_BOTTOM/2.0f), 200.0f};
+    camera.target = {(float)(ARENA_RIGHT/2.0f), (float)(ARENA_BOTTOM/2.0f), 0.0f};
 
     // Initialize scene matrix
     sceneMatFP = (T3DMat4FP*)malloc_uncached(sizeof(T3DMat4FP));
@@ -113,108 +113,108 @@ SceneLast64::SceneLast64()
     
     // Top border (horizontal rectangle)
     // Vertex 0: top-left outer
-    borderVertices[0].posA[0] = (int16_t)SCREEN_LEFT;
-    borderVertices[0].posA[1] = (int16_t)SCREEN_TOP;
+    borderVertices[0].posA[0] = (int16_t)ARENA_LEFT;
+    borderVertices[0].posA[1] = (int16_t)ARENA_TOP;
     borderVertices[0].posA[2] = 0;
     borderVertices[0].normA = norm;
     borderVertices[0].rgbaA = borderColor;
     // Vertex 1: top-right outer
-    borderVertices[0].posB[0] = (int16_t)SCREEN_RIGHT;
-    borderVertices[0].posB[1] = (int16_t)SCREEN_TOP;
+    borderVertices[0].posB[0] = (int16_t)ARENA_RIGHT;
+    borderVertices[0].posB[1] = (int16_t)ARENA_TOP;
     borderVertices[0].posB[2] = 0;
     borderVertices[0].normB = norm;
     borderVertices[0].rgbaB = borderColor;
     
     // Vertex 2: top-left inner
-    borderVertices[1].posA[0] = (int16_t)SCREEN_LEFT;
-    borderVertices[1].posA[1] = (int16_t)(SCREEN_TOP + BORDER_THICKNESS);
+    borderVertices[1].posA[0] = (int16_t)ARENA_LEFT;
+    borderVertices[1].posA[1] = (int16_t)(ARENA_TOP + BORDER_THICKNESS);
     borderVertices[1].posA[2] = 0;
     borderVertices[1].normA = norm;
     borderVertices[1].rgbaA = borderColor;
     // Vertex 3: top-right inner
-    borderVertices[1].posB[0] = (int16_t)SCREEN_RIGHT;
-    borderVertices[1].posB[1] = (int16_t)(SCREEN_TOP + BORDER_THICKNESS);
+    borderVertices[1].posB[0] = (int16_t)ARENA_RIGHT;
+    borderVertices[1].posB[1] = (int16_t)(ARENA_TOP + BORDER_THICKNESS);
     borderVertices[1].posB[2] = 0;
     borderVertices[1].normB = norm;
     borderVertices[1].rgbaB = borderColor;
     
     // Bottom border (horizontal rectangle)
     // Vertex 4: bottom-left inner
-    borderVertices[2].posA[0] = (int16_t)SCREEN_LEFT;
-    borderVertices[2].posA[1] = (int16_t)(SCREEN_BOTTOM - BORDER_THICKNESS);
+    borderVertices[2].posA[0] = (int16_t)ARENA_LEFT;
+    borderVertices[2].posA[1] = (int16_t)(ARENA_BOTTOM - BORDER_THICKNESS);
     borderVertices[2].posA[2] = 0;
     borderVertices[2].normA = norm;
     borderVertices[2].rgbaA = borderColor;
     // Vertex 5: bottom-right inner
-    borderVertices[2].posB[0] = (int16_t)SCREEN_RIGHT;
-    borderVertices[2].posB[1] = (int16_t)(SCREEN_BOTTOM - BORDER_THICKNESS);
+    borderVertices[2].posB[0] = (int16_t)ARENA_RIGHT;
+    borderVertices[2].posB[1] = (int16_t)(ARENA_BOTTOM - BORDER_THICKNESS);
     borderVertices[2].posB[2] = 0;
     borderVertices[2].normB = norm;
     borderVertices[2].rgbaB = borderColor;
     
     // Vertex 6: bottom-left outer
-    borderVertices[3].posA[0] = (int16_t)SCREEN_LEFT;
-    borderVertices[3].posA[1] = (int16_t)SCREEN_BOTTOM;
+    borderVertices[3].posA[0] = (int16_t)ARENA_LEFT;
+    borderVertices[3].posA[1] = (int16_t)ARENA_BOTTOM;
     borderVertices[3].posA[2] = 0;
     borderVertices[3].normA = norm;
     borderVertices[3].rgbaA = borderColor;
     // Vertex 7: bottom-right outer
-    borderVertices[3].posB[0] = (int16_t)SCREEN_RIGHT;
-    borderVertices[3].posB[1] = (int16_t)SCREEN_BOTTOM;
+    borderVertices[3].posB[0] = (int16_t)ARENA_RIGHT;
+    borderVertices[3].posB[1] = (int16_t)ARENA_BOTTOM;
     borderVertices[3].posB[2] = 0;
     borderVertices[3].normB = norm;
     borderVertices[3].rgbaB = borderColor;
     
     // Left border (vertical rectangle)
     // Vertex 8: top-left outer
-    borderVertices[4].posA[0] = (int16_t)SCREEN_LEFT;
-    borderVertices[4].posA[1] = (int16_t)SCREEN_TOP;
+    borderVertices[4].posA[0] = (int16_t)ARENA_LEFT;
+    borderVertices[4].posA[1] = (int16_t)ARENA_TOP;
     borderVertices[4].posA[2] = 0;
     borderVertices[4].normA = norm;
     borderVertices[4].rgbaA = borderColor;
     // Vertex 9: top-left inner
-    borderVertices[4].posB[0] = (int16_t)(SCREEN_LEFT + BORDER_THICKNESS);
-    borderVertices[4].posB[1] = (int16_t)SCREEN_TOP;
+    borderVertices[4].posB[0] = (int16_t)(ARENA_LEFT + BORDER_THICKNESS);
+    borderVertices[4].posB[1] = (int16_t)ARENA_TOP;
     borderVertices[4].posB[2] = 0;
     borderVertices[4].normB = norm;
     borderVertices[4].rgbaB = borderColor;
     
     // Vertex 10: bottom-left outer
-    borderVertices[5].posA[0] = (int16_t)SCREEN_LEFT;
-    borderVertices[5].posA[1] = (int16_t)SCREEN_BOTTOM;
+    borderVertices[5].posA[0] = (int16_t)ARENA_LEFT;
+    borderVertices[5].posA[1] = (int16_t)ARENA_BOTTOM;
     borderVertices[5].posA[2] = 0;
     borderVertices[5].normA = norm;
     borderVertices[5].rgbaA = borderColor;
     // Vertex 11: bottom-left inner
-    borderVertices[5].posB[0] = (int16_t)(SCREEN_LEFT + BORDER_THICKNESS);
-    borderVertices[5].posB[1] = (int16_t)SCREEN_BOTTOM;
+    borderVertices[5].posB[0] = (int16_t)(ARENA_LEFT + BORDER_THICKNESS);
+    borderVertices[5].posB[1] = (int16_t)ARENA_BOTTOM;
     borderVertices[5].posB[2] = 0;
     borderVertices[5].normB = norm;
     borderVertices[5].rgbaB = borderColor;
     
     // Right border (vertical rectangle)
     // Vertex 12: top-right inner
-    borderVertices[6].posA[0] = (int16_t)(SCREEN_RIGHT - BORDER_THICKNESS);
-    borderVertices[6].posA[1] = (int16_t)SCREEN_TOP;
+    borderVertices[6].posA[0] = (int16_t)(ARENA_RIGHT - BORDER_THICKNESS);
+    borderVertices[6].posA[1] = (int16_t)ARENA_TOP;
     borderVertices[6].posA[2] = 0;
     borderVertices[6].normA = norm;
     borderVertices[6].rgbaA = borderColor;
     // Vertex 13: top-right outer
-    borderVertices[6].posB[0] = (int16_t)SCREEN_RIGHT;
-    borderVertices[6].posB[1] = (int16_t)SCREEN_TOP;
+    borderVertices[6].posB[0] = (int16_t)ARENA_RIGHT;
+    borderVertices[6].posB[1] = (int16_t)ARENA_TOP;
     borderVertices[6].posB[2] = 0;
     borderVertices[6].normB = norm;
     borderVertices[6].rgbaB = borderColor;
     
     // Vertex 14: bottom-right inner
-    borderVertices[7].posA[0] = (int16_t)(SCREEN_RIGHT - BORDER_THICKNESS);
-    borderVertices[7].posA[1] = (int16_t)SCREEN_BOTTOM;
+    borderVertices[7].posA[0] = (int16_t)(ARENA_RIGHT - BORDER_THICKNESS);
+    borderVertices[7].posA[1] = (int16_t)ARENA_BOTTOM;
     borderVertices[7].posA[2] = 0;
     borderVertices[7].normA = norm;
     borderVertices[7].rgbaA = borderColor;
     // Vertex 15: bottom-right outer
-    borderVertices[7].posB[0] = (int16_t)SCREEN_RIGHT;
-    borderVertices[7].posB[1] = (int16_t)SCREEN_BOTTOM;
+    borderVertices[7].posB[0] = (int16_t)ARENA_RIGHT;
+    borderVertices[7].posB[1] = (int16_t)ARENA_BOTTOM;
     borderVertices[7].posB[2] = 0;
     borderVertices[7].normB = norm;
     borderVertices[7].rgbaB = borderColor;
@@ -292,36 +292,36 @@ void SceneLast64::updateScene(float deltaTime)
                         // Create player instance
                         T3DVec3 startPos;
                         if (isForceAllPlayers) { // Debug spawn all players
-                            startPos = {{SCREEN_RIGHT/2.0f - 20.0f, SCREEN_BOTTOM/2.0f, 0.0f}}; player1 = new Actor::Player(startPos, JOYPAD_PORT_1);
-                            startPos = {{SCREEN_RIGHT/2.0f        , SCREEN_BOTTOM/2.0f, 0.0f}}; player2 = new Actor::Player(startPos, JOYPAD_PORT_2);
-                            startPos = {{SCREEN_RIGHT/2.0f + 20.0f, SCREEN_BOTTOM/2.0f, 0.0f}}; player3 = new Actor::Player(startPos, JOYPAD_PORT_3);
-                            startPos = {{SCREEN_RIGHT/2.0f + 40.0f, SCREEN_BOTTOM/2.0f, 0.0f}}; player4 = new Actor::Player(startPos, JOYPAD_PORT_4);
+                            startPos = {{ARENA_RIGHT/2.0f - 20.0f, ARENA_BOTTOM/2.0f, 0.0f}}; player1 = new Actor::Player(startPos, JOYPAD_PORT_1);
+                            startPos = {{ARENA_RIGHT/2.0f        , ARENA_BOTTOM/2.0f, 0.0f}}; player2 = new Actor::Player(startPos, JOYPAD_PORT_2);
+                            startPos = {{ARENA_RIGHT/2.0f + 20.0f, ARENA_BOTTOM/2.0f, 0.0f}}; player3 = new Actor::Player(startPos, JOYPAD_PORT_3);
+                            startPos = {{ARENA_RIGHT/2.0f + 40.0f, ARENA_BOTTOM/2.0f, 0.0f}}; player4 = new Actor::Player(startPos, JOYPAD_PORT_4);
                             activePlayerCount = 4; // All players joined
                         }
                         else
                         {
                             switch (i) {
                                 case 0: 
-                                    startPos.x = (float)(SCREEN_RIGHT/2.0f - 20.0f);
-                                    startPos.y = (float)(SCREEN_BOTTOM/2.0f);
+                                    startPos.x = (float)(ARENA_RIGHT/2.0f - 20.0f);
+                                    startPos.y = (float)(ARENA_BOTTOM/2.0f);
                                     startPos.z = 0.0f;
                                     player1 = new Actor::Player(startPos, JOYPAD_PORT_1); 
                                     break;
                                 case 1: 
-                                    startPos.x = (float)(SCREEN_RIGHT/2.0f);
-                                    startPos.y = (float)(SCREEN_BOTTOM/2.0f);
+                                    startPos.x = (float)(ARENA_RIGHT/2.0f);
+                                    startPos.y = (float)(ARENA_BOTTOM/2.0f);
                                     startPos.z = 0.0f;
                                     player2 = new Actor::Player(startPos, JOYPAD_PORT_2); 
                                     break;
                                 case 2: 
-                                    startPos.x = (float)(SCREEN_RIGHT/2.0f + 20.0f);
-                                    startPos.y = (float)(SCREEN_BOTTOM/2.0f);
+                                    startPos.x = (float)(ARENA_RIGHT/2.0f + 20.0f);
+                                    startPos.y = (float)(ARENA_BOTTOM/2.0f);
                                     startPos.z = 0.0f;
                                     player3 = new Actor::Player(startPos, JOYPAD_PORT_3); 
                                     break;
                                 case 3: 
-                                    startPos.x = (float)(SCREEN_RIGHT/2.0f + 40.0f);
-                                    startPos.y = (float)(SCREEN_BOTTOM/2.0f);
+                                    startPos.x = (float)(ARENA_RIGHT/2.0f + 40.0f);
+                                    startPos.y = (float)(ARENA_BOTTOM/2.0f);
                                     startPos.z = 0.0f;
                                     player4 = new Actor::Player(startPos, JOYPAD_PORT_4); 
                                     break;
@@ -374,29 +374,29 @@ void SceneLast64::updateScene(float deltaTime)
                         Actor::Player* newPlayer = nullptr;
                         switch (i) {
                             case 0: 
-                                startPos.x = (float)(SCREEN_RIGHT/2.0f - 20.0f);
-                                startPos.y = (float)(SCREEN_BOTTOM/2.0f);
+                                startPos.x = (float)(ARENA_RIGHT/2.0f - 20.0f);
+                                startPos.y = (float)(ARENA_BOTTOM/2.0f);
                                 startPos.z = 0.0f;
                                 player1 = new Actor::Player(startPos, JOYPAD_PORT_1); 
                                 newPlayer = player1; 
                                 break;
                             case 1: 
-                                startPos.x = (float)(SCREEN_RIGHT/2.0f);
-                                startPos.y = (float)(SCREEN_BOTTOM/2.0f);
+                                startPos.x = (float)(ARENA_RIGHT/2.0f);
+                                startPos.y = (float)(ARENA_BOTTOM/2.0f);
                                 startPos.z = 0.0f;
                                 player2 = new Actor::Player(startPos, JOYPAD_PORT_2); 
                                 newPlayer = player2; 
                                 break;
                             case 2: 
-                                startPos.x = (float)(SCREEN_RIGHT/2.0f + 20.0f);
-                                startPos.y = (float)(SCREEN_BOTTOM/2.0f);
+                                startPos.x = (float)(ARENA_RIGHT/2.0f + 20.0f);
+                                startPos.y = (float)(ARENA_BOTTOM/2.0f);
                                 startPos.z = 0.0f;
                                 player3 = new Actor::Player(startPos, JOYPAD_PORT_3); 
                                 newPlayer = player3; 
                                 break;
                             case 3: 
-                                startPos.x = (float)(SCREEN_RIGHT/2.0f + 40.0f);
-                                startPos.y = (float)(SCREEN_BOTTOM/2.0f);
+                                startPos.x = (float)(ARENA_RIGHT/2.0f + 40.0f);
+                                startPos.y = (float)(ARENA_BOTTOM/2.0f);
                                 startPos.z = 0.0f;
                                 player4 = new Actor::Player(startPos, JOYPAD_PORT_4); 
                                 newPlayer = player4; 
