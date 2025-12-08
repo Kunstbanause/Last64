@@ -193,7 +193,10 @@ int main()
       }
     }
 
-  float realDelta = display_get_delta_time();
+  { // Frame profiling scope
+    ProfileScope frameProfile("Frame");
+  
+    float realDelta = display_get_delta_time();
   float deltaTime = realDelta;
     // "Pause"
     // if (showMenu) {
@@ -207,7 +210,10 @@ int main()
     }
     // Advance audio fades
     gSFXManager.update(deltaTime);
-      state.activeScene->update(deltaTime);
+      {
+        ProfileScope profile("Update");
+        state.activeScene->update(deltaTime);
+      }
 
       // Check if the current scene (if it's SceneLast64) has requested a restart
       SceneLast64* currentLast64Scene = dynamic_cast<SceneLast64*>(state.activeScene);
@@ -264,10 +270,17 @@ int main()
     rdpq_mode_dithering(DITHER_NONE_NONE);
     rdpq_mode_fog(0);
 
-    state.activeScene->draw(deltaTime);
+    {
+      ProfileScope profile("Render3D");
+      state.activeScene->draw(deltaTime);
+    }
 
     postProc[frameIdx].endFrame();
-    auto surfBlur = postProc[frameIdxLast].applyEffects(*fb);
+    surface_t surfBlur;
+    {
+      ProfileScope profile("PostFX");
+      surfBlur = postProc[frameIdxLast].applyEffects(*fb);
+    }
 
     rdpq_sync_pipe();
     rdpq_set_color_image(fb);
@@ -307,8 +320,11 @@ int main()
         int sectionCount = 0;
         const Profiler::Section* sections = Profiler::getSections(sectionCount);
         int yPos = 40;
-        for (int i = 0; i < sectionCount && i < 8; ++i) {
-          if (sections[i].call_count > 0) {
+        
+        // Display all sections (increased limit to show new high-level sections)
+        for (int i = 0; i < sectionCount && i < 16; ++i) {
+          // Show sections that have accumulated time OR have a max recorded
+          if (sections[i].total_ticks > 0 || sections[i].max_ticks > 0) {
             // Convert total accumulated ticks to microseconds (not averaged)
             uint64_t totalUs = (sections[i].total_ticks * 1000000ULL) / RCP_FREQUENCY;
             uint64_t maxUs = (sections[i].max_ticks * 1000000ULL) / RCP_FREQUENCY;
@@ -334,7 +350,10 @@ int main()
       Debug::printf(20, 220, "%.2fms", lastUcodeTime / 1000.0f);
     #endif
 
-    state.activeScene->draw2D(deltaTime);
+    {
+      ProfileScope profile("UI");
+      state.activeScene->draw2D(deltaTime);
+    }
     
     // Profiler frame end - accumulate data for display
     Profiler::frameEnd();
@@ -383,6 +402,7 @@ int main()
       rdpq_fill_rectangle(fx0, SCREEN_HEIGHT - (barHeight * 2), barWidth, SCREEN_HEIGHT);
     }
     rdpq_detach_show();
+  } // End Frame profiling scope
 
     #if RSPQ_PROFILE
       rspq_profile_next_frame();
