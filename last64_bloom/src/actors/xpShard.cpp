@@ -168,7 +168,7 @@ namespace Actor {
             // Use 2D distances only (x,y)
             float dx = tp.x - position.x;
             float dy = tp.y - position.y;
-            float dist = sqrtf(dx*dx + dy*dy);
+            float distSq = dx*dx + dy*dy;
 
             if (isFleeing) {
                 // Flee for a short duration with a quick initial speed that eases out
@@ -184,10 +184,11 @@ namespace Actor {
                 // Compute away direction in 2D (x,y). If zero-length, nudge on X.
                 float ax = position.x - tp.x;
                 float ay = position.y - tp.y;
-                float adist = sqrtf(ax*ax + ay*ay);
-                if (adist <= 0.001f) { ax = 1.0f; ay = 0.0f; adist = 1.0f; }
-                position.x += (ax / adist) * fleeSpeed * deltaTime;
-                position.y += (ay / adist) * fleeSpeed * deltaTime;
+                float adistSq = ax*ax + ay*ay;
+                if (adistSq <= 0.000001f) { ax = 1.0f; ay = 0.0f; adistSq = 1.0f; }
+                float invAdist = 1.0f / sqrtf(adistSq);  // Single sqrt
+                position.x += (ax * invAdist) * fleeSpeed * deltaTime;
+                position.y += (ay * invAdist) * fleeSpeed * deltaTime;
 
                 if (fleeTimer >= fleeDuration) {
                     isFleeing = false;
@@ -205,18 +206,19 @@ namespace Actor {
                 float ease = tt * tt;
                 float speed = homingMin + (homingMax - homingMin) * ease;
 
-                if (dist > 0.0f) {
-                    position.x += dx / dist * speed * deltaTime;
-                    position.y += dy / dist * speed * deltaTime;
+                if (distSq > 0.000001f) {
+                    float invDist = 1.0f / sqrtf(distSq);  // Single sqrt
+                    position.x += dx * invDist * speed * deltaTime;
+                    position.y += dy * invDist * speed * deltaTime;
                 }
             }
 
-            // After movement, check collision with player
+            // After movement, check collision with player (reuse calculated distance)
             float n_dx = tp.x - position.x;
             float n_dy = tp.y - position.y;
-            float n_dist = sqrtf(n_dx*n_dx + n_dy*n_dy);
+            float n_distSq = n_dx*n_dx + n_dy*n_dy;
             float collisionRadius = targetPlayer->getRadius() * 2.0f; // Slightly larger than visual for easier pickup
-            if (n_dist <= collisionRadius) {
+            if (n_distSq <= collisionRadius * collisionRadius) {
                 Experience::addXP(xpValue);
                 
                 // Select sound based on proximity to level up (0-100% maps to xp1-xp8)

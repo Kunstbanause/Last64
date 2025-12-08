@@ -46,6 +46,7 @@ static uint32_t s_best_time = 0xFFFFFFFF;
 static uint16_t s_level_complete_flags = 0;
 static bool s_music_enabled = true;
 static bool s_marble_enabled = true;
+static bool s_profiling_enabled = false;
 static uint32_t s_credits_spent = 0;
 static uint8_t s_pickup_range_level = 0;
 static uint8_t s_damage_level = 0;
@@ -66,8 +67,11 @@ static void load_structured_state() {
   s_music_enabled = buf2[2] != 0;
   // byte 3 in block2 stores marble background enabled flag (1 = enabled)
   s_marble_enabled = buf2[3] != 0;
-  // bytes 4-7 in block2 store credits_spent
-  s_credits_spent = ((uint32_t)buf2[4] << 24) | ((uint32_t)buf2[5] << 16) | ((uint32_t)buf2[6] << 8) | ((uint32_t)buf2[7]);
+  // byte 4 low bit stores profiling enabled flag (1 = enabled) - we'll use only the low byte
+  // Note: bytes 4-7 in block2 now store: profiling (1 byte) + credits_spent (3 bytes)
+  s_profiling_enabled = (buf2[4] & 0x01) != 0;
+  // bytes 5-7 in block2 store credits_spent (changed from 4-7)
+  s_credits_spent = ((uint32_t)buf2[5] << 16) | ((uint32_t)buf2[6] << 8) | ((uint32_t)buf2[7]);
   // read block 3 for pickup_range_level
   uint8_t buf3[8];
   eeprom_read(3, buf3);
@@ -96,7 +100,7 @@ static void save_structured_state() {
     (uint8_t)(s_level_complete_flags & 0xFFu), 
     (uint8_t)(s_music_enabled ? 1 : 0), 
     (uint8_t)(s_marble_enabled ? 1 : 0),
-    (uint8_t)((s_credits_spent >> 24) & 0xFFu),
+    (uint8_t)(s_profiling_enabled ? 1 : 0),
     (uint8_t)((s_credits_spent >> 16) & 0xFFu),
     (uint8_t)((s_credits_spent >> 8) & 0xFFu),
     (uint8_t)(s_credits_spent & 0xFFu)
@@ -209,6 +213,9 @@ bool is_music_enabled() { return s_music_enabled; }
 
 void set_marble_enabled(bool enabled) { s_marble_enabled = enabled; save_structured_state(); }
 bool is_marble_enabled() { return s_marble_enabled; }
+
+void set_profiling_enabled(bool enabled) { s_profiling_enabled = enabled; save_structured_state(); }
+bool is_profiling_enabled() { return s_profiling_enabled; }
 
 // Credits system implementation
 uint32_t get_total_credits() {

@@ -40,6 +40,9 @@ namespace
   // Marble background toggle state and changed flag
   bool marbleEnabledVar = true;
   bool marbleChangedFlag = false;
+  // Profiling toggle state and changed flag
+  bool profilingEnabledVar = false;
+  bool profilingChangedFlag = false;
   // Return to main menu flag and changed flag
   bool returnToMainMenuVar = false;
   bool returnToMainMenuChanged = false;
@@ -124,6 +127,7 @@ void DebugMenu::reset()
   entries.push_back({"Auto    ", EntryType::BOOL, &state.autoExposure});
   entries.push_back({"        ", EntryType::NONE, nullptr}); // Separator
   entries.push_back({"Music   ", EntryType::BOOL, &musicEnabledVar});
+  entries.push_back({"Profile ", EntryType::BOOL, &profilingEnabledVar});
   entries.push_back({"MainMenu", EntryType::BOOL, &returnToMainMenuVar});
 
   changedFlags.resize(entries.size());
@@ -138,6 +142,13 @@ void DebugMenu::reset()
   for (size_t i = 0; i < entries.size(); ++i) {
     if (entries[i].value == &musicEnabledVar) {
       changedFlags[i] = &musicChangedFlag;
+      break;
+    }
+  }
+  // Wire profiling changed flag to the Profile entry
+  for (size_t i = 0; i < entries.size(); ++i) {
+    if (entries[i].value == &profilingEnabledVar) {
+      changedFlags[i] = &profilingChangedFlag;
       break;
     }
   }
@@ -158,6 +169,9 @@ void DebugMenu::reset()
   
   // Initialize marble background state from savegame
   marbleEnabledVar = SaveGame::is_marble_enabled();
+  
+  // Initialize profiling state from savegame
+  profilingEnabledVar = SaveGame::is_profiling_enabled();
 }
 
 void DebugMenu::addEntry(const Entry& entry, bool *changedFlag) {
@@ -244,6 +258,12 @@ void DebugMenu::draw()
     marbleChangedFlag = false;
   }
   
+  // If profiling toggle was changed, persist immediately
+  if (profilingChangedFlag) {
+    SaveGame::set_profiling_enabled(profilingEnabledVar);
+    profilingChangedFlag = false;
+  }
+  
   // If marble background was changed from scene, persist immediately
   if (marbleBackgroundChanged) {
     SaveGame::set_marble_enabled(showMarbleBackground);
@@ -256,40 +276,41 @@ void DebugMenu::draw()
   float posX = 20;
   float posY = 30;
   Debug::print(posX+30, posY, "START Menu");
-  {
-    // Print savegame info block
-    int type = SaveGame::get_type();
-    uint32_t last = SaveGame::get_last_saved_value();
-    const char *tstr = "NONE";
-    if (type == 1) tstr = "4k";
-    if (type == 2) tstr = "16k";
-    int saveInfoX = posX + 150;
-    int saveInfoY = posY + 56;
-    Debug::printf(saveInfoX, saveInfoY, "SaveGame EEPROM: %s", tstr);
-    saveInfoY += 10;
-    // Show last action and structured save fields stacked vertically for readability
-    if (SaveGame::was_last_action_load()) {
-      Debug::printf(saveInfoX, saveInfoY, "Loaded: %lu", (unsigned long)SaveGame::get_last_loaded_value());
-    } else {
-      Debug::printf(saveInfoX, saveInfoY, "Saved:  %lu", (unsigned long)last);
-    }
-    saveInfoY += 10;
-    // Structured save fields: total level-ups, best-time, level-complete flags (one per line)
-    uint32_t totalUps = SaveGame::get_total_level_ups();
-    uint32_t best = SaveGame::get_best_time();
-    uint16_t flags = SaveGame::get_level_complete_flags();
-    Debug::printf(saveInfoX, saveInfoY, "Level Ups: %lu", (unsigned long)totalUps);
-    saveInfoY += 10;
-    if (best > 0) {
-      int bm = (int)(best / 60);
-      int bs = (int)(best % 60);
-      Debug::printf(saveInfoX, saveInfoY, "Best Time: %02d:%02d", bm, bs);
-    } else {
-      Debug::printf(saveInfoX, saveInfoY, "Best Time: --:--");
-    }
-    saveInfoY += 10;
-    Debug::printf(saveInfoX, saveInfoY, "Maps Done: 0x%04x", (unsigned)flags);
-  }
+  // {
+  //   // Print savegame info block
+  //   int type = SaveGame::get_type();
+  //   uint32_t last = SaveGame::get_last_saved_value();
+  //   const char *tstr = "NONE";
+  //   if (type == 1) tstr = "4k";
+  //   if (type == 2) tstr = "16k";
+  //   int saveInfoX = posX + 150;
+  //   int saveInfoY = posY + 56;
+  //   Debug::printf(saveInfoX, saveInfoY, "SaveGame EEPROM: %s", tstr);
+  //   saveInfoY += 10;
+  //   // Show last action and structured save fields stacked vertically for readability
+  //   if (SaveGame::was_last_action_load()) {
+  //     Debug::printf(saveInfoX, saveInfoY, "Loaded: %lu", (unsigned long)SaveGame::get_last_loaded_value());
+  //   } else {
+  //     Debug::printf(saveInfoX, saveInfoY, "Saved:  %lu", (unsigned long)last);
+  //   }
+  //   saveInfoY += 10;
+  //   // Structured save fields: total level-ups, best-time, level-complete flags (one per line)
+  //   uint32_t totalUps = SaveGame::get_total_level_ups();
+  //   uint32_t best = SaveGame::get_best_time();
+  //   uint16_t flags = SaveGame::get_level_complete_flags();
+  //   Debug::printf(saveInfoX, saveInfoY, "Level Ups: %lu", (unsigned long)totalUps);
+  //   saveInfoY += 10;
+  //   if (best > 0) {
+  //     int bm = (int)(best / 60);
+  //     int bs = (int)(best % 60);
+  //     Debug::printf(saveInfoX, saveInfoY, "Best Time: %02d:%02d", bm, bs);
+  //   } else {
+  //     Debug::printf(saveInfoX, saveInfoY, "Best Time: --:--");
+  //   }
+  //   saveInfoY += 10;
+  //   Debug::printf(saveInfoX, saveInfoY, "Maps Done: 0x%04x", (unsigned)flags);
+  // }
+
   //Debug::print(display_get_width() - 100, posY, "[L/R] Scene");
   posY += 12;
 

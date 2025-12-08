@@ -17,6 +17,7 @@
 #include "../../render/colorTest.h"
 #include "../../debugMenu.h"
 #include "../../ui/mainMenu.h"
+#include "../../utils/profiler.h"
 #include <libdragon.h>
 #include <t3d/t3d.h>
 #include <cmath>
@@ -370,53 +371,82 @@ void SceneLast64::updateScene(float deltaTime)
             }
             
             // Update all enemies
-            Actor::Enemy::updateAll(deltaTime);
+            { ProfileScope profile("Enemy"); Actor::Enemy::updateAll(deltaTime); }
             
             // Update all projectiles
-            Actor::Projectile::updateAll(deltaTime);
+            { ProfileScope profile("Proj"); Actor::Projectile::updateAll(deltaTime); }
             
             // Update all shapes
-            Actor::Shape::updateAll(deltaTime);
+            { ProfileScope profile("Shape"); Actor::Shape::updateAll(deltaTime); }
 
             // Update all XP shards
-            Actor::XPShard::updateAll(deltaTime);
+            { ProfileScope profile("XP"); Actor::XPShard::updateAll(deltaTime); }
 
             // Update all enemy death VFX
-            Actor::EnemyDeathVFX::updateAll(deltaTime);
+            { ProfileScope profile("VFX"); Actor::EnemyDeathVFX::updateAll(deltaTime); }
 
             // --- Collision Detection ---
-            // Enemy-Projectile Collision
-            for (uint32_t i = 0; i < MAX_ENEMIES; ++i) {
-                if (!Actor::Enemy::isActive(i)) continue;
-                Actor::Enemy* enemy = Actor::Enemy::getEnemy(i);
-                if (!enemy || !enemy->isActive()) continue;
+            {
+                ProfileScope profile("Collision");
+                
+                // Enemy-Projectile Collision (optimized with early exits)
+                {
+                    ProfileScope profile("EnemyProj");
+                    for (uint32_t i = 0; i < MAX_ENEMIES; ++i) {
+                        if (!Actor::Enemy::isActive(i)) continue;
+                        Actor::Enemy* enemy = Actor::Enemy::getEnemy(i);
+                        if (!enemy || !enemy->isActive()) continue;
 
-                for (uint32_t j = 0; j < MAX_PROJECTILES; ++j) {
-                    Actor::Projectile* proj = Actor::Projectile::getProjectile(j);
-                    if (!proj || !proj->isActive()) continue;
+                        T3DVec3 enemyPos = enemy->getPosition();
+                        float enemyRadius = enemy->getRadius();
 
-                    if (enemy->collidesWith(proj)) {
-                        enemy->takeDamage(proj->getDamage()); // Use projectile's damage value
-                        proj->deactivate(); // Projectile disappears on hit
-                        // Play hit sound effect
-                        gSFXManager.play(SFXManager::SFX_HIT);
+                        for (uint32_t j = 0; j < MAX_PROJECTILES; ++j) {
+                            Actor::Projectile* proj = Actor::Projectile::getProjectile(j);
+                            if (!proj || !proj->isActive()) continue;
+
+                            // Quick distance-squared check before full collision
+                            T3DVec3 projPos = proj->getPosition();
+                            float dx = enemyPos.x - projPos.x;
+                            float dy = enemyPos.y - projPos.y;
+                            float dz = enemyPos.z - projPos.z;
+                            float distSq = dx*dx + dy*dy + dz*dz;
+                            float sumRadius = enemyRadius + proj->getRadius();
+                            
+                            if (distSq <= sumRadius * sumRadius) {
+                                enemy->takeDamage(proj->getDamage());
+                                proj->deactivate();
+                                gSFXManager.play(SFXManager::SFX_HIT);
+                            }
+                        }
                     }
                 }
-            }
 
-            // Player-Enemy Collision
-            Actor::Player* players[4] = {player1, player2, player3, player4};
-            for (int p = 0; p < 4; ++p) {
-                Actor::Player* currentPlayer = players[p];
-                if (!currentPlayer || currentPlayer->getIsDead()) continue; // Only check active, alive players
+                // Player-Enemy Collision (optimized)
+                {
+                    ProfileScope profile("PlyrEnemy");
+                    Actor::Player* players[4] = {player1, player2, player3, player4};
+                    for (int p = 0; p < 4; ++p) {
+                        Actor::Player* currentPlayer = players[p];
+                        if (!currentPlayer || currentPlayer->getIsDead()) continue;
 
-                for (uint32_t i = 0; i < MAX_ENEMIES; ++i) {
-                    Actor::Enemy* enemy = Actor::Enemy::getEnemy(i);
-                    if (!enemy || !enemy->isActive()) continue;
+                        T3DVec3 playerPos = currentPlayer->getPosition();
+                        float playerRadius = currentPlayer->getRadius();
 
-                    if (currentPlayer->collidesWith(enemy)) {
-                        currentPlayer->takeDamage(1);
-                        // gSFXManager.play(SFXManager::SFX_PLAYER_HIT); // Assuming a player hit sound effect
+                        for (uint32_t i = 0; i < MAX_ENEMIES; ++i) {
+                            Actor::Enemy* enemy = Actor::Enemy::getEnemy(i);
+                            if (!enemy || !enemy->isActive()) continue;
+
+                            T3DVec3 enemyPos = enemy->getPosition();
+                            float dx = playerPos.x - enemyPos.x;
+                            float dy = playerPos.y - enemyPos.y;
+                            float dz = playerPos.z - enemyPos.z;
+                            float distSq = dx*dx + dy*dy + dz*dz;
+                            float sumRadius = playerRadius + enemy->getRadius();
+                            
+                            if (distSq <= sumRadius * sumRadius) {
+                                currentPlayer->takeDamage(1);
+                            }
+                        }
                     }
                 }
             }

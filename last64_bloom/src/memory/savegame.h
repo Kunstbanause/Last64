@@ -34,6 +34,10 @@ bool is_music_enabled();
 void set_marble_enabled(bool enabled);
 bool is_marble_enabled();
 
+// Profiling display setting
+void set_profiling_enabled(bool enabled);
+bool is_profiling_enabled();
+
 // Purge all save data (for testing)
 void purge_save();
 

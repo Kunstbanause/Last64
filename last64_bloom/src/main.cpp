@@ -35,6 +35,7 @@
 #include "audio.h"
 #include "memory/savegame.h"
 #include "actors/xpShard.h"
+#include "utils/profiler.h"
 
 State state{
   .ppConf = {
@@ -114,6 +115,9 @@ int main()
 
   // Initialize HDR boost system
   HDRBoost::initialize(state.ppConf.hdrFactor);
+  
+  // Initialize profiler
+  Profiler::init();
 
   SceneManager::loadScene(0);
 
@@ -175,13 +179,13 @@ int main()
     static uint32_t testSaveCounter = 0;
 
     if (showMenu) {
-      // Save when L+R pressed together (edge detect)
+      // Save when R pressed together (edge detect)
       if (combined.r) {
         testSaveCounter++;
         bool ok = SaveGame::save_test_value(testSaveCounter);
         debugf("Save test value %lu -> %s\n", (unsigned long)testSaveCounter, ok ? "OK" : "FAIL");
       }
-      // Load when L+Z pressed together (edge detect)
+      // Load when L pressed together (edge detect)
       if (combined.l) {
         uint32_t val = 0;
         bool ok = SaveGame::load_test_value(val);
@@ -192,14 +196,14 @@ int main()
   float realDelta = display_get_delta_time();
   float deltaTime = realDelta;
     // "Pause"
-    if (showMenu) {
-      deltaTime *= 0.1f; // Slow down to 10% speed
-    }
+    // if (showMenu) {
+    //   deltaTime *= 0.1f; // Slow-motion time down to 10% speed
+    // }
 
     // Tick Experience slow-motion realtime timer (counts down in real seconds)
     Experience::tickSlowMotionRealtime(realDelta);
     if (Experience::getSlowMotionRemaining() > 0.0f) {
-      deltaTime *= Experience::getSlowMotionScale();
+      // deltaTime *= Experience::getSlowMotionScale();
     }
     // Advance audio fades
     gSFXManager.update(deltaTime);
@@ -292,6 +296,35 @@ int main()
       DebugMenu::draw();
       Debug::printf(20, 200, "%d%%", (int)(postProc[frameIdxLast].getBrightness() * 100));
       Debug::printf(SCREEN_WIDTH-64, SCREEN_HEIGHT-20, "fps:%.0f", display_get_fps());
+      
+      // Display profiling data
+      #if RSPQ_PROFILE
+        Debug::printf(20, 220, "RSP:%.2fms", lastUcodeTime / 1000.0f);
+      #endif
+      
+      // Display CPU profiling data (show total frame time + max)
+      if (SaveGame::is_profiling_enabled()) {
+        int sectionCount = 0;
+        const Profiler::Section* sections = Profiler::getSections(sectionCount);
+        int yPos = 40;
+        for (int i = 0; i < sectionCount && i < 8; ++i) {
+          if (sections[i].call_count > 0) {
+            // Convert total accumulated ticks to microseconds (not averaged)
+            uint64_t totalUs = (sections[i].total_ticks * 1000000ULL) / RCP_FREQUENCY;
+            uint64_t maxUs = (sections[i].max_ticks * 1000000ULL) / RCP_FREQUENCY;
+            // Divide by number of accumulated frames (10) to get per-frame time
+            float frameUs = (float)totalUs / 10.0f;
+            // Max is already per-frame (single frame peak), don't divide by 10
+            float maxFrameUs = (float)maxUs;
+            
+            // Display with fixed-width formatting to prevent flickering
+            // Always use same format (ms) for stability
+            Debug::printf(170, yPos, "%s:%4.1f/%4.1fms", sections[i].name, 
+                         frameUs / 1000.0f, maxFrameUs / 1000.0f);
+            yPos += 12;
+          }
+        }
+      }
     }
     if ( display_get_fps() < 30.0f ) {
       Debug::printf(SCREEN_WIDTH-80, SCREEN_HEIGHT-30, "LowFPS:%.0f", display_get_fps());
@@ -302,6 +335,9 @@ int main()
     #endif
 
     state.activeScene->draw2D(deltaTime);
+    
+    // Profiler frame end - accumulate data for display
+    Profiler::frameEnd();
 
     // Tick experience system for UI flash animations
     Experience::tick(deltaTime);

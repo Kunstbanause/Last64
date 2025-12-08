@@ -207,9 +207,10 @@ namespace Actor {
             float lx = fixedDirection.x;
             float ly = fixedDirection.y;
             float lz = fixedDirection.z;
-            float len = sqrtf(lx*lx + ly*ly + lz*lz);
-            if (len > 0.0f) {
-                lx /= len; ly /= len; lz /= len;
+            float lenSq = lx*lx + ly*ly + lz*lz;
+            if (lenSq > 0.0001f) {
+                float invLen = 1.0f / sqrtf(lenSq);  // Only one sqrt
+                lx *= invLen; ly *= invLen; lz *= invLen;
                 float moveDistance = speed * deltaTime;
                 position.x += lx * moveDistance;
                 position.y += ly * moveDistance;
@@ -231,23 +232,23 @@ namespace Actor {
                 T3DVec3 playerPos = targetPlayer->getPosition();
                 
                 // Calculate direction to player
-                T3DVec3 direction;
-                direction.x = playerPos.x - position.x;
-                direction.y = playerPos.y - position.y;
-                direction.z = playerPos.z - position.z;
+                float dx = playerPos.x - position.x;
+                float dy = playerPos.y - position.y;
+                float dz = playerPos.z - position.z;
                 
-                // Normalize direction
-                float length = sqrtf(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
-                if (length > 0.0f) {
-                    direction.x /= length;
-                    direction.y /= length;
-                    direction.z /= length;
+                // Normalize direction (optimized with single sqrt)
+                float lengthSq = dx*dx + dy*dy + dz*dz;
+                if (lengthSq > 0.0001f) {
+                    float invLength = 1.0f / sqrtf(lengthSq);
+                    dx *= invLength;
+                    dy *= invLength;
+                    dz *= invLength;
                     
                     // Move enemy directly towards player
                     float moveDistance = speed * deltaTime;
-                    position.x += direction.x * moveDistance;
-                    position.y += direction.y * moveDistance;
-                    position.z += direction.z * moveDistance;
+                    position.x += dx * moveDistance;
+                    position.y += dy * moveDistance;
+                    position.z += dz * moveDistance;
                 }
             }
         }
