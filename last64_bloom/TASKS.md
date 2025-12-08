@@ -77,7 +77,8 @@
 - [ ] More passive upgrades
 - [x] Option to return to main menu, from Start menu
 - [x] Remove purge and save game from start menu (now in stats menu)
-- [ ] Profiling, what are the performance eaters?
+- [x] Profiling, what are the performance eaters
+- [x] Collision performance optimization
 - [ ] Rework background marble effect, use texture scrolling instead of procedural?
 - [ ] Title image behind debug start menu
 - [x] Larger font for main menu

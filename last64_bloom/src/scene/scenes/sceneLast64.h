@@ -45,6 +45,7 @@ class SceneLast64 : public Scene
     void updateScene(float deltaTime) final;                                                                                                                                                                                                            
     void draw3D(float deltaTime) final;                                                                                                                                                                                                                 
     void drawMarbleBackground(float deltaTime);
+    void drawArenaBorder();
 
   public:                                                                                                                                                                                                                                               
     void draw2D(float deltaTime) final;                                                                                                                                                                                                                 

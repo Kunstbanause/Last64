@@ -25,6 +25,10 @@
 namespace {
   // Static matrix for scene
   T3DMat4FP* sceneMatFP = nullptr;
+  
+  // Arena border rendering
+  T3DVertPacked* borderVertices = nullptr;
+  T3DMat4FP* borderMatrix = nullptr;
 }
 
 // Debug menu flag for marble background (extern so debugMenu can access)
@@ -93,6 +97,127 @@ SceneLast64::SceneLast64()
     
     // Register debug menu entries
     DebugMenu::addEntry({"Marble ", DebugMenu::EntryType::BOOL, &showMarbleBackground}, &marbleBackgroundChanged);
+    
+    // Initialize arena border (draw as 4 thin rectangles in 3D space)
+    // We need 8 vertices (4 rectangles, each needs 2 T3DVertPacked structs for 4 verts)
+    borderVertices = (T3DVertPacked*)malloc_uncached(sizeof(T3DVertPacked) * 8);
+    borderMatrix = (T3DMat4FP*)malloc_uncached(sizeof(T3DMat4FP));
+    t3d_mat4fp_identity(borderMatrix);
+    
+    // White color for border
+    uint32_t borderColor = 0xFFFFFFFF;
+    T3DVec3 normalVec = {{0.0f, 0.0f, 1.0f}};
+    uint16_t norm = t3d_vert_pack_normal(&normalVec);
+    
+    constexpr float BORDER_THICKNESS = 2.0f;
+    
+    // Top border (horizontal rectangle)
+    // Vertex 0: top-left outer
+    borderVertices[0].posA[0] = (int16_t)SCREEN_LEFT;
+    borderVertices[0].posA[1] = (int16_t)SCREEN_TOP;
+    borderVertices[0].posA[2] = 0;
+    borderVertices[0].normA = norm;
+    borderVertices[0].rgbaA = borderColor;
+    // Vertex 1: top-right outer
+    borderVertices[0].posB[0] = (int16_t)SCREEN_RIGHT;
+    borderVertices[0].posB[1] = (int16_t)SCREEN_TOP;
+    borderVertices[0].posB[2] = 0;
+    borderVertices[0].normB = norm;
+    borderVertices[0].rgbaB = borderColor;
+    
+    // Vertex 2: top-left inner
+    borderVertices[1].posA[0] = (int16_t)SCREEN_LEFT;
+    borderVertices[1].posA[1] = (int16_t)(SCREEN_TOP + BORDER_THICKNESS);
+    borderVertices[1].posA[2] = 0;
+    borderVertices[1].normA = norm;
+    borderVertices[1].rgbaA = borderColor;
+    // Vertex 3: top-right inner
+    borderVertices[1].posB[0] = (int16_t)SCREEN_RIGHT;
+    borderVertices[1].posB[1] = (int16_t)(SCREEN_TOP + BORDER_THICKNESS);
+    borderVertices[1].posB[2] = 0;
+    borderVertices[1].normB = norm;
+    borderVertices[1].rgbaB = borderColor;
+    
+    // Bottom border (horizontal rectangle)
+    // Vertex 4: bottom-left inner
+    borderVertices[2].posA[0] = (int16_t)SCREEN_LEFT;
+    borderVertices[2].posA[1] = (int16_t)(SCREEN_BOTTOM - BORDER_THICKNESS);
+    borderVertices[2].posA[2] = 0;
+    borderVertices[2].normA = norm;
+    borderVertices[2].rgbaA = borderColor;
+    // Vertex 5: bottom-right inner
+    borderVertices[2].posB[0] = (int16_t)SCREEN_RIGHT;
+    borderVertices[2].posB[1] = (int16_t)(SCREEN_BOTTOM - BORDER_THICKNESS);
+    borderVertices[2].posB[2] = 0;
+    borderVertices[2].normB = norm;
+    borderVertices[2].rgbaB = borderColor;
+    
+    // Vertex 6: bottom-left outer
+    borderVertices[3].posA[0] = (int16_t)SCREEN_LEFT;
+    borderVertices[3].posA[1] = (int16_t)SCREEN_BOTTOM;
+    borderVertices[3].posA[2] = 0;
+    borderVertices[3].normA = norm;
+    borderVertices[3].rgbaA = borderColor;
+    // Vertex 7: bottom-right outer
+    borderVertices[3].posB[0] = (int16_t)SCREEN_RIGHT;
+    borderVertices[3].posB[1] = (int16_t)SCREEN_BOTTOM;
+    borderVertices[3].posB[2] = 0;
+    borderVertices[3].normB = norm;
+    borderVertices[3].rgbaB = borderColor;
+    
+    // Left border (vertical rectangle)
+    // Vertex 8: top-left outer
+    borderVertices[4].posA[0] = (int16_t)SCREEN_LEFT;
+    borderVertices[4].posA[1] = (int16_t)SCREEN_TOP;
+    borderVertices[4].posA[2] = 0;
+    borderVertices[4].normA = norm;
+    borderVertices[4].rgbaA = borderColor;
+    // Vertex 9: top-left inner
+    borderVertices[4].posB[0] = (int16_t)(SCREEN_LEFT + BORDER_THICKNESS);
+    borderVertices[4].posB[1] = (int16_t)SCREEN_TOP;
+    borderVertices[4].posB[2] = 0;
+    borderVertices[4].normB = norm;
+    borderVertices[4].rgbaB = borderColor;
+    
+    // Vertex 10: bottom-left outer
+    borderVertices[5].posA[0] = (int16_t)SCREEN_LEFT;
+    borderVertices[5].posA[1] = (int16_t)SCREEN_BOTTOM;
+    borderVertices[5].posA[2] = 0;
+    borderVertices[5].normA = norm;
+    borderVertices[5].rgbaA = borderColor;
+    // Vertex 11: bottom-left inner
+    borderVertices[5].posB[0] = (int16_t)(SCREEN_LEFT + BORDER_THICKNESS);
+    borderVertices[5].posB[1] = (int16_t)SCREEN_BOTTOM;
+    borderVertices[5].posB[2] = 0;
+    borderVertices[5].normB = norm;
+    borderVertices[5].rgbaB = borderColor;
+    
+    // Right border (vertical rectangle)
+    // Vertex 12: top-right inner
+    borderVertices[6].posA[0] = (int16_t)(SCREEN_RIGHT - BORDER_THICKNESS);
+    borderVertices[6].posA[1] = (int16_t)SCREEN_TOP;
+    borderVertices[6].posA[2] = 0;
+    borderVertices[6].normA = norm;
+    borderVertices[6].rgbaA = borderColor;
+    // Vertex 13: top-right outer
+    borderVertices[6].posB[0] = (int16_t)SCREEN_RIGHT;
+    borderVertices[6].posB[1] = (int16_t)SCREEN_TOP;
+    borderVertices[6].posB[2] = 0;
+    borderVertices[6].normB = norm;
+    borderVertices[6].rgbaB = borderColor;
+    
+    // Vertex 14: bottom-right inner
+    borderVertices[7].posA[0] = (int16_t)(SCREEN_RIGHT - BORDER_THICKNESS);
+    borderVertices[7].posA[1] = (int16_t)SCREEN_BOTTOM;
+    borderVertices[7].posA[2] = 0;
+    borderVertices[7].normA = norm;
+    borderVertices[7].rgbaA = borderColor;
+    // Vertex 15: bottom-right outer
+    borderVertices[7].posB[0] = (int16_t)SCREEN_RIGHT;
+    borderVertices[7].posB[1] = (int16_t)SCREEN_BOTTOM;
+    borderVertices[7].posB[2] = 0;
+    borderVertices[7].normB = norm;
+    borderVertices[7].rgbaB = borderColor;
 }
 
 SceneLast64::~SceneLast64()
@@ -119,6 +244,16 @@ SceneLast64::~SceneLast64()
     if (sceneMatFP) {
         free_uncached(sceneMatFP);
         sceneMatFP = nullptr;
+    }
+    
+    // Clean up border geometry
+    if (borderVertices) {
+        free_uncached(borderVertices);
+        borderVertices = nullptr;
+    }
+    if (borderMatrix) {
+        free_uncached(borderMatrix);
+        borderMatrix = nullptr;
     }
 }
 
@@ -603,6 +738,38 @@ void SceneLast64::drawMarbleBackground(float deltaTime)
     rdpq_set_mode_standard();
 }
 
+void SceneLast64::drawArenaBorder()
+{
+    // Draw arena border in 3D space at Z=0 (where players and enemies are)
+    // This will match the actual movement boundaries
+    
+    if (!borderVertices || !borderMatrix) return;
+    
+    // Draw border as 4 thin rectangles forming the outline
+    t3d_matrix_push(borderMatrix);
+    t3d_vert_load(borderVertices, 0, 16); // Load all 16 vertices (8 structs × 2 verts each)
+    
+    // Top border (vertices 0-3)
+    t3d_tri_draw(0, 1, 2);
+    t3d_tri_draw(2, 1, 3);
+    
+    // Bottom border (vertices 4-7)
+    t3d_tri_draw(4, 5, 6);
+    t3d_tri_draw(6, 5, 7);
+    
+    // Left border (vertices 8-11)
+    t3d_tri_draw(8, 9, 10);
+    t3d_tri_draw(10, 9, 11);
+    
+    // Right border (vertices 12-15)
+    t3d_tri_draw(12, 13, 14);
+    t3d_tri_draw(14, 13, 15);
+    
+    t3d_tri_sync();
+    
+    t3d_matrix_pop(1);
+}
+
 void SceneLast64::draw3D(float deltaTime)
 {
     camera.attach();
@@ -615,6 +782,7 @@ void SceneLast64::draw3D(float deltaTime)
         rdpq_fill_rectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
         rdpq_set_mode_standard();
     }
+    
     t3d_screen_clear_depth();
     // rdpq_set_env_color({0xFF, 0xAA, 0xEE, 0xAA}); //slightly see-through soft magenta
 
@@ -629,6 +797,8 @@ void SceneLast64::draw3D(float deltaTime)
     // Set up rendering state
     //t3d_state_set_drawflags((enum T3DDrawFlags)(T3D_FLAG_SHADED | T3D_FLAG_DEPTH));
     
+    // Draw arena border in 3D space
+    drawArenaBorder();
     
     // Set combiner mode to use vertex colors (SHADE) instead of textures
     rdpq_mode_combiner(RDPQ_COMBINER_SHADE);
