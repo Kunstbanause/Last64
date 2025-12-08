@@ -14,6 +14,7 @@
 #include <rspq_constants.h>
 #include <rspq_profile.h>
 #include <mixer.h>
+#include <rdpq_mode.h>
 
 #include <t3d/t3d.h>
 #include <t3d/tpx.h>
@@ -385,11 +386,18 @@ int main()
 
     rdpq_set_scissor(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    // Use fill mode with color for the XP bar body
-    rdpq_set_mode_fill(RGBA32(100, 200, 255, 255)); // Light blue color
+    // Reset to a known mode, then enable blending + flat combiner so PRIM alpha actually blends.
+    rdpq_set_mode_standard();
+    rdpq_mode_combiner(RDPQ_COMBINER_FLAT);
+    rdpq_mode_blender(RDPQ_BLENDER_MULTIPLY);
+
+    // Optional: alpha dithering helps smooth 5-bit alpha on RGBA16 targets.
+    rdpq_mode_dithering(DITHER_BAYER_INVBAYER);
+
+    rdpq_set_prim_color(RGBA32(100, 200, 255, 128));  // Semi-transparent light blue
     rdpq_fill_rectangle(0, SCREEN_HEIGHT - (barHeight * 2), barWidth, SCREEN_HEIGHT);
 
-    // Draw a short white flash at the leading edge when XP is collected
+    // Draw a short white flash at the leading edge when XP is collected, still blended.
     float flash = Experience::getXPBarFlash();
     if (flash > 0.001f) {
       // Flash width scales with bar width but caps to a reasonable size
@@ -398,7 +406,7 @@ int main()
       int fx0 = barWidth - flashWidth;
       if (fx0 < 0) fx0 = 0;
       uint8_t a = (uint8_t)(255.0f * (flash));
-      rdpq_set_mode_fill(RGBA32(255,255,255,a));
+      rdpq_set_prim_color(RGBA32(255,255,255,a));
       rdpq_fill_rectangle(fx0, SCREEN_HEIGHT - (barHeight * 2), barWidth, SCREEN_HEIGHT);
     }
     rdpq_detach_show();
