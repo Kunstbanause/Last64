@@ -297,7 +297,7 @@ namespace MainMenu {
                 break;
             }
             case UPGRADES_MENU: {
-                rdpq_text_printf(nullptr, FONT_MENU, 50, 80, "UPGRADES");
+                rdpq_text_printf(nullptr, FONT_MENU, 50, 20, "UPGRADES");
                 
                 uint32_t available = SaveGame::get_credits_available();
                 uint8_t pickupLevel = SaveGame::get_pickup_range_level();
@@ -307,7 +307,7 @@ namespace MainMenu {
                 char buffer[256];
                 
                 // Pickup Range Upgrade
-                int yPos = 110;
+                int yPos = 46;
                 if (upgradeSelection == UPGRADE_PICKUP_RANGE) {
                     rdpq_text_printf(nullptr, FONT_MENU, 40, yPos, ">");
                 }
@@ -400,7 +400,9 @@ namespace MainMenu {
                 break;
             }
             case STATS_MENU: {
-                rdpq_text_printf(nullptr, FONT_MENU, 50, 80, "STATS");
+                int yPos = 20;
+                rdpq_text_printf(nullptr, FONT_MENU, 50, yPos, "STATS");
+                yPos += 20;
                 
                 // Display save game stats
                 uint32_t totalLevelUps = SaveGame::get_total_level_ups();
@@ -409,15 +411,16 @@ namespace MainMenu {
                 
                 char buffer[256];
                 snprintf(buffer, sizeof(buffer), "Total Level Ups: %lu", (unsigned long)totalLevelUps);
-                rdpq_text_printf(nullptr, FONT_MENU, 50, 130, buffer);
+                rdpq_text_printf(nullptr, FONT_MENU, 50, yPos, buffer);
+                yPos += 20;
 
                 if (bestTime == 0) {
-                    rdpq_text_printf(nullptr, FONT_MENU, 50, 160, "Best Time: --:--");
+                    rdpq_text_printf(nullptr, FONT_MENU, 50, yPos, "Best Time: --:--");
                 } else {
                     int minutes = bestTime / 60;
                     int seconds = bestTime % 60;
                     snprintf(buffer, sizeof(buffer), "Best Time: %02d:%02d", minutes, seconds);
-                    rdpq_text_printf(nullptr, FONT_MENU, 50, 160, buffer);
+                    rdpq_text_printf(nullptr, FONT_MENU, 50, yPos, buffer);
                 }
 
                 // snprintf(buffer, sizeof(buffer), "Levels Complete: 0x%04x", (unsigned)flags);
@@ -428,7 +431,7 @@ namespace MainMenu {
                     rdpq_text_printf(nullptr, FONT_MENU, 50, 180, "^01PURGE SAVE DATA?");
                     rdpq_text_printf(nullptr, FONT_MENU, 50, 200, "^01Press A to confirm, D-Up to cancel");
                 } else {
-                    rdpq_text_printf(nullptr, FONT_MENU, 50, 180, "Press D-Down for ^01PURGE^00 or ^01B^00 to return");
+                    rdpq_text_printf(nullptr, FONT_MENU, 50, 180, "Press D-Down for ^01PURGE^00 or \n ^01B^00 to return");
                 }
                 break;
             }

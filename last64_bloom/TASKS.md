@@ -7,12 +7,14 @@
     - More enemy spawn
     - Faster projectile speed
     - More xp per enemy
-- Unlock weapons
 - More levels, unlocked when completing previous level
 - Different enemy types
     - Shooter
     - etc...
 - Fix title image behind debug start menu
+- Background in different color depending on level and main menu
+- Render arena boder only if round is running
+- Get rid of press A to play state. Show the text when no second player has joined yet in the round instead (top right corner)
 - Intro with camera movement
 - Colored debug text (Should work with the font styles)
 - Player Light (Currently the shapes are not affected by light)
@@ -22,6 +24,7 @@
 - Split up code more. main and scene are pretty big
 
 # DONE
+- Unlock weapons
 ## Phase 0: Files and Compile
 - Create the needed files, incl. a makefile in order to compile
 - Render a single box
