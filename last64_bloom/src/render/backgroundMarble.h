@@ -11,6 +11,7 @@
 class BackgroundMarble {
 private:
     float marbleTime;
+    float phaseOffset;  // Random offset for pattern variation
     
 public:
     BackgroundMarble();
