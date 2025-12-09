@@ -41,7 +41,7 @@ namespace {
 }
 
 BackgroundMarble::BackgroundMarble()
-    : marbleTime(0.0f)
+    : marbleTime(0.0f), theme(PaletteTheme::RED)
 {
     initSineTable();
     
@@ -59,6 +59,30 @@ BackgroundMarble::~BackgroundMarble()
 void BackgroundMarble::reset()
 {
     marbleTime = 0.0f;
+}
+
+void BackgroundMarble::setTheme(PaletteTheme newTheme)
+{
+    theme = newTheme;
+    // Update palette based on theme
+    switch (theme) {
+        case PaletteTheme::RED: // default burgundy
+            base_r = 55;  base_g = 25;  base_b = 28;
+            accent_r = 110; accent_g = 45; accent_b = 55;
+            break;
+        case PaletteTheme::GREEN: // deep green
+            base_r = 24;  base_g = 50;  base_b = 36;
+            accent_r = 70; accent_g = 120; accent_b = 90;
+            break;
+        case PaletteTheme::PINK: // vibrant pink
+            base_r = 70;  base_g = 24;  base_b = 48;
+            accent_r = 170; accent_g = 70;  accent_b = 150;
+            break;
+        case PaletteTheme::GREY: // muted greys for menus
+            base_r = 42;  base_g = 42;  base_b = 42;
+            accent_r = 96; accent_g = 96; accent_b = 96;
+            break;
+    }
 }
 
 void BackgroundMarble::draw(float deltaTime)
@@ -109,14 +133,7 @@ void BackgroundMarble::draw(float deltaTime)
             uint32_t patternAngle = (uint32_t)((px_new * 3.5f + py_new * 2.8f + phase * 0.7f) * 256.0f / (2.0f * M_PI)) & 0xFF;
             float pattern = 0.5f + 0.5f * (fastSin(patternAngle) / 256.0f);
 
-            // Balanced palette (dark gray with moderate reddish tint)
-            uint8_t base_r = 55;
-            uint8_t base_g = 25;
-            uint8_t base_b = 28;
-            uint8_t accent_r = 110;
-            uint8_t accent_g = 45;
-            uint8_t accent_b = 55;
-
+            // Palette varies by theme (set via setTheme)
             uint8_t r = base_r + (uint8_t)((accent_r - base_r) * pattern);
             uint8_t g = base_g + (uint8_t)((accent_g - base_g) * pattern);
             uint8_t b = base_b + (uint8_t)((accent_b - base_b) * pattern);

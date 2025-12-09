@@ -34,6 +34,7 @@ class SceneLast64 : public Scene
     
     // Background effects
     BackgroundMarble* backgroundMarble;
+    int currentLevelIndex;
 
     // Player instances                                                                                                                                                                                                                                
     Actor::Player* player1;                                                                                                                                                                                                                             
@@ -51,6 +52,8 @@ class SceneLast64 : public Scene
     void draw2D(float deltaTime) final;                                                                                                                                                                                                                 
     bool isRestartRequested() const { return restartRequested; }
     bool isRoundActive() const { return currentGameState == ROUND_ACTIVE; }
+    void setLevelIndex(int idx) { currentLevelIndex = idx; }
+    int getLevelIndex() const { return currentLevelIndex; }
 
     SceneLast64();                                                                                                                                                                                                                                      
     ~SceneLast64();                                                                                                                                                                                                                                     

@@ -9,11 +9,8 @@
 #include <cstdint>
 
 class BackgroundMarble {
-private:
-    float marbleTime;
-    float phaseOffset;  // Random offset for pattern variation
-    
 public:
+    enum class PaletteTheme { RED, GREEN, PINK, GREY };
     BackgroundMarble();
     ~BackgroundMarble();
     
@@ -23,4 +20,15 @@ public:
     
     // Reset animation time
     void reset();
+
+    // Change palette theme (affects base/accent colors)
+    void setTheme(PaletteTheme newTheme);
+    
+private:
+    float marbleTime;
+    float phaseOffset;  // Random offset for pattern variation
+    PaletteTheme theme;
+    // Current palette values
+    uint8_t base_r{55}, base_g{25}, base_b{28};
+    uint8_t accent_r{110}, accent_g{45}, accent_b{55};
 };

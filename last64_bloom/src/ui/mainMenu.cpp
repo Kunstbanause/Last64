@@ -9,6 +9,7 @@
 #include "../debugMenu.h"
 #include <libdragon.h>
 #include <cstdio>
+#include <algorithm>
 
 // External flags from scenes
 extern bool showMarbleBackground;
@@ -23,9 +24,36 @@ namespace MainMenu {
     static rdpq_font_t* font = nullptr;
     static bool initialized = false;
     static sprite_t* titleSprite = nullptr;
+    static int selectedLevel = 0;
     
     // Purge confirmation
     static bool showPurgeConfirm = false;
+
+    static constexpr int kMaxLevels = 3;
+    static const char* kLevelNames[kMaxLevels] = {
+        "Level 1: Crimson Bloom",
+        "Level 2: Verdant Bloom",
+        "Level 3: Rose Bloom"
+    };
+
+    static int highestUnlockedLevel()
+    {
+        // Sequential unlock: level 0 always unlocked, level 1 unlocks after beating level 0, etc.
+        uint16_t flags = SaveGame::get_level_complete_flags();
+        bool unlocked[kMaxLevels] = {true, false, false};
+        unlocked[1] = (flags & (1u << 0)) != 0u;  // Beat level 0 to unlock level 1
+        unlocked[2] = (flags & (1u << 1)) != 0u;  // Beat level 1 to unlock level 2
+
+        int highest = 0;
+        for (int i = 0; i < kMaxLevels; ++i) {
+            if (unlocked[i]) {
+                highest = i;
+            } else {
+                break; // stop at first locked because unlocks are sequential
+            }
+        }
+        return highest;
+    }
 
     void initialize() {
         // Only do full initialization once
@@ -71,6 +99,7 @@ namespace MainMenu {
         upgradeSelection = 0;
         shouldStart = false;
         showPurgeConfirm = false;
+        selectedLevel = std::min(selectedLevel, highestUnlockedLevel());
     }
 
     void update(float deltaTime) {
@@ -130,11 +159,22 @@ namespace MainMenu {
 
         switch (currentState) {
             case MAIN_MENU: {
+                int maxUnlocked = highestUnlockedLevel();
+                if (selectedLevel > maxUnlocked) selectedLevel = maxUnlocked;
+
                 if (pressed.d_up || stickUp) {
                     currentSelection = (currentSelection - 1 + 3) % 3;
                 }
                 if (pressed.d_down || stickDown) {
                     currentSelection = (currentSelection + 1) % 3;
+                }
+                if (currentSelection == 0) {
+                    if (pressed.d_left || stickLeft) {
+                        selectedLevel = (selectedLevel - 1 + (maxUnlocked + 1)) % (maxUnlocked + 1);
+                    }
+                    if (pressed.d_right || stickRight) {
+                        selectedLevel = (selectedLevel + 1) % (maxUnlocked + 1);
+                    }
                 }
                 if (pressed.a || pressed.z) {
                     if (currentSelection == 0) {
@@ -287,12 +327,20 @@ namespace MainMenu {
 
         switch (currentState) {
             case MAIN_MENU: {
-                rdpq_text_printf(nullptr, FONT_MENU, 100, 120, "Start Level");
-                rdpq_text_printf(nullptr, FONT_MENU, 100, 140, "Upgrades");
-                rdpq_text_printf(nullptr, FONT_MENU, 100, 160, "Stats");
+                int maxUnlocked = highestUnlockedLevel();
+                rdpq_text_printf(nullptr, FONT_MENU, 100, 120, "Start Level (L%d/%d)", selectedLevel + 1, kMaxLevels);
+                rdpq_text_printf(nullptr, FONT_MENU, 120, 140, "%s", kLevelNames[selectedLevel]);
+                if (maxUnlocked + 1 < kMaxLevels) {
+                    rdpq_text_printf(nullptr, FONT_MENU, 120, 160, "Next unlock: beat L%d", maxUnlocked + 1);
+                } else {
+                    rdpq_text_printf(nullptr, FONT_MENU, 120, 160, "All levels unlocked");
+                }
+
+                rdpq_text_printf(nullptr, FONT_MENU, 100, 190, "Upgrades");
+                rdpq_text_printf(nullptr, FONT_MENU, 100, 210, "Stats");
 
                 // Draw selection indicator
-                int yPos = 120 + (currentSelection * 20);
+                int yPos = (currentSelection == 0) ? 120 : (currentSelection == 1 ? 190 : 210);
                 rdpq_text_printf(nullptr, FONT_MENU, 90, yPos, ">");
                 break;
             }
@@ -444,5 +492,9 @@ namespace MainMenu {
 
     bool shouldStartGame() {
         return shouldStart;
+    }
+
+    int getSelectedLevel() {
+        return selectedLevel;
     }
 }

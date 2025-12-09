@@ -12,6 +12,7 @@
     - Shooter
     - etc...
 - Fix title image behind debug start menu
+- Show a little icon left of the upgrade in the upgrade menu
 - Background in different color depending on level and main menu
 - XP Bar flash in the actual size of gain xp, not fixed size?
 - Get rid of press A to play state. Show the text when no second player has joined yet in the round instead (top right corner)

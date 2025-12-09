@@ -32,5 +32,6 @@ namespace MainMenu {
     
     MenuState getCurrentState();
     bool shouldStartGame();
+    int getSelectedLevel();
     void reset();
 }

@@ -33,6 +33,15 @@ namespace {
   T3DMat4FP* borderMatrix = nullptr;
 }
 
+static BackgroundMarble::PaletteTheme themeForLevel(int levelIdx) {
+        switch (levelIdx) {
+                case 0: return BackgroundMarble::PaletteTheme::RED;   // existing burgundy
+                case 1: return BackgroundMarble::PaletteTheme::GREEN; // deep green
+                case 2: return BackgroundMarble::PaletteTheme::PINK;  // pink
+                default: return BackgroundMarble::PaletteTheme::RED;
+        }
+}
+
 // Debug menu flag for marble background (extern so debugMenu can access)
 bool showMarbleBackground = true;
 bool marbleBackgroundChanged = false;
@@ -63,9 +72,11 @@ SceneLast64::SceneLast64()
     roundTimer = 0.0f;
     exposure = 30.0f; // Set exposure for HDR effect
     restartRequested = false; // Scene restart flag for game over
+    currentLevelIndex = 0;
     
     // Initialize background marble
     backgroundMarble = new BackgroundMarble();
+    backgroundMarble->setTheme(BackgroundMarble::PaletteTheme::GREY); // Muted main menu look
 
     // Set up camera
     camera.fov = T3D_DEG_TO_RAD(80.0f);
@@ -286,6 +297,8 @@ void SceneLast64::updateScene(float deltaTime)
             
             // Check if player wants to start the game
             if (MainMenu::shouldStartGame()) {
+                currentLevelIndex = MainMenu::getSelectedLevel();
+                backgroundMarble->setTheme(themeForLevel(currentLevelIndex));
                 currentGameState = WAITING_FOR_PLAYERS;
                 MainMenu::reset();
             }
@@ -477,6 +490,7 @@ void SceneLast64::updateScene(float deltaTime)
                 
                 // Transition to main menu
                 currentGameState = MAIN_MENU;
+                backgroundMarble->setTheme(BackgroundMarble::PaletteTheme::GREY);
                 MainMenu::reset();
                 
                 // Reset game state and end round immediately
@@ -509,7 +523,7 @@ void SceneLast64::updateScene(float deltaTime)
                 isRoundCurrentlyActive = false;
                 // Save best time and mark level complete
                 SaveGame::maybe_update_best_time((uint32_t)roundTimer);
-                SaveGame::set_level_complete(0); // level index 0 for now
+                SaveGame::set_level_complete(currentLevelIndex);
                 // Play a level complete sound or effect
                 gSFXManager.setVolume_Music(1.0f, 0.34f); // restore normal music volume
             }
@@ -615,7 +629,7 @@ void SceneLast64::updateScene(float deltaTime)
                 int maxWaves = Waves::getWaveCount();
                 if (currentWave >= maxWaves - 1) {
                     // For now level index 0
-                    SaveGame::set_level_complete(0);
+                    SaveGame::set_level_complete(currentLevelIndex);
                 }
             }
             break;
@@ -647,6 +661,7 @@ void SceneLast64::updateScene(float deltaTime)
                 // Return to main menu with proper cleanup
                 currentGameState = MAIN_MENU;
                 MainMenu::reset();
+                backgroundMarble->setTheme(BackgroundMarble::PaletteTheme::GREY);
                 
                 // Reset game state
                 for (int i = 0; i < 4; ++i) {
