@@ -820,11 +820,14 @@ void SceneLast64::draw2D(float deltaTime)
             break;
         }
         case WAITING_FOR_PLAYERS: {
-            // Display "Press A to join" in two columns: players 1-2 on the left, 3-4 on the right
-            Debug::printf(25, 10, "Player 1 to 4: Press (A) to join");
+            // Waiting for players - no special display here, the round will start when first player joins
             break;
         }
         case ROUND_ACTIVE: {
+            // Show "Waiting for 2nd player" in top right if only one player has joined
+            if (activePlayerCount < 2) {
+                Debug::printf(SCREEN_WIDTH - 120, 2, "Press A to join");
+            }
             // Draw player weapons overview
             // Draw player 1 and 2 weapons at top left
             Actor::Player* playersTopLeft[2] = {player1, player2};

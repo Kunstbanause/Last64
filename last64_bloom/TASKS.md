@@ -12,10 +12,8 @@
     - etc...
 - Fix title image behind debug start menu
 - Show a little icon left of the upgrade in the upgrade menu
-- XP Bar flash in the actual size of gain xp, not fixed size?
-- Get rid of press A to play state. Show the text when no second player has joined yet in the round instead (top right corner)
 - Intro with camera movement
-- levels with custom enemy wave setup
+- Our different levels should feature custom enemy wave setups
 - Settings menu: Music, marble background, etc...
 - Colored debug text (Should work with the font styles)
 - Player Light (Currently the shapes are not affected by light)
@@ -24,7 +22,8 @@
 - Spiral Weapon upgrades break old projectiles, stay in place detached from player
 - Split up code more. main and scene are pretty big
 
-# DONE
+# DONE- XP Bar flash in the actual size of gain xp, not fixed size?
+
 - Unlock weapons
 - Render arena boder only if round is running
 - Background in different color depending on level and main menu
