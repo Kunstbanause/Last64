@@ -126,8 +126,31 @@ namespace Actor {
             // Use specific weapon based on debug selection
             weaponType = debugWeaponSelection - 1;
         } else {
-            // Random weapon selection (0-5)
-            weaponType = rand() % WeaponRegistry::getWeaponCount();
+            // Random weapon selection from unlocked weapons only
+            std::vector<int> unlockedWeaponIndices;
+            
+            // First 4 weapons are always unlocked
+            for (int i = 0; i < 4; ++i) {
+                unlockedWeaponIndices.push_back(i);
+            }
+            
+            // Check if SHIELD (index 4) is unlocked via credits purchase
+            if (SaveGame::is_shield_weapon_unlocked()) {
+                unlockedWeaponIndices.push_back(4);
+            }
+            
+            // Check if SHAPE (index 5) is unlocked via credits purchase
+            if (SaveGame::is_shape_weapon_unlocked()) {
+                unlockedWeaponIndices.push_back(5);
+            }
+            
+            // Select randomly from unlocked weapons
+            if (!unlockedWeaponIndices.empty()) {
+                int randomIdx = rand() % unlockedWeaponIndices.size();
+                weaponType = unlockedWeaponIndices[randomIdx];
+            } else {
+                weaponType = 0; // Fallback to projectile
+            }
         }
         
         WeaponBase* initialWeapon = nullptr;

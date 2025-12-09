@@ -7,8 +7,7 @@
     - More enemy spawn
     - Faster projectile speed
     - More xp per enemy
-    - Unlock weapons
-    - etc...
+- Unlock weapons
 - More levels, unlocked when completing previous level
 - Different enemy types
     - Shooter

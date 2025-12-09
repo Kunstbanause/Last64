@@ -66,4 +66,11 @@ uint8_t get_projectile_count_level(); // Projectile count upgrade level
 void set_projectile_count_level(uint8_t level);
 int get_projectile_count_bonus();  // Returns level (flat bonus)
 
+// Weapon unlocks
+bool is_shield_weapon_unlocked();   // Defense/Shield weapon unlock state
+void set_shield_weapon_unlocked(bool unlocked);
+
+bool is_shape_weapon_unlocked();    // Shape/Whip weapon unlock state
+void set_shape_weapon_unlocked(bool unlocked);
+
 }

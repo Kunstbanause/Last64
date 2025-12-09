@@ -4,12 +4,33 @@
 */
 #include "upgrade_system.h"
 #include "weapon_registry.h"
+#include "../memory/savegame.h"
 #include <cstdlib>
 #include <algorithm>
 #include <typeinfo>
 #include <set>
 
 namespace UpgradeSystem {
+    // Check if a weapon type is unlocked for offering
+    static bool isWeaponTypeUnlocked(Actor::WeaponType type) {
+        switch (type) {
+            case Actor::WeaponType::PROJECTILE:
+            case Actor::WeaponType::HOMING:
+            case Actor::WeaponType::CIRCULAR:
+            case Actor::WeaponType::SPIRAL:
+                // First 4 weapons are always available
+                return true;
+            case Actor::WeaponType::SHIELD:
+                // Shield is available only if unlocked via credits purchase
+                return SaveGame::is_shield_weapon_unlocked();
+            case Actor::WeaponType::SHAPE:
+                // Shape is available only if unlocked via credits purchase
+                return SaveGame::is_shape_weapon_unlocked();
+            default:
+                return false;
+        }
+    }
+    
     std::vector<UpgradeOption> generateUpgradeOptions(Actor::Player* player) {
         std::vector<UpgradeOption> options;
         
@@ -61,7 +82,10 @@ namespace UpgradeSystem {
             const std::vector<Actor::WeaponType>& allWeaponTypes = WeaponRegistry::getAllWeaponTypes();
             for (const auto& weaponType : allWeaponTypes) {
                 if (existingWeaponTypes.find(weaponType) == existingWeaponTypes.end()) {
-                    availableWeaponTypes.push_back(weaponType);
+                    // Only offer unlocked weapons
+                    if (isWeaponTypeUnlocked(weaponType)) {
+                        availableWeaponTypes.push_back(weaponType);
+                    }
                 }
             }
             
@@ -111,6 +135,14 @@ namespace UpgradeSystem {
         } else if (option.type == UpgradeType::NEW_WEAPON) {
             // Add the new weapon to the player
             if (option.weapon && player) {
+                // Auto-unlock the weapon when it's first offered
+                Actor::WeaponType wt = option.weapon->getWeaponType();
+                if (wt == Actor::WeaponType::SHIELD) {
+                    SaveGame::set_shield_weapon_unlocked(true);
+                } else if (wt == Actor::WeaponType::SHAPE) {
+                    SaveGame::set_shape_weapon_unlocked(true);
+                }
+                
                 option.weapon->setPlayer(player);
                 player->addWeapon(option.weapon);
             }

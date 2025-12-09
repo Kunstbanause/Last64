@@ -186,6 +186,28 @@ namespace MainMenu {
                             SaveGame::set_projectile_count_level(currentLevel + 1);
                             debugf("MainMenu: Purchased projectile count upgrade (level %d)\n", currentLevel + 1);
                         }
+                    } else if (upgradeSelection == UPGRADE_SHIELD_WEAPON) {
+                        // Unlock Shield weapon (100 credits, one-time purchase)
+                        uint32_t available = SaveGame::get_credits_available();
+                        bool isUnlocked = SaveGame::is_shield_weapon_unlocked();
+                        const uint32_t unlockCost = 100;
+                        
+                        if (!isUnlocked && available >= unlockCost) {
+                            SaveGame::spend_credits(unlockCost);
+                            SaveGame::set_shield_weapon_unlocked(true);
+                            debugf("MainMenu: Unlocked Shield weapon\n");
+                        }
+                    } else if (upgradeSelection == UPGRADE_SHAPE_WEAPON) {
+                        // Unlock Shape weapon (150 credits, one-time purchase)
+                        uint32_t available = SaveGame::get_credits_available();
+                        bool isUnlocked = SaveGame::is_shape_weapon_unlocked();
+                        const uint32_t unlockCost = 150;
+                        
+                        if (!isUnlocked && available >= unlockCost) {
+                            SaveGame::spend_credits(unlockCost);
+                            SaveGame::set_shape_weapon_unlocked(true);
+                            debugf("MainMenu: Unlocked Shape weapon\n");
+                        }
                     } else if (upgradeSelection == UPGRADE_RESET_CREDITS) {
                         // Reset all spent credits (refund)
                         SaveGame::reset_credits_spent();
@@ -327,6 +349,42 @@ namespace MainMenu {
                     rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^0250 CR^00");
                 } else {
                     rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^0150 CR^00");
+                }
+                
+                // Shield Weapon Unlock
+                yPos += 20;
+                if (upgradeSelection == UPGRADE_SHIELD_WEAPON) {
+                    rdpq_text_printf(nullptr, FONT_MENU, 40, yPos, ">");
+                }
+                bool shieldUnlocked = SaveGame::is_shield_weapon_unlocked();
+                if (shieldUnlocked) {
+                    rdpq_text_printf(nullptr, FONT_MENU, 50, yPos, "Defense (Unlocked)");
+                    rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^02OWNED^00");
+                } else {
+                    rdpq_text_printf(nullptr, FONT_MENU, 50, yPos, "Unlock: Defense");
+                    if (available >= 100) {
+                        rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^02100 CR^00");
+                    } else {
+                        rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^01100 CR^00");
+                    }
+                }
+                
+                // Shape Weapon Unlock
+                yPos += 20;
+                if (upgradeSelection == UPGRADE_SHAPE_WEAPON) {
+                    rdpq_text_printf(nullptr, FONT_MENU, 40, yPos, ">");
+                }
+                bool shapeUnlocked = SaveGame::is_shape_weapon_unlocked();
+                if (shapeUnlocked) {
+                    rdpq_text_printf(nullptr, FONT_MENU, 50, yPos, "Whip (Unlocked)");
+                    rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^02OWNED^00");
+                } else {
+                    rdpq_text_printf(nullptr, FONT_MENU, 50, yPos, "Unlock: Whip");
+                    if (available >= 150) {
+                        rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^02150 CR^00");
+                    } else {
+                        rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^01150 CR^00");
+                    }
                 }
                 
                 // Reset Credits
