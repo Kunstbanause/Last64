@@ -3,12 +3,24 @@
 - bosses are very similar, fast boss?
 - Improved Spawning: Similar to vampire with fill screen instead of basic frequency
 - More passive upgrades
-- Title image behind debug start menu
+    - Player movespeed
+    - More enemy spawn
+    - Faster projectile speed
+    - More xp per enemy
+    - Unlock weapons
+    - etc...
+- More levels, unlocked when completing previous level
+- Different enemy types
+    - Shooter
+    - etc...
+- Fix title image behind debug start menu
 - Intro with camera movement
-- Colored debug text
-- Player Light
+- Colored debug text (Should work with the font styles)
+- Player Light (Currently the shapes are not affected by light)
+- Quick test whether texture on enemies would work, like xp
 - Main menu in main.cpp instead of sceneLast64.cpp
 - Spiral Weapon upgrades break old projectiles, stay in place detached from player
+- Split up code more. main and scene are pretty big
 
 # DONE
 ## Phase 0: Files and Compile

@@ -89,5 +89,4 @@ The original procedural marble background was consuming **~50% of frame time**, 
 ## Future Optimization Opportunities
 1. **Precalculate all frames ahead**: Load entire animation at scene start (3-4 seconds)
 2. **RSP computation**: Move to Reality Signal Processor for true parallel processing
-3. **Mipmap optimization**: Use smaller tiles as distance increases (screen-space LOD)
-4. **Texture-based approach**: Pre-render high-quality version to texture, animate UVs
+3. **Texture-based approach**: Pre-render high-quality version to texture, animate UVs
