@@ -34,6 +34,7 @@ namespace {
     // XP bar flash state
     static float xpFlashTimer = 0.0f;
     static const float xpFlashDuration = 0.35f;
+    static int xpGainAmount = 0;  // Tracks the XP gained for scaling flash
 
 void Experience::initialize() {
     currentXP = 0;
@@ -100,6 +101,7 @@ void Experience::addXP(int amount) {
     currentXP += amount;
     // Trigger a short XP bar flash so the player can glance the pickup
     xpFlashTimer = xpFlashDuration;
+    xpGainAmount = amount;  // Track the gain amount for flash width scaling
     if (currentXP >= xpToNextLevel) {
         currentLevel++;
         currentXP -= xpToNextLevel;
@@ -193,6 +195,10 @@ void Experience::tick(float deltaTime) {
 float Experience::getXPBarFlash() {
     if (xpFlashTimer <= 0.0f) return 0.0f;
     return xpFlashTimer / xpFlashDuration; // 0..1
+}
+
+int Experience::getXPGainAmount() {
+    return xpGainAmount;
 }
 
 int Experience::getLevel() {

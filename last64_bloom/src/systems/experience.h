@@ -31,8 +31,9 @@ namespace Experience {
     // Per-frame tick for experience system (call from main loop)
     void tick(float deltaTime);
 
-    // XP bar flash intensity (0..1)
+    // XP bar flash intensity (0..1) and gain amount for scaling
     float getXPBarFlash();
+    int getXPGainAmount();
 
     // Pending upgrade choice helpers (two choices shown to player)
     bool hasPendingChoice(Actor::Player* player);

@@ -440,11 +440,16 @@ int main()
       }
     }
 
-    // Draw a short white flash at the leading edge when XP is collected, still blended.
+    // Draw a white flash at the leading edge when XP is collected, scaled by gain amount
     float flash = Experience::getXPBarFlash();
     if (flash > 0.001f) {
-      int flashWidth = (int)(16 + (barWidth * 0.05f));
-      if (flashWidth > 64) flashWidth = 64;
+      int xpGain = Experience::getXPGainAmount();
+      int xpToLevel = Experience::getXToNextLevel();
+      // Scale flash width proportionally to XP gained (as fraction of XP to next level)
+      float gainFraction = (float)xpGain / (float)xpToLevel;
+      gainFraction = (gainFraction < 0.05f) ? 0.05f : gainFraction;  // Minimum 5% width
+      int flashWidth = (int)(barWidth * gainFraction);
+      if (flashWidth > barWidth) flashWidth = barWidth;
       int fx0 = barWidth - flashWidth;
       if (fx0 < 0) fx0 = 0;
       uint8_t a = (uint8_t)(255.0f * (flash));
