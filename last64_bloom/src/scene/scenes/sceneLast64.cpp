@@ -829,8 +829,8 @@ void SceneLast64::draw2D(float deltaTime)
                 Debug::printf(SCREEN_WIDTH - 120, 2, "Press A to join");
             }
             // Draw player weapons overview
-            // Draw player 1 and 2 weapons at top left
-            Actor::Player* playersTopLeft[2] = {player1, player2};
+            // Draw player 1 and 3 weapons at top left
+            Actor::Player* playersTopLeft[2] = {player1, player3};
             for (int i = 0; i < 2; ++i) {
                 Actor::Player* currentPlayer = playersTopLeft[i];
                 if (currentPlayer) {
@@ -838,7 +838,8 @@ void SceneLast64::draw2D(float deltaTime)
                     auto& weapons = currentPlayer->getWeapons();
                     if (!weapons.empty()) {
                         // Draw player number
-                        Debug::printf(10, 10 + (i * 20), "P%d", i + 1);
+                        int playerNum = (i == 0) ? 1 : 3;  // P1 or P3
+                        Debug::printf(10, 10 + (i * 20), "P%d", playerNum);
                         
                         // Draw weapon icons
                         float iconX = 35; // Start position for icons
@@ -856,13 +857,14 @@ void SceneLast64::draw2D(float deltaTime)
                             }
                         }
                     } else {
-                        Debug::printf(10, 10 + (i * 20), "P%d:None", i + 1);
+                        int playerNum = (i == 0) ? 1 : 3;  // P1 or P3
+                        Debug::printf(10, 10 + (i * 20), "P%d:None", playerNum);
                     }
                 }
             }
             
-            // Draw player 3 and 4 weapons at top right
-            Actor::Player* playersTopRight[2] = {player3, player4};
+            // Draw player 2 and 4 weapons at top right
+            Actor::Player* playersTopRight[2] = {player2, player4};
             for (int i = 0; i < 2; ++i) {
                 Actor::Player* currentPlayer = playersTopRight[i];
                 if (currentPlayer) {
@@ -875,8 +877,8 @@ void SceneLast64::draw2D(float deltaTime)
                         float yPosition = 10 + (i * 20); // Same vertical spacing as top left
                         
                         // Draw player number at the rightmost position
-                        int playerNum = i + 3; // Player 3 or 4
-                        int numWidth = 20; // Approximate width for "P3:" or "P4:"
+                        int playerNum = (i == 0) ? 2 : 4;  // Player 2 or 4
+                        int numWidth = 20; // Approximate width for "P2:" or "P4:"
                         Debug::printf(baseX - numWidth, yPosition, "P%d", playerNum);
                         
                         // Draw weapon icons to the left of the player number
@@ -903,7 +905,8 @@ void SceneLast64::draw2D(float deltaTime)
                     } else {
                         // Calculate position for "None" text
                         float yPosition = 10 + (i * 10);
-                        Debug::printf(SCREEN_WIDTH - 50, yPosition, "P%d:None", i + 3);
+                        int playerNum = (i == 0) ? 2 : 4;  // P2 or P4
+                        Debug::printf(SCREEN_WIDTH - 50, yPosition, "P%d:None", playerNum);
                     }
                 }
             }
