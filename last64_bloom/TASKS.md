@@ -7,16 +7,16 @@
     - More enemy spawn
     - Faster projectile speed
     - More xp per enemy
-- More levels, unlocked when completing previous level
 - Different enemy types
     - Shooter
     - etc...
 - Fix title image behind debug start menu
 - Show a little icon left of the upgrade in the upgrade menu
-- Background in different color depending on level and main menu
 - XP Bar flash in the actual size of gain xp, not fixed size?
 - Get rid of press A to play state. Show the text when no second player has joined yet in the round instead (top right corner)
 - Intro with camera movement
+- levels with custom enemy wave setup
+- Settings menu: Music, marble background, etc...
 - Colored debug text (Should work with the font styles)
 - Player Light (Currently the shapes are not affected by light)
 - Quick test whether texture on enemies would work, like xp
@@ -27,6 +27,9 @@
 # DONE
 - Unlock weapons
 - Render arena boder only if round is running
+- Background in different color depending on level and main menu
+- More levels, unlocked when completing previous level
+
 
 ## Phase 0: Files and Compile
 - Create the needed files, incl. a makefile in order to compile

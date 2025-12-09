@@ -31,9 +31,9 @@ namespace MainMenu {
 
     static constexpr int kMaxLevels = 3;
     static const char* kLevelNames[kMaxLevels] = {
-        "Level 1: Crimson Bloom",
-        "Level 2: Verdant Bloom",
-        "Level 3: Rose Bloom"
+        "Crimson Bloom",
+        "Verdant Bloom",
+        "Rose Bloom"
     };
 
     static int highestUnlockedLevel()
@@ -328,19 +328,17 @@ namespace MainMenu {
         switch (currentState) {
             case MAIN_MENU: {
                 int maxUnlocked = highestUnlockedLevel();
-                rdpq_text_printf(nullptr, FONT_MENU, 100, 120, "Start Level (L%d/%d)", selectedLevel + 1, kMaxLevels);
+                rdpq_text_printf(nullptr, FONT_MENU, 100, 120, "Start (Level%d/%d)", selectedLevel + 1, kMaxLevels);
                 rdpq_text_printf(nullptr, FONT_MENU, 120, 140, "%s", kLevelNames[selectedLevel]);
-                if (maxUnlocked + 1 < kMaxLevels) {
-                    rdpq_text_printf(nullptr, FONT_MENU, 120, 160, "Next unlock: beat L%d", maxUnlocked + 1);
-                } else {
+                if (!(maxUnlocked + 1 < kMaxLevels)) {
                     rdpq_text_printf(nullptr, FONT_MENU, 120, 160, "All levels unlocked");
                 }
 
-                rdpq_text_printf(nullptr, FONT_MENU, 100, 190, "Upgrades");
-                rdpq_text_printf(nullptr, FONT_MENU, 100, 210, "Stats");
+                rdpq_text_printf(nullptr, FONT_MENU, 100, 180, "Upgrades");
+                rdpq_text_printf(nullptr, FONT_MENU, 100, 200, "Stats");
 
                 // Draw selection indicator
-                int yPos = (currentSelection == 0) ? 120 : (currentSelection == 1 ? 190 : 210);
+                int yPos = (currentSelection == 0) ? 120 : (currentSelection == 1 ? 180 : 200);
                 rdpq_text_printf(nullptr, FONT_MENU, 90, yPos, ">");
                 break;
             }
@@ -455,7 +453,7 @@ namespace MainMenu {
                 // Display save game stats
                 uint32_t totalLevelUps = SaveGame::get_total_level_ups();
                 uint32_t bestTime = SaveGame::get_best_time();
-                //uint16_t flags = SaveGame::get_level_complete_flags();
+                uint16_t flags = SaveGame::get_level_complete_flags();
                 
                 char buffer[256];
                 snprintf(buffer, sizeof(buffer), "Total Level Ups: %lu", (unsigned long)totalLevelUps);
@@ -469,6 +467,22 @@ namespace MainMenu {
                     int seconds = bestTime % 60;
                     snprintf(buffer, sizeof(buffer), "Best Time: %02d:%02d", minutes, seconds);
                     rdpq_text_printf(nullptr, FONT_MENU, 50, yPos, buffer);
+                }
+
+                yPos += 20;
+
+                // Show level unlock mask and per-level status
+                snprintf(buffer, sizeof(buffer), "Levels: (0x%04x)", (unsigned)flags);
+                rdpq_text_printf(nullptr, FONT_MENU, 50, yPos, buffer);
+                yPos += 15;
+
+                for (int i = 0; i < kMaxLevels; ++i) {
+                    bool completed = (flags & (1u << i)) != 0u;
+                    bool unlocked = (i == 0) || (flags & (1u << (i - 1))) || completed;
+                    const char* state = completed ? "COMPLETED" : (unlocked ? "UNLOCKED" : "LOCKED");
+                    snprintf(buffer, sizeof(buffer), "L%d %s - %s", i + 1, kLevelNames[i], state);
+                    rdpq_text_printf(nullptr, FONT_MENU, 50, yPos, buffer);
+                    yPos += 15;
                 }
 
                 // snprintf(buffer, sizeof(buffer), "Levels Complete: 0x%04x", (unsigned)flags);
