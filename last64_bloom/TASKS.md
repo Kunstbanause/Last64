@@ -13,7 +13,7 @@
     - etc...
 - Fix title image behind debug start menu
 - Background in different color depending on level and main menu
-- Render arena boder only if round is running
+- XP Bar flash in the actual size of gain xp, not fixed size?
 - Get rid of press A to play state. Show the text when no second player has joined yet in the round instead (top right corner)
 - Intro with camera movement
 - Colored debug text (Should work with the font styles)
@@ -25,6 +25,8 @@
 
 # DONE
 - Unlock weapons
+- Render arena boder only if round is running
+
 ## Phase 0: Files and Compile
 - Create the needed files, incl. a makefile in order to compile
 - Render a single box

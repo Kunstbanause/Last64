@@ -755,11 +755,13 @@ void SceneLast64::draw3D(float deltaTime)
     // Set combiner mode to use vertex colors (SHADE) instead of textures
     rdpq_mode_combiner(RDPQ_COMBINER_SHADE);
     
-    // Draw arena border in 3D space with alpha blending
-    rdpq_mode_push();
-    rdpq_mode_blender(RDPQ_BLENDER_MULTIPLY);
-    drawArenaBorder();
-    rdpq_mode_pop();
+    // Draw arena border in 3D space with alpha blending (only while round is active)
+    if (currentGameState == ROUND_ACTIVE) {
+        rdpq_mode_push();
+        rdpq_mode_blender(RDPQ_BLENDER_MULTIPLY);
+        drawArenaBorder();
+        rdpq_mode_pop();
+    }
     
     // Draw all shapes
     Actor::Shape::drawAll(deltaTime);
@@ -894,19 +896,19 @@ void SceneLast64::draw2D(float deltaTime)
             }
 
             // Draw current wave
-            Debug::printf(SCREEN_WIDTH/2-20, 10, "Wave:%d", SpawnManager::getCurrentWave() + 1);
+            Debug::printf(SCREEN_WIDTH/2-20, 2, "Wave:%d", SpawnManager::getCurrentWave() + 1);
 
             // Draw round timer
             int minutes = (int)roundTimer / 60;
             int seconds = (int)roundTimer % 60;
             if (minutes > 0) {
-                Debug::printf(142, 20, "%02d:%02d", minutes, seconds);
+                Debug::printf(142, 12, "%02d:%02d", minutes, seconds);
             } else {
-                Debug::printf(150, 20, "%02d", seconds);
+                Debug::printf(150, 12, "%02d", seconds);
             }
 
             // Draw Level
-            Debug::printf(10, SCREEN_HEIGHT-30, "Level:%d", Experience::getLevel());
+            Debug::printf(SCREEN_WIDTH-60, SCREEN_HEIGHT-10, "Level:%d", Experience::getLevel());
 
             // Draw pending upgrade choices for players (so they render on top in 2D)
             Actor::Player* playersArr[4] = {player1, player2, player3, player4};
