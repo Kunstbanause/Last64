@@ -73,6 +73,7 @@ SceneLast64::SceneLast64()
     exposure = 30.0f; // Set exposure for HDR effect
     restartRequested = false; // Scene restart flag for game over
     currentLevelIndex = 0;
+    firstPlayerSide = -1;  // Track which side the first player joins on (-1 = no players yet)
     
     // Initialize background marble
     backgroundMarble = new BackgroundMarble();
@@ -301,6 +302,13 @@ void SceneLast64::updateScene(float deltaTime)
                 backgroundMarble->setTheme(themeForLevel(currentLevelIndex));
                 currentGameState = WAITING_FOR_PLAYERS;
                 MainMenu::reset();
+                
+                // Reset player joining state for new level
+                for (int i = 0; i < 4; ++i) {
+                    playerJoined[i] = false;
+                }
+                firstPlayerSide = -1;
+                activePlayerCount = 0;
             }
             break;
         }
@@ -311,6 +319,13 @@ void SceneLast64::updateScene(float deltaTime)
                     joypad_inputs_t inputs = joypad_get_inputs((joypad_port_t)(JOYPAD_PORT_1 + i));
                     if (inputs.btn.a || inputs.btn.z) {
                         playerJoined[i] = true;
+                        
+                        // Track which side the first player joined on
+                        if (firstPlayerSide == -1) {
+                            // i: 0,2 = left side (P1, P3), 1,3 = right side (P2, P4)
+                            firstPlayerSide = (i == 0 || i == 2) ? 0 : 1;
+                        }
+                        
                         // Create player instance
                         T3DVec3 startPos;
                         if (isForceAllPlayers) { // Debug spawn all players
@@ -497,6 +512,7 @@ void SceneLast64::updateScene(float deltaTime)
                 for (int i = 0; i < 4; ++i) {
                     playerJoined[i] = false;
                 }
+                firstPlayerSide = -1;  // Reset first player side tracker
                 isRoundCurrentlyActive = false;
                 roundTimer = 0.0f; // Reset round timer
                 Experience::initialize(); // Reset XP bar and level
@@ -667,6 +683,7 @@ void SceneLast64::updateScene(float deltaTime)
                 for (int i = 0; i < 4; ++i) {
                     playerJoined[i] = false;
                 }
+                firstPlayerSide = -1;  // Reset first player side tracker
                 isRoundCurrentlyActive = false;
                 roundTimer = 0.0f; // Reset round timer
                 Experience::initialize(); // Reset XP bar and level
@@ -824,9 +841,15 @@ void SceneLast64::draw2D(float deltaTime)
             break;
         }
         case ROUND_ACTIVE: {
-            // Show "Waiting for 2nd player" in top right if only one player has joined
-            if (activePlayerCount < 2) {
-                Debug::printf(SCREEN_WIDTH - 120, 2, "Press A to join");
+            // Show "Press A to join" on the opposite side from the first player
+            if (activePlayerCount < 2 && firstPlayerSide != -1) {
+                if (firstPlayerSide == 0) {
+                    // First player on left (P1/P3), show prompt on right
+                    Debug::printf(SCREEN_WIDTH - 120, 2, "Press A to join");
+                } else {
+                    // First player on right (P2/P4), show prompt on left
+                    Debug::printf(10, 2, "Press A to join");
+                }
             }
             // Draw player weapons overview
             // Draw player 1 and 3 weapons at top left

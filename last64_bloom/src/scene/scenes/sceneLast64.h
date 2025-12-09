@@ -31,6 +31,7 @@ class SceneLast64 : public Scene
     bool playerJoined[4];
     float roundTimer;
     float exposure; // HDR exposure value
+    int firstPlayerSide;  // Track which side (0=left P1/P3, 1=right P2/P4) the first player joined on
     
     // Background effects
     BackgroundMarble* backgroundMarble;
