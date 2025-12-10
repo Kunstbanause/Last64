@@ -226,6 +226,50 @@ namespace MainMenu {
                             SaveGame::set_projectile_count_level(currentLevel + 1);
                             debugf("MainMenu: Purchased projectile count upgrade (level %d)\n", currentLevel + 1);
                         }
+                       } else if (upgradeSelection == UPGRADE_MOVESPEED) {
+                           // Purchase movespeed upgrade (15 credits per level)
+                           uint32_t available = SaveGame::get_credits_available();
+                           uint8_t currentLevel = SaveGame::get_movespeed_level();
+                           const uint32_t upgradeCost = 15;
+                       
+                           if (available >= upgradeCost && currentLevel < 10) { // Max 10 levels
+                               SaveGame::spend_credits(upgradeCost);
+                               SaveGame::set_movespeed_level(currentLevel + 1);
+                               debugf("MainMenu: Purchased movespeed upgrade (level %d)\n", currentLevel + 1);
+                           }
+                       } else if (upgradeSelection == UPGRADE_ENEMY_SPAWN_RATE) {
+                           // Purchase enemy spawn rate upgrade (25 credits per level)
+                           uint32_t available = SaveGame::get_credits_available();
+                           uint8_t currentLevel = SaveGame::get_enemy_spawn_rate_level();
+                           const uint32_t upgradeCost = 25;
+                       
+                           if (available >= upgradeCost && currentLevel < 8) { // Max 8 levels
+                               SaveGame::spend_credits(upgradeCost);
+                               SaveGame::set_enemy_spawn_rate_level(currentLevel + 1);
+                               debugf("MainMenu: Purchased enemy spawn rate upgrade (level %d)\n", currentLevel + 1);
+                           }
+                       } else if (upgradeSelection == UPGRADE_PROJECTILE_SPEED) {
+                           // Purchase projectile speed upgrade (20 credits per level)
+                           uint32_t available = SaveGame::get_credits_available();
+                           uint8_t currentLevel = SaveGame::get_projectile_speed_level();
+                           const uint32_t upgradeCost = 20;
+                       
+                           if (available >= upgradeCost && currentLevel < 10) { // Max 10 levels
+                               SaveGame::spend_credits(upgradeCost);
+                               SaveGame::set_projectile_speed_level(currentLevel + 1);
+                               debugf("MainMenu: Purchased projectile speed upgrade (level %d)\n", currentLevel + 1);
+                           }
+                       } else if (upgradeSelection == UPGRADE_XP_MULTIPLIER) {
+                           // Purchase XP multiplier upgrade (30 credits per level)
+                           uint32_t available = SaveGame::get_credits_available();
+                           uint8_t currentLevel = SaveGame::get_xp_multiplier_level();
+                           const uint32_t upgradeCost = 30;
+                       
+                           if (available >= upgradeCost && currentLevel < 8) { // Max 8 levels
+                               SaveGame::spend_credits(upgradeCost);
+                               SaveGame::set_xp_multiplier_level(currentLevel + 1);
+                               debugf("MainMenu: Purchased XP multiplier upgrade (level %d)\n", currentLevel + 1);
+                           }
                     } else if (upgradeSelection == UPGRADE_SHIELD_WEAPON) {
                         // Unlock Shield weapon (100 credits, one-time purchase)
                         uint32_t available = SaveGame::get_credits_available();
@@ -254,6 +298,10 @@ namespace MainMenu {
                         SaveGame::set_pickup_range_level(0); // Reset upgrades too
                         SaveGame::set_damage_level(0);
                         SaveGame::set_projectile_count_level(0);
+                           SaveGame::set_movespeed_level(0);
+                           SaveGame::set_enemy_spawn_rate_level(0);
+                           SaveGame::set_projectile_speed_level(0);
+                           SaveGame::set_xp_multiplier_level(0);
                         debugf("MainMenu: Reset all upgrades\n");
                     }
                 }
@@ -343,17 +391,21 @@ namespace MainMenu {
                 break;
             }
             case UPGRADES_MENU: {
-                rdpq_text_printf(nullptr, FONT_MENU, 50, 20, "UPGRADES");
+                rdpq_text_printf(nullptr, FONT_MENU, 50, 12, "UPGRADES");
                 
                 uint32_t available = SaveGame::get_credits_available();
                 uint8_t pickupLevel = SaveGame::get_pickup_range_level();
                 uint8_t damageLevel = SaveGame::get_damage_level();
                 uint8_t projectileLevel = SaveGame::get_projectile_count_level();
+                   uint8_t movespeedLevel = SaveGame::get_movespeed_level();
+                   uint8_t spawnRateLevel = SaveGame::get_enemy_spawn_rate_level();
+                   uint8_t projectileSpeedLevel = SaveGame::get_projectile_speed_level();
+                   uint8_t xpMultiplierLevel = SaveGame::get_xp_multiplier_level();
                 
                 char buffer[256];
                 
                 // Pickup Range Upgrade
-                int yPos = 46;
+                int yPos = 40;
                 if (upgradeSelection == UPGRADE_PICKUP_RANGE) {
                     rdpq_text_printf(nullptr, FONT_MENU, 40, yPos, ">");
                 }
@@ -368,7 +420,7 @@ namespace MainMenu {
                 }
                 
                 // Damage Upgrade
-                yPos += 20;
+                yPos += 12;
                 if (upgradeSelection == UPGRADE_DAMAGE) {
                     rdpq_text_printf(nullptr, FONT_MENU, 40, yPos, ">");
                 }
@@ -383,7 +435,7 @@ namespace MainMenu {
                 }
                 
                 // Projectile Count Upgrade
-                yPos += 20;
+                yPos += 12;
                 if (upgradeSelection == UPGRADE_PROJECTILE_COUNT) {
                     rdpq_text_printf(nullptr, FONT_MENU, 40, yPos, ">");
                 }
@@ -397,8 +449,68 @@ namespace MainMenu {
                     rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^0150 CR^00");
                 }
                 
+                   // Movespeed Upgrade
+                   yPos += 12;
+                   if (upgradeSelection == UPGRADE_MOVESPEED) {
+                       rdpq_text_printf(nullptr, FONT_MENU, 40, yPos, ">");
+                   }
+                   snprintf(buffer, sizeof(buffer), "Movespeed +5%% (Lv %d/10)", movespeedLevel);
+                   rdpq_text_printf(nullptr, FONT_MENU, 50, yPos, buffer);
+                   if (movespeedLevel >= 10) {
+                       rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^02MAX^00");
+                   } else if (available >= 15) {
+                       rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^0215 CR^00");
+                   } else {
+                       rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^0115 CR^00");
+                   }
+               
+                   // Enemy Spawn Rate Upgrade
+                   yPos += 12;
+                   if (upgradeSelection == UPGRADE_ENEMY_SPAWN_RATE) {
+                       rdpq_text_printf(nullptr, FONT_MENU, 40, yPos, ">");
+                   }
+                   snprintf(buffer, sizeof(buffer), "Enemy Spawn +10%% (Lv %d/8)", spawnRateLevel);
+                   rdpq_text_printf(nullptr, FONT_MENU, 50, yPos, buffer);
+                   if (spawnRateLevel >= 8) {
+                       rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^02MAX^00");
+                   } else if (available >= 25) {
+                       rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^0225 CR^00");
+                   } else {
+                       rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^0125 CR^00");
+                   }
+               
+                   // Projectile Speed Upgrade
+                   yPos += 12;
+                   if (upgradeSelection == UPGRADE_PROJECTILE_SPEED) {
+                       rdpq_text_printf(nullptr, FONT_MENU, 40, yPos, ">");
+                   }
+                   snprintf(buffer, sizeof(buffer), "Projectile Speed +5%% (Lv %d/10)", projectileSpeedLevel);
+                   rdpq_text_printf(nullptr, FONT_MENU, 50, yPos, buffer);
+                   if (projectileSpeedLevel >= 10) {
+                       rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^02MAX^00");
+                   } else if (available >= 20) {
+                       rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^0220 CR^00");
+                   } else {
+                       rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^0120 CR^00");
+                   }
+               
+                   // XP Multiplier Upgrade
+                   yPos += 12;
+                   if (upgradeSelection == UPGRADE_XP_MULTIPLIER) {
+                       rdpq_text_printf(nullptr, FONT_MENU, 40, yPos, ">");
+                   }
+                   snprintf(buffer, sizeof(buffer), "XP Gain +10%% (Lv %d/8)", xpMultiplierLevel);
+                   rdpq_text_printf(nullptr, FONT_MENU, 50, yPos, buffer);
+                   if (xpMultiplierLevel >= 8) {
+                       rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^02MAX^00");
+                   } else if (available >= 30) {
+                       rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^0230 CR^00");
+                   } else {
+                       rdpq_text_printf(nullptr, FONT_MENU, 250, yPos, "^0130 CR^00");
+                   }
+               
                 // Shield Weapon Unlock
-                yPos += 20;
+                yPos += 12;
                 if (upgradeSelection == UPGRADE_SHIELD_WEAPON) {
                     rdpq_text_printf(nullptr, FONT_MENU, 40, yPos, ">");
                 }
@@ -416,7 +528,7 @@ namespace MainMenu {
                 }
                 
                 // Shape Weapon Unlock
-                yPos += 20;
+                yPos += 12;
                 if (upgradeSelection == UPGRADE_SHAPE_WEAPON) {
                     rdpq_text_printf(nullptr, FONT_MENU, 40, yPos, ">");
                 }

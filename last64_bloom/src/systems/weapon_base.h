@@ -58,6 +58,9 @@ namespace Actor {
         // Get projectile count bonus from upgrades
         int getProjectileCountBonus() const;
         
+        // Get projectile speed with multiplier applied
+        float getFinalProjectileSpeed(float baseSpeed) const;
+        
         T3DVec3 getSpawnOffset() const { return spawnOffset; }
         void setSpawnOffset(const T3DVec3& offset) { spawnOffset = offset; }
     };

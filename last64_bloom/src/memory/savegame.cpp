@@ -53,6 +53,10 @@ static uint8_t s_damage_level = 0;
 static uint8_t s_projectile_count_level = 0;
 static bool s_shield_weapon_unlocked = false;
 static bool s_shape_weapon_unlocked = false;
+static uint8_t s_movespeed_level = 0;
+static uint8_t s_enemy_spawn_rate_level = 0;
+static uint8_t s_projectile_speed_level = 0;
+static uint8_t s_xp_multiplier_level = 0;
 
 static void load_structured_state() {
   if (!eeprom_present()) return;
@@ -82,6 +86,13 @@ static void load_structured_state() {
   s_projectile_count_level = buf3[2];
   s_shield_weapon_unlocked = buf3[3] != 0;
   s_shape_weapon_unlocked = buf3[4] != 0;
+  s_movespeed_level = buf3[5];
+  s_enemy_spawn_rate_level = buf3[6];
+  s_projectile_speed_level = buf3[7];
+  // read block 4 for xp_multiplier_level
+  uint8_t buf4[8];
+  eeprom_read(4, buf4);
+  s_xp_multiplier_level = buf4[0];
 }
 
 static void save_structured_state() {
@@ -116,10 +127,17 @@ static void save_structured_state() {
     s_projectile_count_level, 
     (uint8_t)(s_shield_weapon_unlocked ? 1 : 0),
     (uint8_t)(s_shape_weapon_unlocked ? 1 : 0),
-    0, 0, 0 
+    s_movespeed_level,
+    s_enemy_spawn_rate_level,
+    s_projectile_speed_level
   };
   uint8_t res3 = eeprom_write(3, buf3);
-  if (res1 == 0 && res2 == 0 && res3 == 0) {
+  uint8_t buf4[8] = { 
+    s_xp_multiplier_level, 
+    0, 0, 0, 0, 0, 0, 0 
+  };
+  uint8_t res4 = eeprom_write(4, buf4);
+  if (res1 == 0 && res2 == 0 && res3 == 0 && res4 == 0) {
     if (s_best_time == 0xFFFFFFFF) {
       debugf("SaveGame: structured write OK - LevelUps:%lu Best:--:-- Flags:0x%04x\n", (unsigned long)s_total_level_ups, (unsigned)s_level_complete_flags);
     } else {
@@ -128,7 +146,7 @@ static void save_structured_state() {
       debugf("SaveGame: structured write OK - LevelUps:%lu Best:%02d:%02d Flags:0x%04x\n", (unsigned long)s_total_level_ups, bm, bs, (unsigned)s_level_complete_flags);
     }
   } else {
-    debugf("SaveGame: structured write FAILED res1=%u res2=%u\n", (unsigned)res1, (unsigned)res2);
+      debugf("SaveGame: structured write FAILED res1=%u res2=%u res3=%u res4=%u\n", (unsigned)res1, (unsigned)res2, (unsigned)res3, (unsigned)res4);
   }
 }
 
@@ -329,6 +347,10 @@ void purge_save() {
   s_projectile_count_level = 0;
   s_shield_weapon_unlocked = false;
   s_shape_weapon_unlocked = false;
+  s_movespeed_level = 0;
+  s_enemy_spawn_rate_level = 0;
+  s_projectile_speed_level = 0;
+  s_xp_multiplier_level = 0;
   // Write the default state to EEPROM using save_structured_state
   // This ensures the default values (music=true, marble=true) are properly written
   save_structured_state();
@@ -336,6 +358,62 @@ void purge_save() {
   uint8_t zeros[8] = {0};
   eeprom_write(0, zeros);
   debugf("SaveGame: purge complete\n");
+}
+
+// Passive upgrade: Player movement speed
+uint8_t get_movespeed_level() {
+  return s_movespeed_level;
+}
+
+void set_movespeed_level(uint8_t level) {
+  s_movespeed_level = level;
+  save_structured_state();
+}
+
+float get_movespeed_multiplier() {
+  return 1.0f + (s_movespeed_level * 0.05f); // 5% per level
+}
+
+// Passive upgrade: Enemy spawn rate
+uint8_t get_enemy_spawn_rate_level() {
+  return s_enemy_spawn_rate_level;
+}
+
+void set_enemy_spawn_rate_level(uint8_t level) {
+  s_enemy_spawn_rate_level = level;
+  save_structured_state();
+}
+
+float get_enemy_spawn_rate_multiplier() {
+  return 1.0f + (s_enemy_spawn_rate_level * 0.1f); // 10% per level
+}
+
+// Passive upgrade: Projectile speed
+uint8_t get_projectile_speed_level() {
+  return s_projectile_speed_level;
+}
+
+void set_projectile_speed_level(uint8_t level) {
+  s_projectile_speed_level = level;
+  save_structured_state();
+}
+
+float get_projectile_speed_multiplier() {
+  return 1.0f + (s_projectile_speed_level * 0.05f); // 5% per level
+}
+
+// Passive upgrade: XP collection multiplier
+uint8_t get_xp_multiplier_level() {
+  return s_xp_multiplier_level;
+}
+
+void set_xp_multiplier_level(uint8_t level) {
+  s_xp_multiplier_level = level;
+  save_structured_state();
+}
+
+float get_xp_multiplier() {
+  return 1.0f + (s_xp_multiplier_level * 0.1f); // 10% per level
 }
 
 }

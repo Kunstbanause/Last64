@@ -98,10 +98,12 @@ void Experience::removePlayer(Actor::Player* player) {
 }
 
 void Experience::addXP(int amount) {
-    currentXP += amount;
+    // Apply XP multiplier from passive upgrades
+    int multipliedAmount = (int)(amount * SaveGame::get_xp_multiplier());
+    currentXP += multipliedAmount;
     // Trigger a short XP bar flash so the player can glance the pickup
     xpFlashTimer = xpFlashDuration;
-    xpGainAmount = amount;  // Track the gain amount for flash width scaling
+    xpGainAmount = multipliedAmount;  // Track the gain amount for flash width scaling
     if (currentXP >= xpToNextLevel) {
         currentLevel++;
         currentXP -= xpToNextLevel;

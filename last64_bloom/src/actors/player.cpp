@@ -216,7 +216,9 @@ namespace Actor {
         // Handle player input
         joypad_inputs_t stick = joypad_get_inputs(playerPort); // Get analog stick inputs
         
-        float moveSpeed = speed * deltaTime;
+        // Apply movespeed multiplier from passive upgrades
+        float baseMoveSpeed = speed * SaveGame::get_movespeed_multiplier();
+        float moveSpeed = baseMoveSpeed * deltaTime;
         
         // 3D movement - X and Y for horizontal/vertical movement, Z stays constant
         // Note: In the N64's coordidinate system with the camera looking down the Z-axis,

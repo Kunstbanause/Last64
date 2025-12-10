@@ -5,6 +5,7 @@
 #include "spawn_manager.h"
 #include "waves.h"
 #include "../main.h"
+#include "../memory/savegame.h"
 #include <libdragon.h>
 #include <vector>
 #include <algorithm>
@@ -209,7 +210,7 @@ namespace SpawnManager {
             }
             
             spawnTimer += deltaTime;
-            if (spawnTimer > config.spawnInterval) {
+            if (spawnTimer > config.spawnInterval / SaveGame::get_enemy_spawn_rate_multiplier()) {
                 spawnTimer = 0.0f;
                 enemiesSpawned++; // Increment the enemy counter
                 

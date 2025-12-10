@@ -11,6 +11,7 @@
     - Shooter
     - etc...
 - Fix title image behind debug start menu
+- Rework upgrade menu to feature icons and a grid. some descp. text on the side so less tect is on the screen. Show upgrade levels on the icon. Buy, refund, etc buttons at the bottom
 - Show a little icon left of the upgrade in the upgrade menu
 - Intro with camera movement
 - Our different levels should feature custom enemy wave setups

@@ -127,7 +127,7 @@ namespace Actor {
         if (player) {
             projectileColor = player->getColor();
         }
-        Projectile::spawn(spawnPos, fireDirection, projectileSpeed, projectileSlowdown, projectileLifetime, getFinalDamage(), projectileColor, projectileSize);
+        Projectile::spawn(spawnPos, fireDirection, getFinalProjectileSpeed(projectileSpeed), projectileSlowdown, projectileLifetime, getFinalDamage(), projectileColor, projectileSize);
     }
 
     void WeaponHoming::fireManual() {

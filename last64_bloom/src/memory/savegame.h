@@ -73,4 +73,21 @@ void set_shield_weapon_unlocked(bool unlocked);
 bool is_shape_weapon_unlocked();    // Shape/Whip weapon unlock state
 void set_shape_weapon_unlocked(bool unlocked);
 
+// Passive upgrades (stat bonuses, not weapon-specific)
+uint8_t get_movespeed_level();      // Player movement speed upgrade level
+void set_movespeed_level(uint8_t level);
+float get_movespeed_multiplier();   // Returns 1.0 + (level * 0.05) - 5% per level
+
+uint8_t get_enemy_spawn_rate_level(); // Enemy spawn rate upgrade level
+void set_enemy_spawn_rate_level(uint8_t level);
+float get_enemy_spawn_rate_multiplier(); // Returns 1.0 + (level * 0.1) - 10% per level
+
+uint8_t get_projectile_speed_level(); // Projectile speed upgrade level
+void set_projectile_speed_level(uint8_t level);
+float get_projectile_speed_multiplier(); // Returns 1.0 + (level * 0.05) - 5% per level
+
+uint8_t get_xp_multiplier_level();  // XP collection multiplier upgrade level
+void set_xp_multiplier_level(uint8_t level);
+float get_xp_multiplier();          // Returns 1.0 + (level * 0.1) - 10% per level
+
 }

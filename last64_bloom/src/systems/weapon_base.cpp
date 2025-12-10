@@ -47,4 +47,8 @@ namespace Actor {
     int WeaponBase::getProjectileCountBonus() const {
         return SaveGame::get_projectile_count_bonus();
     }
+
+    float WeaponBase::getFinalProjectileSpeed(float baseSpeed) const {
+        return baseSpeed * SaveGame::get_projectile_speed_multiplier();
+    }
 }
