@@ -68,6 +68,7 @@ SceneLast64::SceneLast64()
         playerJoined[i] = false;
     }
     activePlayerCount = 0;
+    pauseMenuSelection = 0;
     roundTimer = 0.0f;
     exposure = 30.0f; // Set exposure for HDR effect
     restartRequested = false; // Scene restart flag for game over
@@ -289,6 +290,32 @@ void SceneLast64::updateScene(float deltaTime)
     // Update camera
     camera.update(deltaTime);
     camera.attach();
+
+    auto exitToMainMenu = [this]() {
+        currentGameState = MAIN_MENU;
+        backgroundMarble->setTheme(BackgroundMarble::PaletteTheme::GREY);
+        MainMenu::reset();
+
+        for (int i = 0; i < 4; ++i) {
+            playerJoined[i] = false;
+        }
+        firstPlayerSide = -1;
+        activePlayerCount = 0;
+        isRoundCurrentlyActive = false;
+        roundTimer = 0.0f;
+        Experience::initialize();
+
+        Actor::Enemy::cleanup();
+        Actor::Projectile::cleanup();
+        Actor::Shape::cleanup();
+        Actor::XPShard::cleanup();
+        Actor::EnemyDeathVFX::cleanup();
+
+        if (player1) { delete player1; player1 = nullptr; }
+        if (player2) { delete player2; player2 = nullptr; }
+        if (player3) { delete player3; player3 = nullptr; }
+        if (player4) { delete player4; player4 = nullptr; }
+    };
     
     switch (currentGameState) {
         case MAIN_MENU: {
@@ -312,7 +339,21 @@ void SceneLast64::updateScene(float deltaTime)
             break;
         }
         case ROUND_ACTIVE: {
-            // Check for player input to join (handles both initial join and late joins)
+            // Pause toggle (Start button on any controller)
+            for (int i = 0; i < 4; ++i) {
+                joypad_buttons_t pressed = joypad_get_buttons_pressed((joypad_port_t)(JOYPAD_PORT_1 + i));
+                if (pressed.start) {
+                    currentGameState = PAUSED;
+                    pauseMenuSelection = 0; // Default to Continue
+                    // Keep current round state; just halt gameplay updates
+                    break;
+                }
+            }
+            if (currentGameState == PAUSED) {
+                break; // Skip all gameplay updates while paused
+            }
+
+            // Check for player input to join (even during active round)
             for (int i = 0; i < 4; ++i) {
                 if (!playerJoined[i]) {
                     joypad_inputs_t inputs = joypad_get_inputs((joypad_port_t)(JOYPAD_PORT_1 + i));
@@ -412,14 +453,21 @@ void SceneLast64::updateScene(float deltaTime)
             // Debug input: Press L button to level up all players (for testing)
             for (int i = 0; i < 4; ++i) {
                 joypad_buttons_t pressed = joypad_get_buttons_pressed((joypad_port_t)(JOYPAD_PORT_1 + i));
-                if (pressed.l) {
-                    // Add XP to trigger level up
+                joypad_inputs_t inputs = joypad_get_inputs((joypad_port_t)(JOYPAD_PORT_1 + i));
+                
+                // Debug input: L+R to open debug menu (only when not already visible)
+                if (inputs.btn.l && inputs.btn.r && !Debug::isMenuVisible()) {
+                    Debug::setMenuVisible(true);
+                    break; // Only trigger once per frame
+                }
+                if (pressed.l && !inputs.btn.r) {
+                    // Add XP to trigger level up (only if R is not also pressed)
                     Experience::addXP(Experience::getXToNextLevel());
                     break; // Only trigger once per frame
                 }
                 // Debug input: Press R button to skip to next wave
-                if (pressed.r) {
-                    // Skip to next wave by adjusting the round timer
+                if (pressed.r && !inputs.btn.l) {
+                    // Skip to next wave by adjusting the round timer (only if L is not also pressed)
                     int currentWave = SpawnManager::getCurrentWave();
                     roundTimer = (currentWave + 1) * SpawnManager::getWaveTimeMax() + 1.0f; // Jump to just after the next wave starts
                     break; // Only trigger once per frame
@@ -461,35 +509,8 @@ void SceneLast64::updateScene(float deltaTime)
             if (DebugMenu::isReturnToMainMenuRequested()) {
                 // Close the debug menu immediately
                 Debug::setMenuVisible(false);
-                
-                // Transition to main menu
-                currentGameState = MAIN_MENU;
-                backgroundMarble->setTheme(BackgroundMarble::PaletteTheme::GREY);
-                MainMenu::reset();
-                
-                // Reset game state and end round immediately
-                for (int i = 0; i < 4; ++i) {
-                    playerJoined[i] = false;
-                }
-                firstPlayerSide = -1;  // Reset first player side tracker
-                isRoundCurrentlyActive = false;
-                roundTimer = 0.0f; // Reset round timer
-                Experience::initialize(); // Reset XP bar and level
-                
-                // Clean up all actors immediately
-                Actor::Enemy::cleanup();
-                Actor::Projectile::cleanup();
-                Actor::Shape::cleanup();
-                Actor::XPShard::cleanup();
-                Actor::EnemyDeathVFX::cleanup();
-                
-                if (player1) { delete player1; player1 = nullptr; }
-                if (player2) { delete player2; player2 = nullptr; }
-                if (player3) { delete player3; player3 = nullptr; }
-                if (player4) { delete player4; player4 = nullptr; }
-                
-                // Don't continue processing this frame
-                break;
+                exitToMainMenu();
+                break; // Don't continue processing this frame
             }
 
             // Check for level complete: final wave survived and no active enemies
@@ -607,6 +628,72 @@ void SceneLast64::updateScene(float deltaTime)
                     SaveGame::set_level_complete(currentLevelIndex);
                 }
             }
+            break;
+        }
+
+        case PAUSED: {
+            bool debugVisible = Debug::isMenuVisible();
+            bool resumeRequested = false;
+            bool exitRequested = false;
+
+            // Handle debug menu interactions while paused
+            if (debugVisible) {
+                // Check if debug menu wants to return to main menu (MainMenu toggle on)
+                if (DebugMenu::isReturnToMainMenuRequested()) {
+                    Debug::setMenuVisible(false);
+                    exitToMainMenu();
+                    break;
+                }
+                // Check if player wants to return to pause menu from debug menu
+                if (DebugMenu::isReturnToPauseMenuRequested()) {
+                    Debug::setMenuVisible(false);
+                    DebugMenu::resetReturnToMainMenuFlag(); // Reset the flag so it doesn't trigger on re-enter
+                    break; // Stay in PAUSED state
+                }
+                // While debug menu is visible, skip pause menu input handling
+                break;
+            }
+
+            for (int i = 0; i < 4; ++i) {
+                joypad_buttons_t pressed = joypad_get_buttons_pressed((joypad_port_t)(JOYPAD_PORT_1 + i));
+                joypad_inputs_t inputs = joypad_get_inputs((joypad_port_t)(JOYPAD_PORT_1 + i));
+
+                // L+R opens debug menu
+                if (inputs.btn.l && inputs.btn.r && !debugVisible) {
+                    Debug::setMenuVisible(true);
+                    break;
+                }
+
+                if (pressed.d_up) pauseMenuSelection = (pauseMenuSelection > 0) ? pauseMenuSelection - 1 : 1;
+                if (pressed.d_down) pauseMenuSelection = (pauseMenuSelection < 1) ? pauseMenuSelection + 1 : 0;
+
+                if ((pressed.a || pressed.z) && !debugVisible) {
+                    if (pauseMenuSelection == 0) resumeRequested = true;
+                    else if (pauseMenuSelection == 1) exitRequested = true;
+                }
+
+                if (pressed.b && !debugVisible) {
+                    // B resumes the game
+                    resumeRequested = true;
+                }
+
+                if (pressed.start && !debugVisible) {
+                    // Start resumes only from Continue option
+                    if (pauseMenuSelection == 0) resumeRequested = true;
+                }
+            }
+
+            pauseMenuSelection = (pauseMenuSelection < 0 || pauseMenuSelection > 1) ? 0 : pauseMenuSelection; // Clamp to [0,1]
+
+            if (exitRequested) {
+                exitToMainMenu();
+                break;
+            }
+            if (resumeRequested) {
+                currentGameState = ROUND_ACTIVE;
+                break;
+            }
+            // Do not advance timers or update gameplay systems while paused
             break;
         }
 
@@ -988,6 +1075,17 @@ void SceneLast64::draw2D(float deltaTime)
                 }
             }
 
+            break;
+        }
+        case PAUSED: {
+            // Pause menu overlay with selectable entries
+            int x = SCREEN_WIDTH/2 - 60;
+            int y = SCREEN_HEIGHT/2 - 32;
+            Debug::printf(x, y, "Paused");
+            Debug::printf(x, y + 16, "%c Continue", pauseMenuSelection == 0 ? '>' : ' ');
+            Debug::printf(x, y + 32, "%c Exit Round", pauseMenuSelection == 1 ? '>' : ' ');
+            Debug::printf(x, y + 52, "A/DPad: select");
+            Debug::printf(x, y + 68, "L+R: Debug");
             break;
         }
         case GAME_OVER: {

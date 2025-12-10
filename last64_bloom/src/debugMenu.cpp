@@ -209,8 +209,8 @@ void DebugMenu::draw()
   if(menuSel > maxMenuSel)menuSel = 0;
 
   int selDir = 0;
-  if(btn.a || btn.d_right || btn.c_right)selDir = 1;
-  if(btn.b || btn.d_left || btn.c_left)selDir = -1;
+  if(btn.d_right || btn.c_right)selDir = 1;
+  if(btn.d_left || btn.c_left)selDir = -1;
 
   int heldDir = 0;
   if(held.d_right || held.c_right)heldDir = 1;
@@ -377,6 +377,22 @@ bool DebugMenu::isReturnToMainMenuRequested() {
     return true;
   }
   return false;
+}
+
+void DebugMenu::resetReturnToMainMenuFlag() {
+  returnToMainMenuVar = false;
+  returnToMainMenuChanged = false;
+}
+
+bool DebugMenu::isReturnToPauseMenuRequested() {
+  // Check if Start or B button was pressed to return to pause menu
+  joypad_buttons_t combined = {0};
+  for (int i = JOYPAD_PORT_1; i <= JOYPAD_PORT_4; i++) {
+    joypad_buttons_t b = joypad_get_buttons_pressed((joypad_port_t)i);
+    combined.start |= b.start;
+    combined.b |= b.b;
+  }
+  return combined.start || combined.b;
 }
 
 void DebugMenu::reloadSettings() {

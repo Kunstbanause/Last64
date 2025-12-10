@@ -160,7 +160,11 @@ int main()
     }
     // Toggle menu on Start button press (rising edge across any port)
     static bool lastStart = false;
-    if (combined.start && !lastStart) {
+    bool blockDebugToggle = false;
+    if (auto sceneLast = dynamic_cast<SceneLast64*>(state.activeScene)) {
+      blockDebugToggle = sceneLast->isRoundActive() || sceneLast->isPaused();
+    }
+    if (combined.start && !lastStart && !blockDebugToggle) {
       showMenu = !showMenu;
     }
     lastStart = combined.start;

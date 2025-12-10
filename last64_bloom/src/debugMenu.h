@@ -32,5 +32,7 @@ namespace DebugMenu
 
   void draw();
   bool isReturnToMainMenuRequested();
+  void resetReturnToMainMenuFlag();
+  bool isReturnToPauseMenuRequested();
   void reloadSettings();
 }

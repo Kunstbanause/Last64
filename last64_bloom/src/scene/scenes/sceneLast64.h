@@ -22,6 +22,7 @@ class SceneLast64 : public Scene
   enum GameState {
     MAIN_MENU,
     ROUND_ACTIVE,
+    PAUSED,
     LEVEL_COMPLETE,
     GAME_OVER
   };
@@ -43,6 +44,7 @@ class SceneLast64 : public Scene
     Actor::Player* player4;
     int activePlayerCount;
     bool restartRequested; // Flag to signal restart to main loop
+    int pauseMenuSelection; // 0 = Continue, 1 = Exit round
                                                                                                                                                                                                                                                         
     StaticCam staticCam{camera};
     
@@ -52,6 +54,7 @@ class SceneLast64 : public Scene
     void draw2D(float deltaTime) final;                                                                                                                                                                                                                 
     bool isRestartRequested() const { return restartRequested; }
     bool isRoundActive() const { return currentGameState == ROUND_ACTIVE; }
+    bool isPaused() const { return currentGameState == PAUSED; }
     void setLevelIndex(int idx) { currentLevelIndex = idx; }
     int getLevelIndex() const { return currentLevelIndex; }
 
