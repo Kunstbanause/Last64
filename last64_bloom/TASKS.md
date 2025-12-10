@@ -13,6 +13,7 @@
 - Quick test whether texture on enemies would work, like xp (failed)
 - Main menu in main.cpp instead of sceneLast64.cpp
 - Spiral Weapon upgrades break old projectiles, stay in place detached from player
+- different color for marble in main screen (gold)
 - Split up code more. main and scene are pretty big
 - Enemy to enemy collision?
 - Stick input does not work well in main menu

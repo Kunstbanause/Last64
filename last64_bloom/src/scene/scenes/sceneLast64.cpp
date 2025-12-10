@@ -1184,9 +1184,6 @@ void SceneLast64::draw2D(float deltaTime)
             float firstRowY = 60.0f;
             float roundDuration = roundTimer > 0.0f ? roundTimer : 1.0f;
             
-            // Title/headers
-            Debug::printf(20, firstRowY - 12, "Player");
-            
             int rowIdx = 0;
             for (int playerIdx = 0; playerIdx < 4; ++playerIdx) {
                 if (!RoundStats::isPlayerActive(playerIdx)) continue;
@@ -1217,7 +1214,7 @@ void SceneLast64::draw2D(float deltaTime)
                         int dps = (int)(dmg / roundDuration);
                         Debug::printf(colX, rowY + 12.0f, "%d", dmg);
                         Debug::printf(colX, rowY + 22.0f, "(%d dps)", dps);
-                        colX += 30.0f;
+                        colX += 70.0f;
                     }
                 }
                 
