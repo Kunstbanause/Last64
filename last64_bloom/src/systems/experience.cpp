@@ -17,6 +17,7 @@ namespace {
     int currentXP = 0;
     int xpToNextLevel = 10;
     int currentLevel = 1;
+    int levelUpsThisRun = 0;
     Actor::Player* activePlayers[MAX_PLAYERS];
     int activePlayerCount = 0;
 
@@ -40,6 +41,7 @@ void Experience::initialize() {
     currentXP = 0;
     xpToNextLevel = 10;
     currentLevel = 1;
+    levelUpsThisRun = 0;
     activePlayerCount = 0;
     for (int i = 0; i < MAX_PLAYERS; ++i) {
         activePlayers[i] = nullptr;
@@ -106,6 +108,7 @@ void Experience::addXP(int amount) {
     xpGainAmount = multipliedAmount;  // Track the gain amount for flash width scaling
     if (currentXP >= xpToNextLevel) {
         currentLevel++;
+        levelUpsThisRun++;
         currentXP -= xpToNextLevel;
         xpToNextLevel = static_cast<int>(xpToNextLevel * xpGrowthFactor);
         gSFXManager.play(SFXManager::SFX_LEVEL_UP);
@@ -181,6 +184,14 @@ void Experience::addXP(int amount) {
             }
         }
     }
+}
+
+int Experience::getLevelUpsThisRun() {
+    return levelUpsThisRun;
+}
+
+int Experience::getCreditsEarnedThisRun() {
+    return levelUpsThisRun * 10;
 }
 
 void Experience::tick(float deltaTime) {

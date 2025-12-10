@@ -1125,7 +1125,8 @@ void SceneLast64::draw2D(float deltaTime)
             int seconds = (int)roundTimer % 60;
             
             Debug::printf(20, 40, "Time: %02d:%02d", minutes, seconds);
-            Debug::printf(150, 40, "Kills: %d", Actor::Enemy::getTotalDeathCount());
+            Debug::printf(120, 40, "Kills: %d", Actor::Enemy::getTotalDeathCount());
+            Debug::printf(200, 40, "Credits: %d", Experience::getCreditsEarnedThisRun());
             
             // DPS table with weapon icons for active players only
             float rowHeight = 40.0f;
@@ -1181,7 +1182,8 @@ void SceneLast64::draw2D(float deltaTime)
             int seconds = (int)roundTimer % 60;
             
             Debug::printf(20, 40, "Time: %02d:%02d", minutes, seconds);
-            Debug::printf(150, 40, "Kills: %d", Actor::Enemy::getTotalDeathCount());
+            Debug::printf(120, 40, "Kills: %d", Actor::Enemy::getTotalDeathCount());
+            Debug::printf(200, 40, "Credits: %d", Experience::getCreditsEarnedThisRun());
             
             // DPS table with weapon icons for active players only
             float rowHeight = 40.0f;

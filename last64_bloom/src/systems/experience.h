@@ -16,6 +16,10 @@ namespace Experience {
     float getXPPercentage();
     int getActivePlayerCount();
     Actor::Player* getPlayer(int index);
+
+    // Level-up tracking for current run
+    int getLevelUpsThisRun();
+    int getCreditsEarnedThisRun(); // level-ups * 10
     
     // Get number of alive players
     int getAlivePlayerCount();
