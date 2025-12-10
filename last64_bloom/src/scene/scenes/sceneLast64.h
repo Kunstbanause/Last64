@@ -56,6 +56,7 @@ class SceneLast64 : public Scene
     void draw3D(float deltaTime) final;
     void drawArenaBorder();  public:                                                                                                                                                                                                                                               
     void draw2D(float deltaTime) final;                                                                                                                                                                                                                 
+    bool shouldShowXPBar() const final;
     bool isRestartRequested() const { return restartRequested; }
     bool isRoundActive() const { return currentGameState == ROUND_ACTIVE; }
     bool isPaused() const { return currentGameState == PAUSED; }

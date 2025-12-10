@@ -385,81 +385,83 @@ int main()
     }
 
     // Draw XP Bar with a brooding blood seethe look (pixel-art inspired).
-    const int barHeight = 10;  // Taller for visible layers
-    float xpPercentage = Experience::getXPPercentage();
-    int barWidth = static_cast<int>(xpPercentage * SCREEN_WIDTH);
+    if (!state.activeScene || state.activeScene->shouldShowXPBar()) {
+      const int barHeight = 10;  // Taller for visible layers
+      float xpPercentage = Experience::getXPPercentage();
+      int barWidth = static_cast<int>(xpPercentage * SCREEN_WIDTH);
 
-    rdpq_set_scissor(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+      rdpq_set_scissor(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-    // Reset to a known mode, then enable blending + flat combiner so PRIM alpha actually blends.
-    rdpq_set_mode_standard();
-    rdpq_mode_combiner(RDPQ_COMBINER_FLAT);
-    rdpq_mode_blender(RDPQ_BLENDER_MULTIPLY);
+      // Reset to a known mode, then enable blending + flat combiner so PRIM alpha actually blends.
+      rdpq_set_mode_standard();
+      rdpq_mode_combiner(RDPQ_COMBINER_FLAT);
+      rdpq_mode_blender(RDPQ_BLENDER_MULTIPLY);
 
-    // Optional: alpha dithering helps smooth 5-bit alpha on RGBA16 targets.
-    rdpq_mode_dithering(DITHER_BAYER_INVBAYER);
+      // Optional: alpha dithering helps smooth 5-bit alpha on RGBA16 targets.
+      rdpq_mode_dithering(DITHER_BAYER_INVBAYER);
 
-    static float xpBarTime = 0.0f;
-    xpBarTime += deltaTime;
-    // Anchor to bottom of the screen
-    int yBase = SCREEN_HEIGHT - barHeight;
+      static float xpBarTime = 0.0f;
+      xpBarTime += deltaTime;
+      // Anchor to bottom of the screen
+      int yBase = SCREEN_HEIGHT - barHeight;
 
-    // Base dark blood body
-    rdpq_set_prim_color(RGBA32(80, 8, 12, 170));
-    rdpq_fill_rectangle(0, yBase, barWidth, yBase + barHeight);
+      // Base dark blood body
+      rdpq_set_prim_color(RGBA32(80, 8, 12, 170));
+      rdpq_fill_rectangle(0, yBase, barWidth, yBase + barHeight);
 
-    // Seething veins: layered, wavy darker stripes
-    const int segments = 28;
-    int segWidth = barWidth > 0 ? (barWidth + segments - 1) / segments : 0;
-    for (int s = 0; s < segments; ++s) {
-      int x0 = s * segWidth;
-      if (x0 >= barWidth) break;
-      int x1 = x0 + segWidth;
-      if (x1 > barWidth) x1 = barWidth;
-      float phase = xpBarTime * 1.25f + (float)s * 0.4f;
-      float crest = sinf(phase);
-      int stripeY = yBase + 2 + (int)((crest * 0.5f + 0.5f) * (barHeight - 4));
-      int stripeH = 3;
-      rdpq_set_prim_color(RGBA32(140, 24, 32, 150));
-      rdpq_fill_rectangle(x0, stripeY, x1, stripeY + stripeH);
-    }
-
-    // Surface sheen / meniscus highlight (thin, wavy band near the top)
-    int highlightY = yBase + 1 + (int)(sinf(xpBarTime * 0.9f) * 1.5f);
-    rdpq_set_prim_color(RGBA32(255, 80, 80, 180));
-    rdpq_fill_rectangle(0, highlightY, barWidth, highlightY + 2);
-
-    // Occasional bright pulses coursing through (slow, sparse)
-    for (int s = 0; s < segments; ++s) {
-      int x0 = s * segWidth;
-      if (x0 >= barWidth) break;
-      int x1 = x0 + segWidth;
-      if (x1 > barWidth) x1 = barWidth;
-      float pulse = fmodf(xpBarTime * 0.55f + s * 0.17f, 1.0f);
-      if (pulse < 0.18f) {
-        float t = pulse / 0.18f;
-        uint8_t a = (uint8_t)(220 * (1.0f - t));
-        rdpq_set_prim_color(RGBA32(255, 140, 120, a));
-        int py = yBase + 3;
-        rdpq_fill_rectangle(x0, py, x1, py + 3);
+      // Seething veins: layered, wavy darker stripes
+      const int segments = 28;
+      int segWidth = barWidth > 0 ? (barWidth + segments - 1) / segments : 0;
+      for (int s = 0; s < segments; ++s) {
+        int x0 = s * segWidth;
+        if (x0 >= barWidth) break;
+        int x1 = x0 + segWidth;
+        if (x1 > barWidth) x1 = barWidth;
+        float phase = xpBarTime * 1.25f + (float)s * 0.4f;
+        float crest = sinf(phase);
+        int stripeY = yBase + 2 + (int)((crest * 0.5f + 0.5f) * (barHeight - 4));
+        int stripeH = 3;
+        rdpq_set_prim_color(RGBA32(140, 24, 32, 150));
+        rdpq_fill_rectangle(x0, stripeY, x1, stripeY + stripeH);
       }
-    }
 
-    // Draw a white flash at the leading edge when XP is collected, scaled by gain amount
-    float flash = Experience::getXPBarFlash();
-    if (flash > 0.001f) {
-      int xpGain = Experience::getXPGainAmount();
-      int xpToLevel = Experience::getXToNextLevel();
-      // Scale flash width proportionally to XP gained (as fraction of XP to next level)
-      float gainFraction = (float)xpGain / (float)xpToLevel;
-      gainFraction = (gainFraction < 0.05f) ? 0.05f : gainFraction;  // Minimum 5% width
-      int flashWidth = (int)(barWidth * gainFraction);
-      if (flashWidth > barWidth) flashWidth = barWidth;
-      int fx0 = barWidth - flashWidth;
-      if (fx0 < 0) fx0 = 0;
-      uint8_t a = (uint8_t)(255.0f * (flash));
-      rdpq_set_prim_color(RGBA32(255,255,255,a));
-      rdpq_fill_rectangle(fx0, yBase, barWidth, yBase + barHeight);
+      // Surface sheen / meniscus highlight (thin, wavy band near the top)
+      int highlightY = yBase + 1 + (int)(sinf(xpBarTime * 0.9f) * 1.5f);
+      rdpq_set_prim_color(RGBA32(255, 80, 80, 180));
+      rdpq_fill_rectangle(0, highlightY, barWidth, highlightY + 2);
+
+      // Occasional bright pulses coursing through (slow, sparse)
+      for (int s = 0; s < segments; ++s) {
+        int x0 = s * segWidth;
+        if (x0 >= barWidth) break;
+        int x1 = x0 + segWidth;
+        if (x1 > barWidth) x1 = barWidth;
+        float pulse = fmodf(xpBarTime * 0.55f + s * 0.17f, 1.0f);
+        if (pulse < 0.18f) {
+          float t = pulse / 0.18f;
+          uint8_t a = (uint8_t)(220 * (1.0f - t));
+          rdpq_set_prim_color(RGBA32(255, 140, 120, a));
+          int py = yBase + 3;
+          rdpq_fill_rectangle(x0, py, x1, py + 3);
+        }
+      }
+
+      // Draw a white flash at the leading edge when XP is collected, scaled by gain amount
+      float flash = Experience::getXPBarFlash();
+      if (flash > 0.001f) {
+        int xpGain = Experience::getXPGainAmount();
+        int xpToLevel = Experience::getXToNextLevel();
+        // Scale flash width proportionally to XP gained (as fraction of XP to next level)
+        float gainFraction = (float)xpGain / (float)xpToLevel;
+        gainFraction = (gainFraction < 0.05f) ? 0.05f : gainFraction;  // Minimum 5% width
+        int flashWidth = (int)(barWidth * gainFraction);
+        if (flashWidth > barWidth) flashWidth = barWidth;
+        int fx0 = barWidth - flashWidth;
+        if (fx0 < 0) fx0 = 0;
+        uint8_t a = (uint8_t)(255.0f * (flash));
+        rdpq_set_prim_color(RGBA32(255,255,255,a));
+        rdpq_fill_rectangle(fx0, yBase, barWidth, yBase + barHeight);
+      }
     }
     rdpq_detach_show();
   } // End Frame profiling scope

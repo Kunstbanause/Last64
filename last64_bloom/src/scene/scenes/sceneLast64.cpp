@@ -1232,3 +1232,7 @@ void SceneLast64::draw2D(float deltaTime)
         }
     }
 }
+
+bool SceneLast64::shouldShowXPBar() const {
+    return currentGameState != GAME_OVER && currentGameState != LEVEL_COMPLETE;
+}

@@ -32,5 +32,8 @@ class Scene
 
     virtual void draw2D(float deltaTime) {}
 
+    // Whether global UI (e.g., XP bar) should be shown this frame
+    virtual bool shouldShowXPBar() const { return true; }
+
     Camera &getCam() { return camera; }
 };
