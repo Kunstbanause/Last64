@@ -49,7 +49,13 @@ BackgroundMarble::BackgroundMarble()
     // This value increases over gameplay, providing different patterns
     uint32_t levelUps = SaveGame::get_total_level_ups();
     phaseOffset = (float)(levelUps % 100) * 1.88f; // Arbitrary scaling for variation
-    debugf("BackgroundMarble: levelUps=%lu, phaseOffset=%.2f\n", levelUps, phaseOffset);
+    paletteLerp = 1.0f;
+    start_base_r = target_base_r = base_r;
+    start_base_g = target_base_g = base_g;
+    start_base_b = target_base_b = base_b;
+    start_accent_r = target_accent_r = accent_r;
+    start_accent_g = target_accent_g = accent_g;
+    start_accent_b = target_accent_b = accent_b;
 }
 
 BackgroundMarble::~BackgroundMarble()
@@ -63,34 +69,39 @@ void BackgroundMarble::reset()
 
 void BackgroundMarble::setTheme(PaletteTheme newTheme)
 {
+    // Capture current palette as start for interpolation
+    start_base_r = base_r; start_base_g = base_g; start_base_b = base_b;
+    start_accent_r = accent_r; start_accent_g = accent_g; start_accent_b = accent_b;
+
     theme = newTheme;
-    // Update palette based on theme
+    // Update target palette based on theme
     switch (theme) {
         case PaletteTheme::RED: // default burgundy
-            base_r = 55;  base_g = 25;  base_b = 28;
-            accent_r = 110; accent_g = 45; accent_b = 55;
+            target_base_r = 55;  target_base_g = 25;  target_base_b = 28;
+            target_accent_r = 110; target_accent_g = 45; target_accent_b = 55;
             break;
         case PaletteTheme::GREEN: // deep green
-            base_r = 24;  base_g = 50;  base_b = 36;
-            accent_r = 70; accent_g = 120; accent_b = 90;
+            target_base_r = 24;  target_base_g = 50;  target_base_b = 36;
+            target_accent_r = 70; target_accent_g = 120; target_accent_b = 90;
             break;
         case PaletteTheme::PINK: // vibrant pink
-            base_r = 70;  base_g = 24;  base_b = 48;
-            accent_r = 170; accent_g = 70;  accent_b = 150;
+            target_base_r = 70;  target_base_g = 24;  target_base_b = 48;
+            target_accent_r = 170; target_accent_g = 70;  target_accent_b = 150;
             break;
         case PaletteTheme::GREY: // muted greys for menus
-            base_r = 42;  base_g = 42;  base_b = 42;
-            accent_r = 96; accent_g = 96; accent_b = 96;
+            target_base_r = 42;  target_base_g = 42;  target_base_b = 42;
+            target_accent_r = 96; target_accent_g = 96; target_accent_b = 96;
             break;
         case PaletteTheme::GOLD: // warm gold for main menu
-            base_r = 60;  base_g = 46;  base_b = 18;
-            accent_r = 196; accent_g = 160; accent_b = 64;
+            target_base_r = 60;  target_base_g = 46;  target_base_b = 18;
+            target_accent_r = 196; target_accent_g = 160; target_accent_b = 64;
             break;
         case PaletteTheme::RAINBOW: // animated rainbow (values modulated in draw)
-            base_r = 80;  base_g = 80;  base_b = 80;
-            accent_r = 160; accent_g = 160; accent_b = 160;
+            target_base_r = 80;  target_base_g = 80;  target_base_b = 80;
+            target_accent_r = 160; target_accent_g = 160; target_accent_b = 160;
             break;
     }
+    paletteLerp = 0.0f; // start fade
 }
 
 void BackgroundMarble::draw(float deltaTime)
@@ -98,6 +109,24 @@ void BackgroundMarble::draw(float deltaTime)
     ProfileScope profile("Marble");
     
     marbleTime += deltaTime;
+    // Advance palette interpolation (fade between themes)
+    if (paletteLerp < 1.0f) {
+        paletteLerp += deltaTime * 6.4f; // fade speed
+        if (paletteLerp > 1.0f) paletteLerp = 1.0f;
+    }
+    float tLerp = paletteLerp;
+    auto lerp8 = [](uint8_t a, uint8_t b, float t) -> uint8_t {
+        float v = a + (b - a) * t;
+        if (v < 0.0f) v = 0.0f;
+        if (v > 255.0f) v = 255.0f;
+        return (uint8_t)v;
+    };
+    base_r = lerp8(start_base_r, target_base_r, tLerp);
+    base_g = lerp8(start_base_g, target_base_g, tLerp);
+    base_b = lerp8(start_base_b, target_base_b, tLerp);
+    accent_r = lerp8(start_accent_r, target_accent_r, tLerp);
+    accent_g = lerp8(start_accent_g, target_accent_g, tLerp);
+    accent_b = lerp8(start_accent_b, target_accent_b, tLerp);
 
     rdpq_set_scissor(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     rdpq_set_mode_standard();

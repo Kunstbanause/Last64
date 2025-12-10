@@ -18,6 +18,7 @@
 - Stick input does not work well in main menu
 
 # DONE
+- More marble colors / themes
 - game over and level complete stats screen
 - different color for marble in main screen (gold)
 - Fix title image behind debug start menu
