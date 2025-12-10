@@ -21,6 +21,7 @@ namespace Actor {
     T3DMat4FP** Enemy::sharedMatrices = nullptr;
     bool* Enemy::activeFlags = nullptr;
     uint32_t Enemy::activeCount = 0;
+    uint32_t Enemy::totalDeathCount = 0;
     bool Enemy::initialized = false;
     Enemy Enemy::enemyPool[MAX_ENEMIES];
 
@@ -52,6 +53,7 @@ namespace Actor {
         if (!initialized) {
             initializePool();
         }
+        totalDeathCount = 0; // Reset death count when initializing a new round
     }
 
     void Enemy::cleanup() {
@@ -349,6 +351,9 @@ namespace Actor {
     }
 
     void Enemy::die() {
+        // Increment death counter for stats tracking
+        totalDeathCount++;
+        
         // Spawn death VFX with the same position, size, and color as the enemy
         float vfxSize = 1.0f;
         switch (size) {

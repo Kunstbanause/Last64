@@ -73,6 +73,10 @@ namespace WeaponIcons {
             case Actor::WeaponType::SHAPE:
                 spriteIndex = 5; // 6_whip.png
                 break;
+            case Actor::WeaponType::COUNT:
+                // Invalid type, default to projectile
+                spriteIndex = 0;
+                break;
         }
         
         // Run the display list setup

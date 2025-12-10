@@ -67,7 +67,9 @@ namespace Actor {
                 shieldLifetime,
                 getFinalDamage(),
                 projectileColor,
-                shieldSize
+                shieldSize,
+                getOwnerPlayerIndex(),
+                weaponType
             );
             
             shieldActive = true;

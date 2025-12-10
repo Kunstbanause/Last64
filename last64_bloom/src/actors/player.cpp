@@ -187,6 +187,16 @@ namespace Actor {
         width = 10.0f;
         height = 10.0f;
     }
+
+    int Player::getPlayerIndex() const {
+        switch (playerPort) {
+            case JOYPAD_PORT_1: return 0;
+            case JOYPAD_PORT_2: return 1;
+            case JOYPAD_PORT_3: return 2;
+            case JOYPAD_PORT_4: return 3;
+            default: return -1;
+        }
+    }
     
     Player::~Player() {
         // Clean up per-player vertices and matrix

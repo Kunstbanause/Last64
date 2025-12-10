@@ -6,6 +6,7 @@
 #include "enemy.h"  // Include enemy header for collision detection
 #include "../main.h"
 #include "../systems/experience.h"
+#include "../systems/roundStats.h"
 #include <t3d/t3d.h>
 #include <libdragon.h>
 #include <malloc.h>
@@ -37,6 +38,8 @@ namespace Actor {
         damage = 4; // Default damage so it can be divived by 4 players
         color = DEFAULT_PROJECTILE_COLOR; // Default color
         size = 1.0f; // Default size
+        ownerIndex = -1;
+        weaponType = WeaponType::PROJECTILE;
         flags |= FLAG_DISABLED;
     }
 
@@ -116,7 +119,7 @@ namespace Actor {
         initialized = true;
     }
 
-    Projectile* Projectile::spawn(const T3DVec3& pos, const T3DVec3& vel, float spd, float slowdown, float maxLifetime, int damage, uint32_t color, float size) {
+    Projectile* Projectile::spawn(const T3DVec3& pos, const T3DVec3& vel, float spd, float slowdown, float maxLifetime, int damage, uint32_t color, float size, int ownerPlayerIndex, WeaponType weaponTypeParam) {
         if (!initialized) initializePool();
 
         for (uint32_t i = 0; i < MAX_PROJECTILES; i++) {
@@ -134,6 +137,8 @@ namespace Actor {
                 p->damage = damage; // Set the damage value
                 p->color = color; // Set the color
                 p->size = size; // Set the size
+                p->ownerIndex = ownerPlayerIndex;
+                p->weaponType = weaponTypeParam;
                 p->flags &= ~FLAG_DISABLED;
                 return p;
             }
@@ -195,6 +200,7 @@ namespace Actor {
                 Actor::Enemy* enemy = Actor::Enemy::getEnemy(i);
                 if (enemy && enemy->isActive() && enemy->collidesWith(this)) {
                     enemy->takeDamage(damage); // This will be updated when we pass the player count
+                    RoundStats::addDamage(ownerIndex, weaponType, damage);
                     deactivate(); // Projectile disappears on hit
                     // Play hit sound effect
                     gSFXManager.play(SFXManager::SFX_HIT);

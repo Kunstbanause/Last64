@@ -24,6 +24,7 @@ namespace Actor {
         static T3DMat4FP** sharedMatrices;
         static bool* activeFlags;
         static uint32_t activeCount;
+        static uint32_t totalDeathCount; // Track total enemy deaths this round
         static bool initialized;
         static Enemy enemyPool[MAX_ENEMIES]; // Static pool of enemies
 
@@ -54,6 +55,8 @@ namespace Actor {
         static void updateAll(float deltaTime);
         static void drawAll(float deltaTime);
         static uint32_t getActiveCount() { return activeCount; }
+        static uint32_t getTotalDeathCount() { return totalDeathCount; }
+        static void resetDeathCount() { totalDeathCount = 0; }
         static Enemy* getEnemy(uint32_t index) { return &enemyPool[index]; }
         static bool isActive(uint32_t index) { return activeFlags[index]; }
 

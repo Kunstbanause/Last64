@@ -158,7 +158,9 @@ namespace Actor {
                 projectileLifetime, 
                 getFinalDamage(), 
                 projectileColor,
-                1.3f
+                1.3f,
+                getOwnerPlayerIndex(),
+                weaponType
             );
             
             // Store projectile for orbiting

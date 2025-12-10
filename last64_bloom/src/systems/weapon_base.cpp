@@ -51,4 +51,8 @@ namespace Actor {
     float WeaponBase::getFinalProjectileSpeed(float baseSpeed) const {
         return baseSpeed * SaveGame::get_projectile_speed_multiplier();
     }
+
+    int WeaponBase::getOwnerPlayerIndex() const {
+        return player ? player->getPlayerIndex() : -1;
+    }
 }

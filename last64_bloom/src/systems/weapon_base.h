@@ -3,6 +3,7 @@
 * @license MIT
 */
 #pragma once
+#include "weapon_types.h"
 #include "../actors/base.h"
 #include "../actors/player.h"
 #include <t3d/t3d.h>
@@ -11,15 +12,6 @@ namespace Actor {
     // Forward declarations
     class Projectile;
     class Player;
-    
-    enum class WeaponType {
-        PROJECTILE,
-        HOMING,
-        CIRCULAR,
-        SPIRAL,
-        SHIELD,
-        SHAPE
-    };
     
     class WeaponBase : public Base {
     protected:
@@ -47,6 +39,7 @@ namespace Actor {
         // Getters and setters
         void setPlayer(Player* p) { player = p; }
         Player* getPlayer() const { return player; }
+        int getOwnerPlayerIndex() const;
         
         int getUpgradeLevel() const { return upgradeLevel; }
         int getMaxUpgradeLevel() const { return maxUpgradeLevel; }

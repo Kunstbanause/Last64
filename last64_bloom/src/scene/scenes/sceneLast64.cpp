@@ -10,6 +10,7 @@
 #include "../../systems/experience.h"
 #include "../../systems/spawn_manager.h"
 #include "../../systems/waves.h"
+#include "../../systems/roundStats.h"
 #include "../../memory/savegame.h"
 #include "../../systems/weapon_registry.h"
 #include "../../main.h"
@@ -302,12 +303,14 @@ void SceneLast64::updateScene(float deltaTime)
         isRoundCurrentlyActive = false;
         roundTimer = 0.0f;
         Experience::initialize();
+        RoundStats::reset();
 
         Actor::Enemy::cleanup();
         Actor::Projectile::cleanup();
         Actor::Shape::cleanup();
         Actor::XPShard::cleanup();
         Actor::EnemyDeathVFX::cleanup();
+        SpawnManager::deinitialize();
 
         if (player1) { delete player1; player1 = nullptr; }
         if (player2) { delete player2; player2 = nullptr; }
@@ -335,6 +338,7 @@ void SceneLast64::updateScene(float deltaTime)
                 activePlayerCount = 0;
                 roundEnemiesDefeated = 0;
                 roundDamageDealt = 0;
+                RoundStats::reset();
             }
             break;
         }
@@ -436,6 +440,8 @@ void SceneLast64::updateScene(float deltaTime)
                             SpawnManager::initialize(currentLevelIndex);
                             // Initialize Experience system
                             Experience::initialize();
+                            // Initialize RoundStats for damage tracking
+                            RoundStats::reset();
                             // Restart background music when round starts
                             gSFXManager.setVolume_Music(1.0f, 0.34f); // Set Volume to normal
                             gSFXManager.play(SFXManager::SFX_START);
@@ -447,12 +453,25 @@ void SceneLast64::updateScene(float deltaTime)
                         // Add player to Experience system (works for both first join and late joins)
                         if (newPlayer) {
                             Experience::addPlayer(newPlayer);
+                            RoundStats::markPlayerActive(newPlayer->getPlayerIndex(), true);
                         } else if (isForceAllPlayers) {
                             // Debug mode: add all players
-                            if (player1) Experience::addPlayer(player1);
-                            if (player2) Experience::addPlayer(player2);
-                            if (player3) Experience::addPlayer(player3);
-                            if (player4) Experience::addPlayer(player4);
+                            if (player1) {
+                                Experience::addPlayer(player1);
+                                RoundStats::markPlayerActive(player1->getPlayerIndex(), true);
+                            }
+                            if (player2) {
+                                Experience::addPlayer(player2);
+                                RoundStats::markPlayerActive(player2->getPlayerIndex(), true);
+                            }
+                            if (player3) {
+                                Experience::addPlayer(player3);
+                                RoundStats::markPlayerActive(player3->getPlayerIndex(), true);
+                            }
+                            if (player4) {
+                                Experience::addPlayer(player4);
+                                RoundStats::markPlayerActive(player4->getPlayerIndex(), true);
+                            }
                         }
                     }
                 }
@@ -509,11 +528,11 @@ void SceneLast64::updateScene(float deltaTime)
             if (player3) player3->update(deltaTime);
             if (player4) player4->update(deltaTime);
             
-            // Update spawn manager with player references
-            SpawnManager::setPlayers(player1, player2, player3, player4);
-            
-            // Update spawn manager
-            SpawnManager::update(deltaTime, roundTimer);
+            // Update spawn manager with player references only if round is active
+            if (isRoundCurrentlyActive) {
+                SpawnManager::setPlayers(player1, player2, player3, player4);
+                SpawnManager::update(deltaTime, roundTimer);
+            }
 
             // Check for level complete: final wave survived and no active enemies
             if (SpawnManager::isFinalWaveCleared()) {
@@ -724,6 +743,7 @@ void SceneLast64::updateScene(float deltaTime)
                 roundEnemiesDefeated = 0; // Reset defeated enemies counter
                 roundDamageDealt = 0; // Reset damage dealt counter
                 Experience::initialize(); // Reset XP bar and level
+                RoundStats::reset(); // Reset damage tracking stats
                 
                 // Clean up all actors
                 Actor::Enemy::cleanup();
@@ -755,6 +775,7 @@ void SceneLast64::updateScene(float deltaTime)
                 isRoundCurrentlyActive = false;
                 roundTimer = 0.0f; // Reset round timer
                 Experience::initialize(); // Reset XP bar and level
+                RoundStats::reset(); // Reset damage tracking stats
                 
                 // Clean up all actors
                 Actor::Enemy::cleanup();
@@ -1093,23 +1114,121 @@ void SceneLast64::draw2D(float deltaTime)
         }
         case GAME_OVER: {
             // Display "Game Over" message with restart and menu options
-            Debug::printf(120, 100, "Game Over");
-            Debug::printf(80, 130, "Press A to restart");
-            Debug::printf(80, 150, "Press B for main menu");
-            break;
-        }
-        case LEVEL_COMPLETE: {
-            Debug::printf(100, 60, "Level Complete!");
+            Debug::printf(120, 20, "Game Over");
             
             // Display round statistics
             int minutes = (int)roundTimer / 60;
             int seconds = (int)roundTimer % 60;
             
-            Debug::printf(60, 100, "Enemies Defeated: %d", roundEnemiesDefeated);
-            Debug::printf(60, 120, "Damage Dealt: %d", roundDamageDealt);
-            Debug::printf(60, 140, "Time: %02d:%02d", minutes, seconds);
+            Debug::printf(20, 40, "Time: %02d:%02d", minutes, seconds);
+            Debug::printf(20, 55, "Enemies: %d", Actor::Enemy::getTotalDeathCount());
             
-            Debug::printf(80, 180, "Press A to continue");
+            // DPS table with weapon icons for active players only
+            // Layout: Y starts at 75, each player row is 65 pixels tall
+            // X: player col at 20, then weapon columns at 80, 130, 180, 230
+            float rowHeight = 65.0f;
+            float firstRowY = 75.0f;
+            float roundDuration = roundTimer > 0.0f ? roundTimer : 1.0f;
+            
+            int rowIdx = 0;
+            for (int playerIdx = 0; playerIdx < 4; ++playerIdx) {
+                if (!RoundStats::isPlayerActive(playerIdx)) continue;
+                
+                float rowY = firstRowY + rowIdx * rowHeight;
+                
+                // Player label (use color or index)
+                Actor::Player* p = nullptr;
+                switch (playerIdx) {
+                    case 0: p = player1; break;
+                    case 1: p = player2; break;
+                    case 2: p = player3; break;
+                    case 3: p = player4; break;
+                }
+                if (p) {
+                    // Draw player indicator with color
+                    Debug::printf(20, rowY, "P%d", playerIdx + 1);
+                }
+                
+                // Draw weapon damage and DPS for each weapon type
+                float colX = 80.0f;
+                for (int wt = 0; wt < static_cast<int>(Actor::WeaponType::COUNT); ++wt) {
+                    int dmg = RoundStats::getDamage(playerIdx, static_cast<Actor::WeaponType>(wt));
+                    if (dmg > 0) {
+                        // Draw weapon icon
+                        WeaponIcons::drawIcon(colX, rowY - 5.0f, static_cast<Actor::WeaponType>(wt), 0);
+                        // Draw damage value below icon
+                        int dps = (int)(dmg / roundDuration);
+                        Debug::printf(colX, rowY + 12.0f, "%d damage", dmg);
+                        Debug::printf(colX, rowY + 22.0f, "(%d dps)", dps);
+                        colX += 50.0f;
+                    }
+                }
+                
+                rowIdx++;
+            }
+            
+            Debug::printf(80, 240, "Press A to restart");
+            Debug::printf(80, 260, "Press B for main menu");
+            break;
+        }
+        case LEVEL_COMPLETE: {
+            Debug::printf(100, 20, "Level Complete!");
+            
+            // Display round statistics
+            int minutes = (int)roundTimer / 60;
+            int seconds = (int)roundTimer % 60;
+            
+            Debug::printf(20, 40, "Time: %02d:%02d", minutes, seconds);
+            Debug::printf(20, 55, "Enemies: %d", Actor::Enemy::getTotalDeathCount());
+            
+            // DPS table with weapon icons for active players only
+            // Layout: Y starts at 75, each player row is 65 pixels tall
+            // X: player col at 20, then weapon columns at 80, 130, 180, 230
+            float rowHeight = 65.0f;
+            float firstRowY = 75.0f;
+            float roundDuration = roundTimer > 0.0f ? roundTimer : 1.0f;
+            
+            // Title/headers
+            Debug::printf(20, firstRowY - 12, "Player");
+            
+            int rowIdx = 0;
+            for (int playerIdx = 0; playerIdx < 4; ++playerIdx) {
+                if (!RoundStats::isPlayerActive(playerIdx)) continue;
+                
+                float rowY = firstRowY + rowIdx * rowHeight;
+                
+                // Player label (use color or index)
+                Actor::Player* p = nullptr;
+                switch (playerIdx) {
+                    case 0: p = player1; break;
+                    case 1: p = player2; break;
+                    case 2: p = player3; break;
+                    case 3: p = player4; break;
+                }
+                if (p) {
+                    // Draw player indicator with color
+                    Debug::printf(20, rowY, "P%d", playerIdx + 1);
+                }
+                
+                // Draw weapon damage and DPS for each weapon type
+                float colX = 80.0f;
+                for (int wt = 0; wt < static_cast<int>(Actor::WeaponType::COUNT); ++wt) {
+                    int dmg = RoundStats::getDamage(playerIdx, static_cast<Actor::WeaponType>(wt));
+                    if (dmg > 0) {
+                        // Draw weapon icon
+                        WeaponIcons::drawIcon(colX, rowY - 5.0f, static_cast<Actor::WeaponType>(wt), 0);
+                        // Draw damage value below icon
+                        int dps = (int)(dmg / roundDuration);
+                        Debug::printf(colX, rowY + 12.0f, "%d", dmg);
+                        Debug::printf(colX, rowY + 22.0f, "(%d dps)", dps);
+                        colX += 30.0f;
+                    }
+                }
+                
+                rowIdx++;
+            }
+            
+            Debug::printf(80, 200, "Press A to continue");
             break;
         }
     }

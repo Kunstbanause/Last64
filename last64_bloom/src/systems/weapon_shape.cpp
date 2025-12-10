@@ -55,7 +55,7 @@ namespace Actor {
         
         // Alternate between left and right spawn positions
         T3DVec3 spawnOffset = spawnOnRight ? T3DVec3{shapeWidth/2+12, 0, 0} : T3DVec3{-(shapeWidth/2+12), 0, 0};
-        currentShape = Shape::spawnAttached(player, spawnOffset, shapeWidth, shapeHeight, shapeLifetime, attackFrequency, getFinalDamage(), player->getColor());
+        currentShape = Shape::spawnAttached(player, spawnOffset, shapeWidth, shapeHeight, shapeLifetime, attackFrequency, getFinalDamage(), player->getColor(), getOwnerPlayerIndex(), weaponType);
         
         // Flip the spawn side for next time
         spawnOnRight = !spawnOnRight;

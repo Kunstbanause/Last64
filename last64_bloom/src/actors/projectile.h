@@ -3,6 +3,7 @@
 * @license MIT
 */
 #pragma once
+#include "../systems/weapon_types.h"
 #include "../actors/base.h"
 #include <t3d/t3d.h>
 
@@ -33,6 +34,8 @@ namespace Actor {
         int damage; // Damage dealt by this projectile
         uint32_t color; // Color of this projectile
         float size; // Size of this projectile (scale factor)
+        int8_t ownerIndex; // Owning player index (-1 if none)
+        WeaponType weaponType; // Weapon that spawned this projectile
 
         static void initializePool();
 
@@ -43,7 +46,7 @@ namespace Actor {
         // Static methods for managing the pool
         static void initialize();
         static void cleanup();
-        static Projectile* spawn(const T3DVec3& position, const T3DVec3& velocity, float speed, float slowdown, float maxLifetime, int damage, uint32_t color = DEFAULT_PROJECTILE_COLOR, float size = 1.0f);
+        static Projectile* spawn(const T3DVec3& position, const T3DVec3& velocity, float speed, float slowdown, float maxLifetime, int damage, uint32_t color = DEFAULT_PROJECTILE_COLOR, float size = 1.0f, int ownerPlayerIndex = -1, WeaponType weaponType = WeaponType::PROJECTILE);
         static void updateAll(float deltaTime);
         static void drawAll(float deltaTime);
         static uint32_t getActiveCount() { return activeCount; }
@@ -64,5 +67,7 @@ namespace Actor {
         int getDamage() const { return damage; }
         uint32_t getColor() const { return color; }
         void setColor(uint32_t newColor) { color = newColor; }
+        int getOwnerIndex() const { return ownerIndex; }
+        WeaponType getWeaponType() const { return weaponType; }
     };
 }

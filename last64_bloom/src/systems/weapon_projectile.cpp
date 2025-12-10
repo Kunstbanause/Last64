@@ -93,7 +93,7 @@ namespace Actor {
             if (player) {
                 projectileColor = player->getColor();
             }
-            Projectile::spawn(spawnPos, spreadDirection, getFinalProjectileSpeed(projectileSpeed), projectileSlowdown, projectileLifetime, getFinalDamage(), projectileColor, 0.7f);
+            Projectile::spawn(spawnPos, spreadDirection, getFinalProjectileSpeed(projectileSpeed), projectileSlowdown, projectileLifetime, getFinalDamage(), projectileColor, 0.7f, getOwnerPlayerIndex(), weaponType);
         }
     }
 

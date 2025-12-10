@@ -50,6 +50,7 @@ namespace Actor {
         T3DVec3 getPosition() const { return position; }
         void setPosition(T3DVec3 newPos) { position = newPos; }
         float getRotation() const { return rotation; }
+        int getPlayerIndex() const;
         
         void takeDamage(int amount);
         void kill() { isDead = true; playerColor = 0xFF0000FF; gSFXManager.play(SFXManager::SFX_DEATH);}

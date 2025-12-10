@@ -15,8 +15,10 @@
 - Spiral Weapon upgrades break old projectiles, stay in place detached from player
 - Split up code more. main and scene are pretty big
 - Enemy to enemy collision?
+- Stick input does not work well in main menu
 
 # DONE
+- game over and level complete stats screen
 - Fix title image behind debug start menu
 - Option to disable color test strips and set to true by default. Save in savegame
 - Our different levels should feature custom enemy wave setups (Level 0: Crimson - classic mixed waves, Level 1: Verdant - aggressive swarms, Level 2: Rose - tactical alternating patterns)

@@ -6,6 +6,7 @@
 #include "../actors/base.h"
 #include <t3d/t3d.h>
 #include <unordered_map>
+#include "../systems/weapon_types.h"
 
 #define MAX_SHAPES 50
 
@@ -32,6 +33,8 @@ namespace Actor {
         uint32_t color; // Color of this shape
         float width; // Width of this shape
         float height; // Height of this shape
+        int8_t ownerIndex; // Owning player index (-1 if none)
+        WeaponType weaponType; // Weapon type that spawned this shape
         std::unordered_map<uint32_t, float> enemyAttackTimers; // Track attack timers per enemy
 
         static void initializePool();
@@ -43,8 +46,8 @@ namespace Actor {
         // Static methods for managing the pool
         static void initialize();
         static void cleanup();
-        static Shape* spawn(const T3DVec3& position, float width, float height, float maxLifetime, float attackFrequency, int damage, uint32_t color = 0xFF00FFFF);
-        static Shape* spawnAttached(Base* attachTo, const T3DVec3& offset, float width, float height, float maxLifetime, float attackFrequency, int damage, uint32_t color = 0xFF00FFFF);
+        static Shape* spawn(const T3DVec3& position, float width, float height, float maxLifetime, float attackFrequency, int damage, uint32_t color = 0xFF00FFFF, int ownerPlayerIndex = -1, WeaponType weaponType = WeaponType::SHAPE);
+        static Shape* spawnAttached(Base* attachTo, const T3DVec3& offset, float width, float height, float maxLifetime, float attackFrequency, int damage, uint32_t color = 0xFF00FFFF, int ownerPlayerIndex = -1, WeaponType weaponType = WeaponType::SHAPE);
         static void updateAll(float deltaTime);
         static void drawAll(float deltaTime);
         static uint32_t getActiveCount() { return activeCount; }
@@ -73,6 +76,8 @@ namespace Actor {
         void setColor(uint32_t newColor) { color = newColor; }
         float getWidth() const { return width; }
         float getHeight() const { return height; }
+        int getOwnerIndex() const { return ownerIndex; }
+        WeaponType getWeaponType() const { return weaponType; }
         
         // Shape-specific methods
         bool canDamageEnemy(uint32_t enemyId) const;

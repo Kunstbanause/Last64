@@ -6,6 +6,7 @@
 #include "enemy.h"  // Include enemy header for collision detection
 #include "../main.h"
 #include "../systems/experience.h"
+#include "../systems/roundStats.h"
 #include <t3d/t3d.h>
 #include <libdragon.h>
 #include <malloc.h>
@@ -34,6 +35,8 @@ namespace Actor {
         color = 0xFF00FFFF; // Default color (cyan)
         width = 4.0f; // Default width
         height = 4.0f; // Default height
+        ownerIndex = -1;
+        weaponType = WeaponType::SHAPE;
         flags |= FLAG_DISABLED;
     }
 
@@ -113,7 +116,7 @@ namespace Actor {
         initialized = true;
     }
 
-    Shape* Shape::spawn(const T3DVec3& pos, float width, float height, float maxLifetime, float attackFrequency, int damage, uint32_t color) {
+    Shape* Shape::spawn(const T3DVec3& pos, float width, float height, float maxLifetime, float attackFrequency, int damage, uint32_t color, int ownerPlayerIndex, WeaponType weaponTypeParam) {
         if (!initialized) initializePool();
 
         for (uint32_t i = 0; i < MAX_SHAPES; i++) {
@@ -132,6 +135,8 @@ namespace Actor {
                 s->width = width;
                 s->height = height;
                 s->enemyAttackTimers.clear(); // Reset enemy attack timers
+                s->ownerIndex = ownerPlayerIndex;
+                s->weaponType = weaponTypeParam;
                 s->flags &= ~FLAG_DISABLED;
                 return s;
             }
@@ -139,7 +144,7 @@ namespace Actor {
         return nullptr;
     }
     
-    Shape* Shape::spawnAttached(Base* attachTo, const T3DVec3& offset, float width, float height, float maxLifetime, float attackFrequency, int damage, uint32_t color) {
+    Shape* Shape::spawnAttached(Base* attachTo, const T3DVec3& offset, float width, float height, float maxLifetime, float attackFrequency, int damage, uint32_t color, int ownerPlayerIndex, WeaponType weaponTypeParam) {
         if (!initialized) initializePool();
 
         for (uint32_t i = 0; i < MAX_SHAPES; i++) {
@@ -159,6 +164,8 @@ namespace Actor {
                 s->width = width;
                 s->height = height;
                 s->enemyAttackTimers.clear(); // Reset enemy attack timers
+                s->ownerIndex = ownerPlayerIndex;
+                s->weaponType = weaponTypeParam;
                 s->flags &= ~FLAG_DISABLED;
                 return s;
             }
@@ -216,6 +223,7 @@ namespace Actor {
                     // Check if we can damage this enemy
                     if (canDamageEnemy(i)) {
                         enemy->takeDamage(damage);
+                        RoundStats::addDamage(ownerIndex, weaponType, damage);
                         registerEnemyHit(i);
                         // Play hit sound effect
                         gSFXManager.play(SFXManager::SFX_HIT);
