@@ -79,7 +79,7 @@ SceneLast64::SceneLast64()
     
     // Initialize background marble
     backgroundMarble = new BackgroundMarble();
-    backgroundMarble->setTheme(BackgroundMarble::PaletteTheme::GREY); // Muted main menu look
+    backgroundMarble->setTheme(BackgroundMarble::PaletteTheme::GOLD); // Warm gold main menu look
 
     // Set up camera
     camera.fov = T3D_DEG_TO_RAD(80.0f);
@@ -292,7 +292,7 @@ void SceneLast64::updateScene(float deltaTime)
 
     auto exitToMainMenu = [this]() {
         currentGameState = MAIN_MENU;
-        backgroundMarble->setTheme(BackgroundMarble::PaletteTheme::GREY);
+        backgroundMarble->setTheme(BackgroundMarble::PaletteTheme::GOLD);
         MainMenu::reset();
 
         for (int i = 0; i < 4; ++i) {
@@ -765,7 +765,7 @@ void SceneLast64::updateScene(float deltaTime)
                 // Return to main menu with proper cleanup
                 currentGameState = MAIN_MENU;
                 MainMenu::reset();
-                backgroundMarble->setTheme(BackgroundMarble::PaletteTheme::GREY);
+                backgroundMarble->setTheme(BackgroundMarble::PaletteTheme::GOLD);
                 
                 // Reset game state
                 for (int i = 0; i < 4; ++i) {

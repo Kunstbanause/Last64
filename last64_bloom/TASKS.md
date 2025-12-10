@@ -11,15 +11,15 @@
 - Colored debug text (Should work with the font styles)
 - Player Light (Currently the shapes are not affected by light)
 - Quick test whether texture on enemies would work, like xp (failed)
-- Main menu in main.cpp instead of sceneLast64.cpp
 - Spiral Weapon upgrades break old projectiles, stay in place detached from player
-- different color for marble in main screen (gold)
 - Split up code more. main and scene are pretty big
+- Main menu in main.cpp instead of sceneLast64.cpp
 - Enemy to enemy collision?
 - Stick input does not work well in main menu
 
 # DONE
 - game over and level complete stats screen
+- different color for marble in main screen (gold)
 - Fix title image behind debug start menu
 - Option to disable color test strips and set to true by default. Save in savegame
 - Our different levels should feature custom enemy wave setups (Level 0: Crimson - classic mixed waves, Level 1: Verdant - aggressive swarms, Level 2: Rose - tactical alternating patterns)

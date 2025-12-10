@@ -82,6 +82,10 @@ void BackgroundMarble::setTheme(PaletteTheme newTheme)
             base_r = 42;  base_g = 42;  base_b = 42;
             accent_r = 96; accent_g = 96; accent_b = 96;
             break;
+        case PaletteTheme::GOLD: // warm gold for main menu
+            base_r = 60;  base_g = 46;  base_b = 18;
+            accent_r = 196; accent_g = 160; accent_b = 64;
+            break;
     }
 }
 

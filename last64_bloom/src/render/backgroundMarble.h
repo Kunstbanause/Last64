@@ -10,7 +10,7 @@
 
 class BackgroundMarble {
 public:
-    enum class PaletteTheme { RED, GREEN, PINK, GREY };
+    enum class PaletteTheme { RED, GREEN, PINK, GREY, GOLD };
     BackgroundMarble();
     ~BackgroundMarble();
     
