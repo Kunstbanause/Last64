@@ -93,12 +93,12 @@ void BackgroundMarble::setTheme(PaletteTheme newTheme)
             target_accent_r = 96; target_accent_g = 96; target_accent_b = 96;
             break;
         case PaletteTheme::GOLD: // warm gold for main menu
-            target_base_r = 60;  target_base_g = 46;  target_base_b = 18;
-            target_accent_r = 196; target_accent_g = 160; target_accent_b = 64;
+            target_base_r = 52;  target_base_g = 44;  target_base_b = 26;   // softer base
+            target_accent_r = 150; target_accent_g = 130; target_accent_b = 70; // reduced saturation/highlights
             break;
         case PaletteTheme::RAINBOW: // animated rainbow (values modulated in draw)
-            target_base_r = 80;  target_base_g = 80;  target_base_b = 80;
-            target_accent_r = 160; target_accent_g = 160; target_accent_b = 160;
+            target_base_r = 70;  target_base_g = 70;  target_base_b = 70;   // slightly dimmer
+            target_accent_r = 140; target_accent_g = 140; target_accent_b = 140; // lower cap
             break;
     }
     paletteLerp = 0.0f; // start fade
@@ -151,7 +151,7 @@ void BackgroundMarble::draw(float deltaTime)
         float t = marbleTime * 0.9f;
         auto wave = [](float x) -> uint8_t {
             float s = 0.5f + 0.5f * sinf(x);
-            int v = (int)(s * 255.0f);
+            int v = 40 + (int)(s * 170.0f); // narrower range to soften saturation
             if (v < 0) v = 0;
             if (v > 255) v = 255;
             return (uint8_t)v;
