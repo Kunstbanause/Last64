@@ -12,7 +12,8 @@ namespace MainMenu {
     enum MenuState {
         MAIN_MENU,
         UPGRADES_MENU,
-        STATS_MENU
+        STATS_MENU,
+        SETTINGS_MENU
     };
     
     enum UpgradeOption {

@@ -34,6 +34,12 @@ bool is_music_enabled();
 void set_marble_enabled(bool enabled);
 bool is_marble_enabled();
 
+// Volume settings (0-10, default 10 = 100%)
+void set_music_volume(uint8_t volume);
+uint8_t get_music_volume();
+void set_sfx_volume(uint8_t volume);
+uint8_t get_sfx_volume();
+
 // Profiling display setting
 void set_profiling_enabled(bool enabled);
 bool is_profiling_enabled();

@@ -1,4 +1,5 @@
 #include "audio.h"
+#include "memory/savegame.h"
 #include <libdragon.h>
 #include <stdlib.h>
 
@@ -33,49 +34,70 @@ void SFXManager::init()
 
 void SFXManager::play(SfxId id)
 {
+    // Get SFX volume from save game (0-10 scale, convert to 0.0-1.0)
+    float sfxVolume = SaveGame::get_sfx_volume() / 10.0f;
+    
     switch (id)
     {
         case SFX_LEVEL_UP:
             mixer_ch_play(0, &sfx_level_up.wave);
+            mixer_ch_set_vol(0, sfxVolume, sfxVolume);
             break;
         case SFX_START:
             mixer_ch_play(0, &sfx_start.wave);
+            mixer_ch_set_vol(0, sfxVolume, sfxVolume);
             break;
         case SFX_JOIN:
             mixer_ch_play(1, &sfx_join.wave);
+            mixer_ch_set_vol(1, sfxVolume, sfxVolume);
             break;
         case SFX_XP1:
             mixer_ch_play(1, &sfx_xp[0].wave);
+            mixer_ch_set_vol(1, sfxVolume, sfxVolume);
             break;
         case SFX_XP2:
             mixer_ch_play(1, &sfx_xp[1].wave);
+            mixer_ch_set_vol(1, sfxVolume, sfxVolume);
             break;
         case SFX_XP3:
             mixer_ch_play(1, &sfx_xp[2].wave);
+            mixer_ch_set_vol(1, sfxVolume, sfxVolume);
             break;
         case SFX_XP4:
             mixer_ch_play(1, &sfx_xp[3].wave);
+            mixer_ch_set_vol(1, sfxVolume, sfxVolume);
             break;
         case SFX_XP5:
             mixer_ch_play(1, &sfx_xp[4].wave);
+            mixer_ch_set_vol(1, sfxVolume, sfxVolume);
             break;
         case SFX_XP6:
             mixer_ch_play(1, &sfx_xp[5].wave);
+            mixer_ch_set_vol(1, sfxVolume, sfxVolume);
             break;
         case SFX_XP7:
             mixer_ch_play(1, &sfx_xp[6].wave);
+            mixer_ch_set_vol(1, sfxVolume, sfxVolume);
             break;
         case SFX_XP8:
             mixer_ch_play(1, &sfx_xp[7].wave);
+            mixer_ch_set_vol(1, sfxVolume, sfxVolume);
             break;
         case SFX_DEATH:
             mixer_ch_play(1, &sfx_death.wave);
+            mixer_ch_set_vol(1, sfxVolume, sfxVolume);
             break;
         case SFX_MUSIC1:
-            if (isMusicEnabled()) mixer_ch_play(2, &sfx_music1.wave);
+            if (isMusicEnabled()) {
+                mixer_ch_play(2, &sfx_music1.wave);
+                // Music uses its own volume setting
+                float musicVolume = SaveGame::get_music_volume() / 10.0f;
+                mixer_ch_set_vol(2, musicVolume, musicVolume);
+            }
             break;
         case SFX_HIT:
             mixer_ch_play(3 + next_hit_channel, &sfx_hits[rand() % sfx_hits_count].wave);
+            mixer_ch_set_vol(3 + next_hit_channel, sfxVolume, sfxVolume);
             next_hit_channel = (next_hit_channel + 1) % HIT_CHANNELS;
             break;
     }
@@ -86,6 +108,10 @@ void SFXManager::setVolume_Music(float volume, float fadeTime)
     // Clamp volume
     if(volume < 0.0f) volume = 0.0f;
     if(volume > 1.0f) volume = 1.0f;
+    
+    // Apply saved music volume setting as a multiplier
+    float savedVolume = SaveGame::get_music_volume() / 10.0f;
+    volume *= savedVolume;
 
     if (fadeTime <= 0.0f) {
         // Immediate set

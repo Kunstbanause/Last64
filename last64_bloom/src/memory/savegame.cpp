@@ -57,6 +57,8 @@ static uint8_t s_movespeed_level = 0;
 static uint8_t s_enemy_spawn_rate_level = 0;
 static uint8_t s_projectile_speed_level = 0;
 static uint8_t s_xp_multiplier_level = 0;
+static uint8_t s_music_volume = 10;  // Default 100% (0-10 scale)
+static uint8_t s_sfx_volume = 10;    // Default 100% (0-10 scale)
 
 static void load_structured_state() {
   if (!eeprom_present()) return;
@@ -89,10 +91,15 @@ static void load_structured_state() {
   s_movespeed_level = buf3[5];
   s_enemy_spawn_rate_level = buf3[6];
   s_projectile_speed_level = buf3[7];
-  // read block 4 for xp_multiplier_level
+  // read block 4 for xp_multiplier_level and volume settings
   uint8_t buf4[8];
   eeprom_read(4, buf4);
   s_xp_multiplier_level = buf4[0];
+  s_music_volume = buf4[1];
+  s_sfx_volume = buf4[2];
+  // Clamp volume values to 0-10 range
+  if (s_music_volume > 10) s_music_volume = 10;
+  if (s_sfx_volume > 10) s_sfx_volume = 10;
 }
 
 static void save_structured_state() {
@@ -134,7 +141,9 @@ static void save_structured_state() {
   uint8_t res3 = eeprom_write(3, buf3);
   uint8_t buf4[8] = { 
     s_xp_multiplier_level, 
-    0, 0, 0, 0, 0, 0, 0 
+    s_music_volume,
+    s_sfx_volume,
+    0, 0, 0, 0, 0 
   };
   uint8_t res4 = eeprom_write(4, buf4);
   if (res1 == 0 && res2 == 0 && res3 == 0 && res4 == 0) {
@@ -351,6 +360,8 @@ void purge_save() {
   s_enemy_spawn_rate_level = 0;
   s_projectile_speed_level = 0;
   s_xp_multiplier_level = 0;
+  s_music_volume = 10;  // Reset to 100%
+  s_sfx_volume = 10;    // Reset to 100%
   // Write the default state to EEPROM using save_structured_state
   // This ensures the default values (music=true, marble=true) are properly written
   save_structured_state();
@@ -414,6 +425,27 @@ void set_xp_multiplier_level(uint8_t level) {
 
 float get_xp_multiplier() {
   return 1.0f + (s_xp_multiplier_level * 0.1f); // 10% per level
+}
+
+// Volume settings (0-10, default 10 = 100%)
+void set_music_volume(uint8_t volume) {
+  if (volume > 10) volume = 10;
+  s_music_volume = volume;
+  save_structured_state();
+}
+
+uint8_t get_music_volume() {
+  return s_music_volume;
+}
+
+void set_sfx_volume(uint8_t volume) {
+  if (volume > 10) volume = 10;
+  s_sfx_volume = volume;
+  save_structured_state();
+}
+
+uint8_t get_sfx_volume() {
+  return s_sfx_volume;
 }
 
 }

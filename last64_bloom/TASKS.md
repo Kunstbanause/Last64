@@ -10,7 +10,6 @@
 - Show a little icon left of the upgrade in the upgrade menu
 - Intro with camera movement
 - Our different levels should feature custom enemy wave setups
-- Main menu -> Settings sub menu: Music and sfx slider, marble background toggle, etc...
 - Pause menu while a round is running, with a background. Pasues game. triggerd with Start button, old debug menu can be accessed in the pause menu.
 - Characters: z to shoot, dash, etc...
 - Colored debug text (Should work with the font styles)
@@ -22,6 +21,7 @@
 - Enemy to enemy collision?
 
 # DONE
+- Main menu -> Settings sub menu: Music and sfx slider, marble background toggle, etc...
 - More passive upgrades
     - Player movespeed
     - More enemy spawn

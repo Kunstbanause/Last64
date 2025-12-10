@@ -20,6 +20,7 @@ namespace MainMenu {
     static MenuState currentState = MAIN_MENU;
     static int currentSelection = 0;
     static int upgradeSelection = 0;  // Selection in upgrades menu
+    static int settingsSelection = 0; // Selection in settings menu
     static bool shouldStart = false;
     static rdpq_font_t* font = nullptr;
     static bool initialized = false;
@@ -97,6 +98,7 @@ namespace MainMenu {
         currentState = MAIN_MENU;
         currentSelection = 0;
         upgradeSelection = 0;
+        settingsSelection = 0;
         shouldStart = false;
         showPurgeConfirm = false;
         selectedLevel = std::min(selectedLevel, highestUnlockedLevel());
@@ -163,10 +165,10 @@ namespace MainMenu {
                 if (selectedLevel > maxUnlocked) selectedLevel = maxUnlocked;
 
                 if (pressed.d_up || stickUp) {
-                    currentSelection = (currentSelection - 1 + 3) % 3;
+                    currentSelection = (currentSelection - 1 + 4) % 4;
                 }
                 if (pressed.d_down || stickDown) {
-                    currentSelection = (currentSelection + 1) % 3;
+                    currentSelection = (currentSelection + 1) % 4;
                 }
                 if (currentSelection == 0) {
                     if (pressed.d_left || stickLeft) {
@@ -179,8 +181,12 @@ namespace MainMenu {
                 if (pressed.a || pressed.z) {
                     if (currentSelection == 0) {
                         shouldStart = true;
-                    } else {
-                        currentState = (MenuState)(UPGRADES_MENU + (currentSelection - 1));
+                    } else if (currentSelection == 1) {
+                        currentState = UPGRADES_MENU;
+                    } else if (currentSelection == 2) {
+                        currentState = SETTINGS_MENU;
+                    } else if (currentSelection == 3) {
+                        currentState = STATS_MENU;
                     }
                 }
                 break;
@@ -311,6 +317,63 @@ namespace MainMenu {
                 }
                 break;
             }
+            case SETTINGS_MENU: {
+                // Settings menu has 3 items: Music Volume, SFX Volume, Marble Background
+                if (pressed.d_up || stickUp) {
+                    settingsSelection = (settingsSelection - 1 + 3) % 3;
+                }
+                if (pressed.d_down || stickDown) {
+                    settingsSelection = (settingsSelection + 1) % 3;
+                }
+                
+                // Adjust values with left/right
+                if (settingsSelection == 0) { // Music Volume
+                    uint8_t vol = SaveGame::get_music_volume();
+                    if (pressed.d_left || stickLeft) {
+                        if (vol > 0) {
+                            SaveGame::set_music_volume(vol - 1);
+                            // Apply immediately
+                            gSFXManager.setVolume_Music((vol - 1) / 10.0f, 0.0f);
+                        }
+                    }
+                    if (pressed.d_right || stickRight) {
+                        if (vol < 10) {
+                            SaveGame::set_music_volume(vol + 1);
+                            // Apply immediately
+                            gSFXManager.setVolume_Music((vol + 1) / 10.0f, 0.0f);
+                        }
+                    }
+                } else if (settingsSelection == 1) { // SFX Volume
+                    uint8_t vol = SaveGame::get_sfx_volume();
+                    if (pressed.d_left || stickLeft) {
+                        if (vol > 0) {
+                            SaveGame::set_sfx_volume(vol - 1);
+                            // Play test sound
+                            gSFXManager.play(SFXManager::SFX_HIT);
+                        }
+                    }
+                    if (pressed.d_right || stickRight) {
+                        if (vol < 10) {
+                            SaveGame::set_sfx_volume(vol + 1);
+                            // Play test sound
+                            gSFXManager.play(SFXManager::SFX_HIT);
+                        }
+                    }
+                } else if (settingsSelection == 2) { // Marble Background
+                    if (pressed.d_left || stickLeft || pressed.d_right || stickRight || pressed.a || pressed.z) {
+                        bool current = SaveGame::is_marble_enabled();
+                        SaveGame::set_marble_enabled(!current);
+                        showMarbleBackground = !current;
+                        marbleBackgroundChanged = true;
+                    }
+                }
+                
+                if (pressed.b) {
+                    currentState = MAIN_MENU;
+                    currentSelection = 2;  // Return to settings in main menu
+                }
+                break;
+            }
             case STATS_MENU: {
                 if ((pressed.d_down || stickDown) && !showPurgeConfirm) {
                     // Move to purge option
@@ -338,7 +401,7 @@ namespace MainMenu {
                 }
                 if (pressed.b) {
                     currentState = MAIN_MENU;
-                    currentSelection = 2;
+                    currentSelection = 3;  // Return to stats position
                     showPurgeConfirm = false;
                 }
                 break;
@@ -383,10 +446,14 @@ namespace MainMenu {
                 }
 
                 rdpq_text_printf(nullptr, FONT_MENU, 100, 180, "Upgrades");
-                rdpq_text_printf(nullptr, FONT_MENU, 100, 200, "Stats");
+                rdpq_text_printf(nullptr, FONT_MENU, 100, 200, "Settings");
+                rdpq_text_printf(nullptr, FONT_MENU, 100, 220, "Stats");
 
                 // Draw selection indicator
-                int yPos = (currentSelection == 0) ? 120 : (currentSelection == 1 ? 180 : 200);
+                int yPos = 120;
+                if (currentSelection == 1) yPos = 180;
+                else if (currentSelection == 2) yPos = 200;
+                else if (currentSelection == 3) yPos = 220;
                 rdpq_text_printf(nullptr, FONT_MENU, 90, yPos, ">");
                 break;
             }
@@ -554,6 +621,61 @@ namespace MainMenu {
                 
                 // Instructions
                 rdpq_text_printf(nullptr, FONT_MENU, 50, 200, "Press ^02A^00 to purchase/reset");
+                rdpq_text_printf(nullptr, FONT_MENU, 50, 220, "Press ^01B^00 to return");
+                break;
+            }
+            case SETTINGS_MENU: {
+                rdpq_text_printf(nullptr, FONT_MENU, 50, 12, "SETTINGS");
+                
+                int yPos = 40;
+                
+                // Music Volume
+                if (settingsSelection == 0) {
+                    rdpq_text_printf(nullptr, FONT_MENU, 40, yPos, ">");
+                }
+                uint8_t musicVol = SaveGame::get_music_volume();
+                rdpq_text_printf(nullptr, FONT_MENU, 50, yPos, "Music Volume");
+                
+                // Draw slider bar
+                char sliderBar[13]; // "[##########]" = 12 chars + null
+                sliderBar[0] = '[';
+                for (int i = 0; i < 10; i++) {
+                    sliderBar[i + 1] = (i < musicVol) ? '#' : '-';
+                }
+                sliderBar[11] = ']';
+                sliderBar[12] = '\0';
+                rdpq_text_printf(nullptr, FONT_MENU, 190, yPos, "%s %d%%", sliderBar, musicVol * 10);
+                
+                yPos += 20;
+                
+                // SFX Volume
+                if (settingsSelection == 1) {
+                    rdpq_text_printf(nullptr, FONT_MENU, 40, yPos, ">");
+                }
+                uint8_t sfxVol = SaveGame::get_sfx_volume();
+                rdpq_text_printf(nullptr, FONT_MENU, 50, yPos, "SFX Volume");
+                
+                // Draw slider bar
+                sliderBar[0] = '[';
+                for (int i = 0; i < 10; i++) {
+                    sliderBar[i + 1] = (i < sfxVol) ? '#' : '-';
+                }
+                sliderBar[11] = ']';
+                sliderBar[12] = '\0';
+                rdpq_text_printf(nullptr, FONT_MENU, 190, yPos, "%s %d%%", sliderBar, sfxVol * 10);
+                
+                yPos += 20;
+                
+                // Marble Background Toggle
+                if (settingsSelection == 2) {
+                    rdpq_text_printf(nullptr, FONT_MENU, 40, yPos, ">");
+                }
+                bool marbleEnabled = SaveGame::is_marble_enabled();
+                rdpq_text_printf(nullptr, FONT_MENU, 50, yPos, "Marble Background");
+                rdpq_text_printf(nullptr, FONT_MENU, 190, yPos, marbleEnabled ? "^02ON^00" : "^01OFF^00");
+                
+                // Instructions
+                rdpq_text_printf(nullptr, FONT_MENU, 50, 200, "Use ^02D-Pad^00 to adjust");
                 rdpq_text_printf(nullptr, FONT_MENU, 50, 220, "Press ^01B^00 to return");
                 break;
             }
