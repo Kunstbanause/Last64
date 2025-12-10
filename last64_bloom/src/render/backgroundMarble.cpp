@@ -86,6 +86,10 @@ void BackgroundMarble::setTheme(PaletteTheme newTheme)
             base_r = 60;  base_g = 46;  base_b = 18;
             accent_r = 196; accent_g = 160; accent_b = 64;
             break;
+        case PaletteTheme::RAINBOW: // animated rainbow (values modulated in draw)
+            base_r = 80;  base_g = 80;  base_b = 80;
+            accent_r = 160; accent_g = 160; accent_b = 160;
+            break;
     }
 }
 
@@ -105,6 +109,31 @@ void BackgroundMarble::draw(float deltaTime)
     const int cellW = 12;
     const int cellH = 8;
     float phase = (marbleTime + phaseOffset) * 0.45f;
+
+    // Dynamic rainbow palette modulation
+    uint8_t dyn_base_r = base_r;
+    uint8_t dyn_base_g = base_g;
+    uint8_t dyn_base_b = base_b;
+    uint8_t dyn_accent_r = accent_r;
+    uint8_t dyn_accent_g = accent_g;
+    uint8_t dyn_accent_b = accent_b;
+
+    if (theme == PaletteTheme::RAINBOW) {
+        float t = marbleTime * 0.9f;
+        auto wave = [](float x) -> uint8_t {
+            float s = 0.5f + 0.5f * sinf(x);
+            int v = (int)(s * 255.0f);
+            if (v < 0) v = 0;
+            if (v > 255) v = 255;
+            return (uint8_t)v;
+        };
+        dyn_base_r   = wave(t);
+        dyn_base_g   = wave(t + 2.094f); // +120 deg
+        dyn_base_b   = wave(t + 4.188f); // +240 deg
+        dyn_accent_r = wave(t + 0.6f);
+        dyn_accent_g = wave(t + 2.694f);
+        dyn_accent_b = wave(t + 4.788f);
+    }
 
     for (int y = 0; y < SCREEN_HEIGHT; y += cellH) {
         for (int x = 0; x < SCREEN_WIDTH; x += cellW) {
@@ -138,9 +167,9 @@ void BackgroundMarble::draw(float deltaTime)
             float pattern = 0.5f + 0.5f * (fastSin(patternAngle) / 256.0f);
 
             // Palette varies by theme (set via setTheme)
-            uint8_t r = base_r + (uint8_t)((accent_r - base_r) * pattern);
-            uint8_t g = base_g + (uint8_t)((accent_g - base_g) * pattern);
-            uint8_t b = base_b + (uint8_t)((accent_b - base_b) * pattern);
+            uint8_t r = dyn_base_r + (uint8_t)((dyn_accent_r - dyn_base_r) * pattern);
+            uint8_t g = dyn_base_g + (uint8_t)((dyn_accent_g - dyn_base_g) * pattern);
+            uint8_t b = dyn_base_b + (uint8_t)((dyn_accent_b - dyn_base_b) * pattern);
 
             rdpq_set_mode_fill(RGBA32(r, g, b, 0xFF));
             rdpq_fill_rectangle(x, y, x + cellW, y + cellH);

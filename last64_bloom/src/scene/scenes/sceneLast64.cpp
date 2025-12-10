@@ -361,6 +361,7 @@ void SceneLast64::updateScene(float deltaTime)
             if (DebugMenu::isEndRoundRequested()) {
                 currentGameState = LEVEL_COMPLETE;
                 isRoundCurrentlyActive = false;
+                backgroundMarble->setTheme(BackgroundMarble::PaletteTheme::RAINBOW);
                 SaveGame::maybe_update_best_time((uint32_t)roundTimer);
                 SaveGame::set_level_complete(currentLevelIndex);
                 gSFXManager.setVolume_Music(1.0f, 0.34f);
@@ -538,6 +539,7 @@ void SceneLast64::updateScene(float deltaTime)
             if (SpawnManager::isFinalWaveCleared()) {
                 currentGameState = LEVEL_COMPLETE;
                 isRoundCurrentlyActive = false;
+                backgroundMarble->setTheme(BackgroundMarble::PaletteTheme::RAINBOW);
                 // Save best time and mark level complete
                 SaveGame::maybe_update_best_time((uint32_t)roundTimer);
                 SaveGame::set_level_complete(currentLevelIndex);
