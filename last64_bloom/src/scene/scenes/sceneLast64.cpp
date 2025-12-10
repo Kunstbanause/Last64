@@ -384,6 +384,10 @@ void SceneLast64::updateScene(float deltaTime)
                 Actor::Projectile::initialize();
                 Actor::Shape::initialize();
                 Actor::XPShard::initialize();
+                Actor::EnemyDeathVFX::initialize();
+                // Re-initialize SpawnManager for a new round
+                SpawnManager::deinitialize();
+                SpawnManager::initialize();
                 // Initialize Experience system
                 Experience::initialize();
                 // Add all currently joined players to the Experience system
@@ -668,11 +672,35 @@ void SceneLast64::updateScene(float deltaTime)
             }
 
             if (restartPressed) {
-                restartRequested = true; // Signal restart Scene
-                // Restart background music when game restarts
+                // Restart the round without reloading the entire scene
+                currentGameState = WAITING_FOR_PLAYERS;
+                
+                // Reset game state
+                for (int i = 0; i < 4; ++i) {
+                    playerJoined[i] = false;
+                }
+                firstPlayerSide = -1;  // Reset first player side tracker
+                activePlayerCount = 0;
+                isRoundCurrentlyActive = false;
+                roundTimer = 0.0f; // Reset round timer
+                Experience::initialize(); // Reset XP bar and level
+                
+                // Clean up all actors
+                Actor::Enemy::cleanup();
+                Actor::Projectile::cleanup();
+                Actor::Shape::cleanup();
+                Actor::XPShard::cleanup();
+                Actor::EnemyDeathVFX::cleanup();
+                SpawnManager::deinitialize();
+                
+                // Delete players so they can rejoin
+                if (player1) { delete player1; player1 = nullptr; }
+                if (player2) { delete player2; player2 = nullptr; }
+                if (player3) { delete player3; player3 = nullptr; }
+                if (player4) { delete player4; player4 = nullptr; }
+                
+                // Restart background music when restarting
                 gSFXManager.setVolume_Music(1.0f, 0.34f); // Set Volume to normal
-                // All cleanup and reset logic will be handled by SceneManager::loadScene(0)
-                // and the SceneLast64 destructor/constructor.
             } else if (menuPressed) {
                 // Return to main menu with proper cleanup
                 currentGameState = MAIN_MENU;
