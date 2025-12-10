@@ -1121,13 +1121,11 @@ void SceneLast64::draw2D(float deltaTime)
             int seconds = (int)roundTimer % 60;
             
             Debug::printf(20, 40, "Time: %02d:%02d", minutes, seconds);
-            Debug::printf(20, 55, "Enemies: %d", Actor::Enemy::getTotalDeathCount());
+            Debug::printf(150, 40, "Kills: %d", Actor::Enemy::getTotalDeathCount());
             
             // DPS table with weapon icons for active players only
-            // Layout: Y starts at 75, each player row is 65 pixels tall
-            // X: player col at 20, then weapon columns at 80, 130, 180, 230
-            float rowHeight = 65.0f;
-            float firstRowY = 75.0f;
+            float rowHeight = 40.0f;
+            float firstRowY = 60.0f;
             float roundDuration = roundTimer > 0.0f ? roundTimer : 1.0f;
             
             int rowIdx = 0;
@@ -1158,17 +1156,17 @@ void SceneLast64::draw2D(float deltaTime)
                         WeaponIcons::drawIcon(colX, rowY - 5.0f, static_cast<Actor::WeaponType>(wt), 0);
                         // Draw damage value below icon
                         int dps = (int)(dmg / roundDuration);
-                        Debug::printf(colX, rowY + 12.0f, "%d damage", dmg);
+                        Debug::printf(colX, rowY + 12.0f, "%d dmg", dmg);
                         Debug::printf(colX, rowY + 22.0f, "(%d dps)", dps);
-                        colX += 50.0f;
+                        colX += 70.0f;
                     }
                 }
                 
                 rowIdx++;
             }
             
-            Debug::printf(80, 240, "Press A to restart");
-            Debug::printf(80, 260, "Press B for main menu");
+            Debug::printf(80, 220, "(A) to restart");
+            // Debug::printf(80, 214, "(B) for main menu");
             break;
         }
         case LEVEL_COMPLETE: {
@@ -1179,13 +1177,11 @@ void SceneLast64::draw2D(float deltaTime)
             int seconds = (int)roundTimer % 60;
             
             Debug::printf(20, 40, "Time: %02d:%02d", minutes, seconds);
-            Debug::printf(20, 55, "Enemies: %d", Actor::Enemy::getTotalDeathCount());
+            Debug::printf(150, 40, "Kills: %d", Actor::Enemy::getTotalDeathCount());
             
             // DPS table with weapon icons for active players only
-            // Layout: Y starts at 75, each player row is 65 pixels tall
-            // X: player col at 20, then weapon columns at 80, 130, 180, 230
-            float rowHeight = 65.0f;
-            float firstRowY = 75.0f;
+            float rowHeight = 40.0f;
+            float firstRowY = 60.0f;
             float roundDuration = roundTimer > 0.0f ? roundTimer : 1.0f;
             
             // Title/headers
@@ -1228,7 +1224,7 @@ void SceneLast64::draw2D(float deltaTime)
                 rowIdx++;
             }
             
-            Debug::printf(80, 200, "Press A to continue");
+            Debug::printf(80, 220, "(A) to continue");
             break;
         }
     }
