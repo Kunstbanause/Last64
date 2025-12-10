@@ -642,6 +642,7 @@ void SceneLast64::updateScene(float deltaTime)
             if (alivePlayers == 0 && activePlayerCount > 0) { // Ensure at least one player was active before game over
                 currentGameState = GAME_OVER;
                 isRoundCurrentlyActive = false;
+                backgroundMarble->setTheme(BackgroundMarble::PaletteTheme::GREY); // Switch to muted background for game over
                 // Stop background music when game is over
                 gSFXManager.setVolume_Music(0.45f, 0.1f); // Lower volume
                 // gSFXManager.play(SFXManager::SFX_GAME_OVER); // Assuming a game over sound effect
@@ -731,6 +732,7 @@ void SceneLast64::updateScene(float deltaTime)
             if (restartPressed) {
                 // Restart the round without reloading the entire scene
                 currentGameState = ROUND_ACTIVE;
+                backgroundMarble->setTheme(themeForLevel(currentLevelIndex)); // Restore level theme when restarting
                 
                 // Reset game state
                 for (int i = 0; i < 4; ++i) {
