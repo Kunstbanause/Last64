@@ -45,6 +45,10 @@ class SceneLast64 : public Scene
     int activePlayerCount;
     bool restartRequested; // Flag to signal restart to main loop
     int pauseMenuSelection; // 0 = Continue, 1 = Exit round
+    
+    // Round statistics
+    int roundEnemiesDefeated;
+    int roundDamageDealt;
                                                                                                                                                                                                                                                         
     StaticCam staticCam{camera};
     

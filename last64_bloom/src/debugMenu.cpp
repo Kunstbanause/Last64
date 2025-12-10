@@ -46,6 +46,9 @@ namespace
   // Return to main menu flag and changed flag
   bool returnToMainMenuVar = false;
   bool returnToMainMenuChanged = false;
+  // End round flag for testing
+  bool endRoundVar = false;
+  bool endRoundChanged = false;
 
   // Helper function to find the index of the scene entry
   int findSceneEntryIndex() {
@@ -129,6 +132,7 @@ void DebugMenu::reset()
   entries.push_back({"Music   ", EntryType::BOOL, &musicEnabledVar});
   entries.push_back({"Profile ", EntryType::BOOL, &profilingEnabledVar});
   entries.push_back({"MainMenu", EntryType::BOOL, &returnToMainMenuVar});
+  entries.push_back({"EndRound", EntryType::BOOL, &endRoundVar});
 
   changedFlags.resize(entries.size());
   
@@ -156,6 +160,13 @@ void DebugMenu::reset()
   for (size_t i = 0; i < entries.size(); ++i) {
     if (entries[i].value == &returnToMainMenuVar) {
       changedFlags[i] = &returnToMainMenuChanged;
+      break;
+    }
+  }
+  // Wire end round flag
+  for (size_t i = 0; i < entries.size(); ++i) {
+    if (entries[i].value == &endRoundVar) {
+      changedFlags[i] = &endRoundChanged;
       break;
     }
   }
@@ -394,6 +405,20 @@ bool DebugMenu::isReturnToPauseMenuRequested() {
   // This function is no longer used since B button now closes the menu directly
   // Keeping it for compatibility but it always returns false
   return false;
+}
+
+bool DebugMenu::isEndRoundRequested() {
+  if (endRoundChanged && endRoundVar) {
+    endRoundVar = false;
+    endRoundChanged = false;
+    return true;
+  }
+  return false;
+}
+
+void DebugMenu::resetEndRoundFlag() {
+  endRoundVar = false;
+  endRoundChanged = false;
 }
 
 void DebugMenu::reloadSettings() {

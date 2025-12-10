@@ -70,6 +70,8 @@ SceneLast64::SceneLast64()
     activePlayerCount = 0;
     pauseMenuSelection = 0;
     roundTimer = 0.0f;
+    roundEnemiesDefeated = 0;
+    roundDamageDealt = 0;
     exposure = 30.0f; // Set exposure for HDR effect
     restartRequested = false; // Scene restart flag for game over
     currentLevelIndex = 0;
@@ -335,6 +337,8 @@ void SceneLast64::updateScene(float deltaTime)
                 }
                 firstPlayerSide = -1;
                 activePlayerCount = 0;
+                roundEnemiesDefeated = 0;
+                roundDamageDealt = 0;
             }
             break;
         }
@@ -351,6 +355,16 @@ void SceneLast64::updateScene(float deltaTime)
             }
             if (currentGameState == PAUSED) {
                 break; // Skip all gameplay updates while paused
+            }
+
+            // Check for debug end round request
+            if (DebugMenu::isEndRoundRequested()) {
+                currentGameState = LEVEL_COMPLETE;
+                isRoundCurrentlyActive = false;
+                SaveGame::maybe_update_best_time((uint32_t)roundTimer);
+                SaveGame::set_level_complete(currentLevelIndex);
+                gSFXManager.setVolume_Music(1.0f, 0.34f);
+                break;
             }
 
             // Check for player input to join (even during active round)
@@ -567,7 +581,13 @@ void SceneLast64::updateScene(float deltaTime)
                             float sumRadius = enemyRadius + proj->getRadius();
                             
                             if (distSq <= sumRadius * sumRadius) {
-                                enemy->takeDamage(proj->getDamage());
+                                int damageAmount = proj->getDamage();
+                                enemy->takeDamage(damageAmount);
+                                roundDamageDealt += damageAmount;
+                                // Check if enemy died from this hit
+                                if (!enemy->isActive()) {
+                                    roundEnemiesDefeated++;
+                                }
                                 proj->deactivate();
                                 gSFXManager.play(SFXManager::SFX_HIT);
                             }
@@ -725,6 +745,8 @@ void SceneLast64::updateScene(float deltaTime)
                 activePlayerCount = 0;
                 isRoundCurrentlyActive = false;
                 roundTimer = 0.0f; // Reset round timer
+                roundEnemiesDefeated = 0; // Reset defeated enemies counter
+                roundDamageDealt = 0; // Reset damage dealt counter
                 Experience::initialize(); // Reset XP bar and level
                 
                 // Clean up all actors
@@ -778,17 +800,19 @@ void SceneLast64::updateScene(float deltaTime)
             break;
         }
         case LEVEL_COMPLETE: {
-            // Simple display state; wait for player to press A to continue/restart
-            bool restartPressed = false;
+            // Level completed state; wait for player to press A (not Z) to return to main menu
+            bool continuePressed = false;
             for (int i = 0; i < 4; ++i) {
-                joypad_inputs_t inputs = joypad_get_inputs((joypad_port_t)(JOYPAD_PORT_1 + i));
-                if (inputs.btn.a || inputs.btn.z) {
-                    restartPressed = true;
+                joypad_buttons_t pressed = joypad_get_buttons_pressed((joypad_port_t)(JOYPAD_PORT_1 + i));
+                if (pressed.a) {  // Only A button, not Z
+                    continuePressed = true;
                     break;
                 }
             }
-            if (restartPressed) {
-                restartRequested = true;
+            if (continuePressed) {
+                // Return to main menu after level completion
+                exitToMainMenu();
+                break;
             }
             break;
         }
@@ -1101,8 +1125,17 @@ void SceneLast64::draw2D(float deltaTime)
             break;
         }
         case LEVEL_COMPLETE: {
-            Debug::printf(120, 100, "Level Complete!");
-            Debug::printf(100, 120, "Press A to continue");
+            Debug::printf(100, 60, "Level Complete!");
+            
+            // Display round statistics
+            int minutes = (int)roundTimer / 60;
+            int seconds = (int)roundTimer % 60;
+            
+            Debug::printf(60, 100, "Enemies Defeated: %d", roundEnemiesDefeated);
+            Debug::printf(60, 120, "Damage Dealt: %d", roundDamageDealt);
+            Debug::printf(60, 140, "Time: %02d:%02d", minutes, seconds);
+            
+            Debug::printf(80, 180, "Press A to continue");
             break;
         }
     }

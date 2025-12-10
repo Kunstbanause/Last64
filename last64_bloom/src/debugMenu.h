@@ -34,5 +34,7 @@ namespace DebugMenu
   bool isReturnToMainMenuRequested();
   void resetReturnToMainMenuFlag();
   bool isReturnToPauseMenuRequested();
+  bool isEndRoundRequested();
+  void resetEndRoundFlag();
   void reloadSettings();
 }
