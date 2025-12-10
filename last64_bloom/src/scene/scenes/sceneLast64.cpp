@@ -900,6 +900,11 @@ void SceneLast64::draw3D(float deltaTime)
 
 void SceneLast64::draw2D(float deltaTime)
 {
+    // If debug menu is visible, don't draw any UI elements - show clean 3D view only
+    if (Debug::isMenuVisible()) {
+        return;
+    }
+    
     switch (currentGameState) {
         case MAIN_MENU: {
             // Draw main menu

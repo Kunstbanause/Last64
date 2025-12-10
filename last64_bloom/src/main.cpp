@@ -158,16 +158,17 @@ int main()
       combined.c_left |= b.c_left;
       combined.c_right|= b.c_right;
     }
-    // Toggle menu on Start button press (rising edge across any port)
-    static bool lastStart = false;
+    // Toggle menu on L+R button press (rising edge across any port)
+    static bool lastLR = false;
+    bool currentLR = combined.l && combined.r;
     bool blockDebugToggle = false;
     if (auto sceneLast = dynamic_cast<SceneLast64*>(state.activeScene)) {
       blockDebugToggle = sceneLast->isRoundActive() || sceneLast->isPaused();
     }
-    if (combined.start && !lastStart && !blockDebugToggle) {
+    if (currentLR && !lastLR && !blockDebugToggle) {
       showMenu = !showMenu;
     }
-    lastStart = combined.start;
+    lastLR = currentLR;
 
   // Toggle between static and fly camera
     if(combined.z && state.activeScene) {

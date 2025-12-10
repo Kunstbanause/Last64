@@ -186,6 +186,12 @@ void DebugMenu::draw()
   auto btn  = joypad_get_all_pressed();
   auto held = joypad_get_all_held();
 
+  // Close debug menu with B button
+  if(btn.b) {
+    Debug::setMenuVisible(false);
+    return;
+  }
+
   // Handle L/R buttons for scene selection
   // int sceneEntryIndex = findSceneEntryIndex();
   // if (sceneEntryIndex >= 0) {
@@ -385,14 +391,9 @@ void DebugMenu::resetReturnToMainMenuFlag() {
 }
 
 bool DebugMenu::isReturnToPauseMenuRequested() {
-  // Check if Start or B button was pressed to return to pause menu
-  joypad_buttons_t combined = {0};
-  for (int i = JOYPAD_PORT_1; i <= JOYPAD_PORT_4; i++) {
-    joypad_buttons_t b = joypad_get_buttons_pressed((joypad_port_t)i);
-    combined.start |= b.start;
-    combined.b |= b.b;
-  }
-  return combined.start || combined.b;
+  // This function is no longer used since B button now closes the menu directly
+  // Keeping it for compatibility but it always returns false
+  return false;
 }
 
 void DebugMenu::reloadSettings() {
