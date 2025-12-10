@@ -6,7 +6,7 @@
     - Player movespeed
     - More enemy spawn
     - Faster projectile speed
-    - More xp per enemy
+    - More xp when collecting a xp shard
 - Different enemy types
     - Shooter
     - etc...
@@ -23,7 +23,8 @@
 - Split up code more. main and scene are pretty big
 
 # DONE
-- XP Bar flash in the actual size of gain xp, not fixed size?
+- Fix menu flow: Removed waiting for players
+- XP Bar flash in the actual size of gain xp, not fixed size
 - Switch the Weapon info order. Instead of p1 and 2 underneath, put the p1 and 3 underneath in the top left cronerand p2 and 4 underneath in the top right corner
 - Unlock weapons
 - Render arena boder only if round is running

@@ -52,15 +52,14 @@ bool isRoundCurrentlyActive = false;
 SceneLast64::SceneLast64()
 {
     // Check if this is a restart (players were already playing) vs first launch
-    // If we're restarting from game over, skip main menu and go to waiting for players
     static bool isFirstLaunch = true;
     
     if (isFirstLaunch) {
         currentGameState = MAIN_MENU;
         isFirstLaunch = false;
     } else {
-        // This is a restart - skip main menu
-        currentGameState = WAITING_FOR_PLAYERS;
+        // This is a restart - skip main menu and go directly to round
+        currentGameState = ROUND_ACTIVE;
     }
     
     isRoundCurrentlyActive = false; // Reset round state on scene init
@@ -300,7 +299,7 @@ void SceneLast64::updateScene(float deltaTime)
             if (MainMenu::shouldStartGame()) {
                 currentLevelIndex = MainMenu::getSelectedLevel();
                 backgroundMarble->setTheme(themeForLevel(currentLevelIndex));
-                currentGameState = WAITING_FOR_PLAYERS;
+                currentGameState = ROUND_ACTIVE;
                 MainMenu::reset();
                 
                 // Reset player joining state for new level
@@ -312,13 +311,15 @@ void SceneLast64::updateScene(float deltaTime)
             }
             break;
         }
-        case WAITING_FOR_PLAYERS: {
-            // Check for player input to join
+        case ROUND_ACTIVE: {
+            // Check for player input to join (even during active round)
+            bool shouldInitializeRound = false;
             for (int i = 0; i < 4; ++i) {
                 if (!playerJoined[i]) {
                     joypad_inputs_t inputs = joypad_get_inputs((joypad_port_t)(JOYPAD_PORT_1 + i));
                     if (inputs.btn.a || inputs.btn.z) {
                         playerJoined[i] = true;
+                        shouldInitializeRound = true;
                         
                         // Track which side the first player joined on
                         if (firstPlayerSide == -1) {
@@ -367,17 +368,11 @@ void SceneLast64::updateScene(float deltaTime)
                             gSFXManager.play(SFXManager::SFX_START);
                         }
                     }
-
-            // If this is the first player to join, start the round
-            bool anyPlayerJoined = false;
-            for (int j = 0; j < 4; ++j) {
-                if (playerJoined[j]) {
-                    anyPlayerJoined = true;
-                    break;
                 }
             }
-            if (anyPlayerJoined && currentGameState == WAITING_FOR_PLAYERS) {
-                currentGameState = ROUND_ACTIVE;
+            
+            // If this is the first player to join, initialize the round systems
+            if (shouldInitializeRound && !isRoundCurrentlyActive) {
                 isRoundCurrentlyActive = true;
                 // Re-initialize Enemy and Projectile systems for a new round
                 Actor::Enemy::initialize();
@@ -398,12 +393,8 @@ void SceneLast64::updateScene(float deltaTime)
                 // Restart background music when round starts
                 gSFXManager.setVolume_Music(1.0f, 0.34f); // Set Volume to normal
             }
-        }
-    }
-    break;
-}
-
-        case ROUND_ACTIVE: {
+            
+            // Handle round active gameplay
             // Check for player input to join (even during active round)
             for (int i = 0; i < 4; ++i) {
                 if (!playerJoined[i]) {
@@ -673,7 +664,7 @@ void SceneLast64::updateScene(float deltaTime)
 
             if (restartPressed) {
                 // Restart the round without reloading the entire scene
-                currentGameState = WAITING_FOR_PLAYERS;
+                currentGameState = ROUND_ACTIVE;
                 
                 // Reset game state
                 for (int i = 0; i < 4; ++i) {
@@ -862,10 +853,6 @@ void SceneLast64::draw2D(float deltaTime)
         case MAIN_MENU: {
             // Draw main menu
             MainMenu::draw();
-            break;
-        }
-        case WAITING_FOR_PLAYERS: {
-            // Waiting for players - no special display here, the round will start when first player joins
             break;
         }
         case ROUND_ACTIVE: {
