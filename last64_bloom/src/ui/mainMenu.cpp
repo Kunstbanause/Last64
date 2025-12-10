@@ -441,9 +441,6 @@ namespace MainMenu {
                 int maxUnlocked = highestUnlockedLevel();
                 rdpq_text_printf(nullptr, FONT_MENU, 100, 120, "Start (Level%d/%d)", selectedLevel + 1, kMaxLevels);
                 rdpq_text_printf(nullptr, FONT_MENU, 120, 140, "%s", kLevelNames[selectedLevel]);
-                if (!(maxUnlocked + 1 < kMaxLevels)) {
-                    rdpq_text_printf(nullptr, FONT_MENU, 120, 160, "All levels unlocked");
-                }
 
                 rdpq_text_printf(nullptr, FONT_MENU, 100, 180, "Upgrades");
                 rdpq_text_printf(nullptr, FONT_MENU, 100, 200, "Settings");
