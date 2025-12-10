@@ -2,11 +2,6 @@
 - Rework shield to hit multiple targets, no downtime just cooldown
 - bosses are very similar, fast boss?
 - Improved Spawning: Similar to vampire with fill screen instead of basic frequency
-- More passive upgrades
-    - Player movespeed
-    - More enemy spawn
-    - Faster projectile speed
-    - More xp when collecting a xp shard
 - Different enemy types
     - Shooter
     - etc...
@@ -15,15 +10,23 @@
 - Show a little icon left of the upgrade in the upgrade menu
 - Intro with camera movement
 - Our different levels should feature custom enemy wave setups
-- Settings menu: Music, marble background, etc...
+- Main menu -> Settings sub menu: Music and sfx slider, marble background toggle, etc...
+- Pause menu while a round is running, with a background. Pasues game. triggerd with Start button, old debug menu can be accessed in the pause menu.
+- Characters: z to shoot, dash, etc...
 - Colored debug text (Should work with the font styles)
 - Player Light (Currently the shapes are not affected by light)
 - Quick test whether texture on enemies would work, like xp (failed)
 - Main menu in main.cpp instead of sceneLast64.cpp
 - Spiral Weapon upgrades break old projectiles, stay in place detached from player
 - Split up code more. main and scene are pretty big
+- Enemy to enemy collision?
 
 # DONE
+- More passive upgrades
+    - Player movespeed
+    - More enemy spawn
+    - Faster projectile speed
+    - More xp when collecting a xp shard
 - Fix menu flow: Removed waiting for players
 - XP Bar flash in the actual size of gain xp, not fixed size
 - Switch the Weapon info order. Instead of p1 and 2 underneath, put the p1 and 3 underneath in the top left cronerand p2 and 4 underneath in the top right corner
