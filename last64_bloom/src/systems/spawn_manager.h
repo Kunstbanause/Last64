@@ -34,8 +34,8 @@ namespace SpawnManager {
         bool linearMovement;       // If true, enemies from this wave will move in a fixed direction instead of chasing players
     };
 
-    // Initialize the spawn manager
-    void initialize();
+    // Initialize the spawn manager with level-specific waves
+    void initialize(int levelIndex = 0);
     
     // Update the spawn manager (call every frame)
     void update(float deltaTime, float roundTimer);

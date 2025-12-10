@@ -6,9 +6,9 @@
 #include "spawn_manager.h"
 
 namespace Waves {
-    // Get the number of waves (statically known)
-    int getWaveCount();
+    // Get the number of waves for a specific level
+    int getWaveCount(int levelIndex);
     
-    // Initialize all wave configurations
-    void initializeWaveConfigs(SpawnManager::WaveConfig* waveConfigs);
+    // Initialize wave configurations for a specific level
+    void initializeWaveConfigs(SpawnManager::WaveConfig* waveConfigs, int levelIndex);
 }

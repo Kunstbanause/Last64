@@ -103,7 +103,7 @@ SceneLast64::SceneLast64()
     Actor::Shape::initialize();
     Actor::XPShard::initialize();
     Actor::EnemyDeathVFX::initialize();
-    SpawnManager::initialize();
+    SpawnManager::initialize(currentLevelIndex);
     
     // Initialize weapon icons
     WeaponIcons::init();
@@ -421,9 +421,9 @@ void SceneLast64::updateScene(float deltaTime)
                             Actor::Shape::initialize();
                             Actor::XPShard::initialize();
                             Actor::EnemyDeathVFX::initialize();
-                            // Re-initialize SpawnManager for a new round
+                            // Re-initialize SpawnManager for a new round with current level
                             SpawnManager::deinitialize();
-                            SpawnManager::initialize();
+                            SpawnManager::initialize(currentLevelIndex);
                             // Initialize Experience system
                             Experience::initialize();
                             // Restart background music when round starts
@@ -622,7 +622,7 @@ void SceneLast64::updateScene(float deltaTime)
                 SaveGame::maybe_update_best_time((uint32_t)roundTimer);
                 // If we reached the final wave (level complete) mark level as complete
                 int currentWave = SpawnManager::getCurrentWave();
-                int maxWaves = Waves::getWaveCount();
+                int maxWaves = Waves::getWaveCount(currentLevelIndex);
                 if (currentWave >= maxWaves - 1) {
                     // For now level index 0
                     SaveGame::set_level_complete(currentLevelIndex);

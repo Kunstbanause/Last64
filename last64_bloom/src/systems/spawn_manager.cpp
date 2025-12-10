@@ -88,21 +88,21 @@ namespace SpawnManager {
         return nullptr;
     }
     
-    // Initialize wave configurations
-    void initializeWaves() {
-        Waves::initializeWaveConfigs(waveConfigs);
+    // Initialize wave configurations for a specific level
+    void initializeWaves(int levelIndex) {
+        Waves::initializeWaveConfigs(waveConfigs, levelIndex);
     }
     
-    void initialize() {
+    void initialize(int levelIndex) {
         if (initialized) return;
         
-        // Get the number of waves from the Waves module (statically known)
-        maxWaves = Waves::getWaveCount();
+        // Get the number of waves from the Waves module for this level
+        maxWaves = Waves::getWaveCount(levelIndex);
         
         // Allocate memory for wave configs
         waveConfigs = new WaveConfig[maxWaves];
         
-        initializeWaves();
+        initializeWaves(levelIndex);
         currentWave = 0;
         waveTimer = 0.0f;
         spawnTimer = 0.0f;
