@@ -44,6 +44,10 @@ uint8_t get_sfx_volume();
 void set_profiling_enabled(bool enabled);
 bool is_profiling_enabled();
 
+// Color test strips visibility (debug overlay)
+void set_color_test_strips_disabled(bool disabled);
+bool are_color_test_strips_disabled();
+
 // Purge all save data (for testing)
 void purge_save();
 

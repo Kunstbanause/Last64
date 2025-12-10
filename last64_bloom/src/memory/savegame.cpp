@@ -40,6 +40,17 @@ static bool s_last_action_was_load = false;
 // offset 11           : marble_enabled (1 byte)
 // offset 12 (block 3) : credits_spent (4 bytes)
 // offset 16           : pickup_range_level (1 byte)
+// offset 17           : damage_level (1 byte)
+// offset 18           : projectile_count_level (1 byte)
+// offset 19           : shield_weapon_unlocked (1 byte)
+// offset 20           : shape_weapon_unlocked (1 byte)
+// offset 21           : movespeed_level (1 byte)
+// offset 22           : enemy_spawn_rate_level (1 byte)
+// offset 23           : projectile_speed_level (1 byte)
+// offset 24 (block 4) : xp_multiplier_level (1 byte)
+// offset 25           : music_volume (1 byte)
+// offset 26           : sfx_volume (1 byte)
+// offset 27           : color_test_strips_enabled (1 = enabled, 0 = disabled/default)
 
 static uint32_t s_total_level_ups = 0;
 static uint32_t s_best_time = 0xFFFFFFFF;
@@ -47,6 +58,7 @@ static uint16_t s_level_complete_flags = 0;
 static bool s_music_enabled = true;
 static bool s_marble_enabled = true;
 static bool s_profiling_enabled = false;
+static bool s_color_test_strips_disabled = true;
 static uint32_t s_credits_spent = 0;
 static uint8_t s_pickup_range_level = 0;
 static uint8_t s_damage_level = 0;
@@ -97,6 +109,8 @@ static void load_structured_state() {
   s_xp_multiplier_level = buf4[0];
   s_music_volume = buf4[1];
   s_sfx_volume = buf4[2];
+  // Byte 3 stores color test strip visibility: 0 = disabled (default), 1 = enabled
+  s_color_test_strips_disabled = (buf4[3] == 1) ? false : true;
   // Clamp volume values to 0-10 range
   if (s_music_volume > 10) s_music_volume = 10;
   if (s_sfx_volume > 10) s_sfx_volume = 10;
@@ -143,7 +157,8 @@ static void save_structured_state() {
     s_xp_multiplier_level, 
     s_music_volume,
     s_sfx_volume,
-    0, 0, 0, 0, 0 
+    (uint8_t)(s_color_test_strips_disabled ? 0 : 1),
+    0, 0, 0, 0 
   };
   uint8_t res4 = eeprom_write(4, buf4);
   if (res1 == 0 && res2 == 0 && res3 == 0 && res4 == 0) {
@@ -255,6 +270,9 @@ bool is_marble_enabled() { return s_marble_enabled; }
 void set_profiling_enabled(bool enabled) { s_profiling_enabled = enabled; save_structured_state(); }
 bool is_profiling_enabled() { return s_profiling_enabled; }
 
+void set_color_test_strips_disabled(bool disabled) { s_color_test_strips_disabled = disabled; save_structured_state(); }
+bool are_color_test_strips_disabled() { return s_color_test_strips_disabled; }
+
 // Credits system implementation
 uint32_t get_total_credits() {
   return s_total_level_ups * 10;
@@ -350,6 +368,7 @@ void purge_save() {
   s_level_complete_flags = 0;
   s_music_enabled = true;
   s_marble_enabled = true;
+  s_color_test_strips_disabled = true;
   s_credits_spent = 0;
   s_pickup_range_level = 0;
   s_damage_level = 0;

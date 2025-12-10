@@ -5,9 +5,7 @@
 - Different enemy types
     - Shooter
     - etc...
-- Fix title image behind debug start menu
 - Rework upgrade menu to feature icons and a grid. some descp. text on the side so less tect is on the screen. Show upgrade levels on the icon. Buy, refund, etc buttons at the bottom
-- Show a little icon left of the upgrade in the upgrade menu
 - Intro with camera movement
 - Characters: z to shoot, dash, etc...
 - Colored debug text (Should work with the font styles)
@@ -19,6 +17,8 @@
 - Enemy to enemy collision?
 
 # DONE
+- Fix title image behind debug start menu
+- Option to disable color test strips and set to true by default. Save in savegame
 - Our different levels should feature custom enemy wave setups (Level 0: Crimson - classic mixed waves, Level 1: Verdant - aggressive swarms, Level 2: Rose - tactical alternating patterns)
 - Pause menu while a round is running, with a background. Pasues game. triggerd with Start button, old debug menu can be accessed  with L + R 
 - Main menu -> Settings sub menu: Music and sfx slider, marble background toggle, etc...

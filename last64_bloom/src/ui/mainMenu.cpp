@@ -11,9 +11,8 @@
 #include <cstdio>
 #include <algorithm>
 
-// External flags from scenes
+// External flag from scenes
 extern bool showMarbleBackground;
-extern bool marbleBackgroundChanged;
 
 namespace MainMenu {
     // Menu state
@@ -364,7 +363,6 @@ namespace MainMenu {
                         bool current = SaveGame::is_marble_enabled();
                         SaveGame::set_marble_enabled(!current);
                         showMarbleBackground = !current;
-                        marbleBackgroundChanged = true;
                     }
                 }
                 
@@ -392,7 +390,7 @@ namespace MainMenu {
                     
                     // Reload marble background setting
                     showMarbleBackground = SaveGame::is_marble_enabled();
-                    marbleBackgroundChanged = false;
+                    // marble background setting already persisted in SaveGame
                     
                     // Reload debug menu settings to sync toggles
                     DebugMenu::reloadSettings();

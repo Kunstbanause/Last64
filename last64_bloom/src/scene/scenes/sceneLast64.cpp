@@ -44,7 +44,6 @@ static BackgroundMarble::PaletteTheme themeForLevel(int levelIdx) {
 
 // Debug menu flag for marble background (extern so debugMenu can access)
 bool showMarbleBackground = true;
-bool marbleBackgroundChanged = false;
 
 // Flag to track if a round is active (for debug features like XP spawn)
 bool isRoundCurrentlyActive = false;
@@ -112,9 +111,6 @@ SceneLast64::SceneLast64()
     
     // Initialize marble background from save game
     showMarbleBackground = SaveGame::is_marble_enabled();
-    
-    // Register debug menu entries
-    DebugMenu::addEntry({"Marble ", DebugMenu::EntryType::BOOL, &showMarbleBackground}, &marbleBackgroundChanged);
     
     // Initialize arena border (draw as 4 thin rectangles in 3D space)
     // We need 8 vertices (4 rectangles, each needs 2 T3DVertPacked structs for 4 verts)
@@ -519,14 +515,6 @@ void SceneLast64::updateScene(float deltaTime)
             // Update spawn manager
             SpawnManager::update(deltaTime, roundTimer);
 
-            // Check if return to main menu was requested from debug menu
-            if (DebugMenu::isReturnToMainMenuRequested()) {
-                // Close the debug menu immediately
-                Debug::setMenuVisible(false);
-                exitToMainMenu();
-                break; // Don't continue processing this frame
-            }
-
             // Check for level complete: final wave survived and no active enemies
             if (SpawnManager::isFinalWaveCleared()) {
                 currentGameState = LEVEL_COMPLETE;
@@ -658,18 +646,6 @@ void SceneLast64::updateScene(float deltaTime)
 
             // Handle debug menu interactions while paused
             if (debugVisible) {
-                // Check if debug menu wants to return to main menu (MainMenu toggle on)
-                if (DebugMenu::isReturnToMainMenuRequested()) {
-                    Debug::setMenuVisible(false);
-                    exitToMainMenu();
-                    break;
-                }
-                // Check if player wants to return to pause menu from debug menu
-                if (DebugMenu::isReturnToPauseMenuRequested()) {
-                    Debug::setMenuVisible(false);
-                    DebugMenu::resetReturnToMainMenuFlag(); // Reset the flag so it doesn't trigger on re-enter
-                    break; // Stay in PAUSED state
-                }
                 // While debug menu is visible, skip pause menu input handling
                 break;
             }
@@ -913,8 +889,8 @@ void SceneLast64::draw3D(float deltaTime)
     if (player3) player3->draw3D(deltaTime);
     if (player4) player4->draw3D(deltaTime);
 
-    // Draw color test strip only when debug menu is visible
-    if (Debug::isMenuVisible()) {
+    // Draw color test strip only when debug menu is visible and feature is enabled
+    if (Debug::isMenuVisible() && !SaveGame::are_color_test_strips_disabled()) {
         color_test_draw();
     }
 
@@ -1113,8 +1089,6 @@ void SceneLast64::draw2D(float deltaTime)
             Debug::printf(x, y, "Paused");
             Debug::printf(x, y + 16, "%c Continue", pauseMenuSelection == 0 ? '>' : ' ');
             Debug::printf(x, y + 32, "%c Exit Round", pauseMenuSelection == 1 ? '>' : ' ');
-            Debug::printf(x, y + 52, "A/DPad: select");
-            Debug::printf(x, y + 68, "L+R: Debug");
             break;
         }
         case GAME_OVER: {

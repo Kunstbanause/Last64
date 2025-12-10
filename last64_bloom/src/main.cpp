@@ -158,7 +158,7 @@ int main()
       combined.c_left |= b.c_left;
       combined.c_right|= b.c_right;
     }
-    // Toggle menu on L+R button press (rising edge across any port)
+    // Toggle debug menu on L+R button press (rising edge across any port)
     static bool lastLR = false;
     bool currentLR = combined.l && combined.r;
     bool blockDebugToggle = false;
@@ -367,7 +367,7 @@ int main()
     // Tick experience system for UI flash animations
     Experience::tick(deltaTime);
     
-    if (showMenu) {
+    if (showMenu && !SaveGame::are_color_test_strips_disabled()) {
       // Draw color test strip RGBA32
       static float screenAdjustedWidth = SCREEN_WIDTH-90;
       constexpr int colorCount = sizeof(Colors::testColors2D) / sizeof(Colors::testColors2D[0]);

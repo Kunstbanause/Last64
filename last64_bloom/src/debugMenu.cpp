@@ -8,11 +8,6 @@
 #include "scene/sceneManager.h"
 #include <vector>
 #include "memory/savegame.h"
-#include "audio.h"
-
-// External flags from scenes
-extern bool showMarbleBackground;
-extern bool marbleBackgroundChanged;
 
 namespace
 {
@@ -34,18 +29,12 @@ namespace
   std::vector<DebugMenu::Entry> entries{};
   std::vector<bool*> changedFlags{};
 
-  // Music toggle state and changed flag
-  bool musicEnabledVar = true;
-  bool musicChangedFlag = false;
-  // Marble background toggle state and changed flag
-  bool marbleEnabledVar = true;
-  bool marbleChangedFlag = false;
   // Profiling toggle state and changed flag
   bool profilingEnabledVar = false;
   bool profilingChangedFlag = false;
-  // Return to main menu flag and changed flag
-  bool returnToMainMenuVar = false;
-  bool returnToMainMenuChanged = false;
+  // Color test strips visibility flag (true = hidden) and changed flag
+  bool colorStripsDisabledVar = true;
+  bool colorStripsChangedFlag = false;
   // End round flag for testing
   bool endRoundVar = false;
   bool endRoundChanged = false;
@@ -129,9 +118,8 @@ void DebugMenu::reset()
   entries.push_back({"RDP-S   ", EntryType::BOOL, &state.ppConf.scalingUseRDP});
   entries.push_back({"Auto    ", EntryType::BOOL, &state.autoExposure});
   entries.push_back({"        ", EntryType::NONE, nullptr}); // Separator
-  entries.push_back({"Music   ", EntryType::BOOL, &musicEnabledVar});
   entries.push_back({"Profile ", EntryType::BOOL, &profilingEnabledVar});
-  entries.push_back({"MainMenu", EntryType::BOOL, &returnToMainMenuVar});
+  entries.push_back({"ClrStrip", EntryType::BOOL, &colorStripsDisabledVar});
   entries.push_back({"EndRound", EntryType::BOOL, &endRoundVar});
 
   changedFlags.resize(entries.size());
@@ -142,13 +130,6 @@ void DebugMenu::reset()
     changedFlags[sceneEntryIndex] = &needsSceneLoad;
   }
 
-  // Wire music changed flag to the Music entry
-  for (size_t i = 0; i < entries.size(); ++i) {
-    if (entries[i].value == &musicEnabledVar) {
-      changedFlags[i] = &musicChangedFlag;
-      break;
-    }
-  }
   // Wire profiling changed flag to the Profile entry
   for (size_t i = 0; i < entries.size(); ++i) {
     if (entries[i].value == &profilingEnabledVar) {
@@ -156,10 +137,10 @@ void DebugMenu::reset()
       break;
     }
   }
-  // Wire return to main menu flag
+  // Wire color strip visibility changed flag
   for (size_t i = 0; i < entries.size(); ++i) {
-    if (entries[i].value == &returnToMainMenuVar) {
-      changedFlags[i] = &returnToMainMenuChanged;
+    if (entries[i].value == &colorStripsDisabledVar) {
+      changedFlags[i] = &colorStripsChangedFlag;
       break;
     }
   }
@@ -174,15 +155,10 @@ void DebugMenu::reset()
   menuSel = 0;
   idxCustom = entries.size();
 
-  // Initialize music state from savegame
-  musicEnabledVar = SaveGame::is_music_enabled();
-  gSFXManager.setMusicEnabled(musicEnabledVar);
-  
-  // Initialize marble background state from savegame
-  marbleEnabledVar = SaveGame::is_marble_enabled();
-  
   // Initialize profiling state from savegame
   profilingEnabledVar = SaveGame::is_profiling_enabled();
+  // Initialize color strip visibility state from savegame (true = hidden)
+  colorStripsDisabledVar = SaveGame::are_color_test_strips_disabled();
 }
 
 void DebugMenu::addEntry(const Entry& entry, bool *changedFlag) {
@@ -263,32 +239,19 @@ void DebugMenu::draw()
   }
 
   // If music toggle was changed, persist and apply immediately
-  if (musicChangedFlag) {
-    SaveGame::set_music_enabled(musicEnabledVar);
-  gSFXManager.setMusicEnabled(musicEnabledVar);
-    musicChangedFlag = false;
-  }
-  
-  // If marble toggle was changed, persist immediately
-  if (marbleChangedFlag) {
-    SaveGame::set_marble_enabled(marbleEnabledVar);
-    marbleChangedFlag = false;
-  }
   
   // If profiling toggle was changed, persist immediately
   if (profilingChangedFlag) {
     SaveGame::set_profiling_enabled(profilingEnabledVar);
     profilingChangedFlag = false;
   }
-  
-  // If marble background was changed from scene, persist immediately
-  if (marbleBackgroundChanged) {
-    SaveGame::set_marble_enabled(showMarbleBackground);
-    marbleBackgroundChanged = false;
-  }
 
-  // Return to main menu is handled by checking isReturnToMainMenuRequested()
-  // Don't reset the flag here - let the scene consume it
+  // If color test strip visibility was changed, persist immediately
+  if (colorStripsChangedFlag) {
+    SaveGame::set_color_test_strips_disabled(colorStripsDisabledVar);
+    colorStripsChangedFlag = false;
+  }
+  
 
   float posX = 20;
   float posY = 30;
@@ -369,6 +332,8 @@ void DebugMenu::draw()
       case EntryType::BOOL:
         if (entry.value == &isForceAllPlayers) {
           Debug::printf(posX + 8, posY, "%s: %s", entry.name, isForceAllPlayers ? "ON" : "OFF");
+        } else if (entry.value == &colorStripsDisabledVar) {
+          Debug::printf(posX + 8, posY, "Color Strips: %s", colorStripsDisabledVar ? "HIDDEN" : "VISIBLE");
         } else {
           Debug::printf(posX + 8, posY, *((bool*)entry.value) ? "%s: ON" : "%s: OFF", entry.name);
           break;
@@ -385,20 +350,6 @@ void DebugMenu::draw()
     posY += 8;
     ++idx;
   }
-}
-
-bool DebugMenu::isReturnToMainMenuRequested() {
-  if (returnToMainMenuChanged && returnToMainMenuVar) {
-    returnToMainMenuVar = false;
-    returnToMainMenuChanged = false;
-    return true;
-  }
-  return false;
-}
-
-void DebugMenu::resetReturnToMainMenuFlag() {
-  returnToMainMenuVar = false;
-  returnToMainMenuChanged = false;
 }
 
 bool DebugMenu::isReturnToPauseMenuRequested() {
@@ -422,11 +373,6 @@ void DebugMenu::resetEndRoundFlag() {
 }
 
 void DebugMenu::reloadSettings() {
-  // Reload music state from savegame
-  musicEnabledVar = SaveGame::is_music_enabled();
-  gSFXManager.setMusicEnabled(musicEnabledVar);
-  
-  // Reload marble background state from savegame
-  marbleEnabledVar = SaveGame::is_marble_enabled();
-  showMarbleBackground = marbleEnabledVar;
+  // Reload color strip visibility state
+  colorStripsDisabledVar = SaveGame::are_color_test_strips_disabled();
 }

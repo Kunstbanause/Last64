@@ -31,8 +31,6 @@ namespace DebugMenu
   void addEntry(const Entry& entry, bool *changedFlag = nullptr);
 
   void draw();
-  bool isReturnToMainMenuRequested();
-  void resetReturnToMainMenuFlag();
   bool isReturnToPauseMenuRequested();
   bool isEndRoundRequested();
   void resetEndRoundFlag();
