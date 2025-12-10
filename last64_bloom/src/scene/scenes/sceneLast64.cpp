@@ -312,14 +312,12 @@ void SceneLast64::updateScene(float deltaTime)
             break;
         }
         case ROUND_ACTIVE: {
-            // Check for player input to join (even during active round)
-            bool shouldInitializeRound = false;
+            // Check for player input to join (handles both initial join and late joins)
             for (int i = 0; i < 4; ++i) {
                 if (!playerJoined[i]) {
                     joypad_inputs_t inputs = joypad_get_inputs((joypad_port_t)(JOYPAD_PORT_1 + i));
                     if (inputs.btn.a || inputs.btn.z) {
                         playerJoined[i] = true;
-                        shouldInitializeRound = true;
                         
                         // Track which side the first player joined on
                         if (firstPlayerSide == -1) {
@@ -329,6 +327,8 @@ void SceneLast64::updateScene(float deltaTime)
                         
                         // Create player instance
                         T3DVec3 startPos;
+                        Actor::Player* newPlayer = nullptr;
+                        
                         if (isForceAllPlayers) { // Debug spawn all players
                             startPos = {{ARENA_RIGHT/2.0f - 20.0f, ARENA_BOTTOM/2.0f, 0.0f}}; player1 = new Actor::Player(startPos, JOYPAD_PORT_1);
                             startPos = {{ARENA_RIGHT/2.0f        , ARENA_BOTTOM/2.0f, 0.0f}}; player2 = new Actor::Player(startPos, JOYPAD_PORT_2);
@@ -344,100 +344,64 @@ void SceneLast64::updateScene(float deltaTime)
                                     startPos.y = (float)(ARENA_BOTTOM/2.0f);
                                     startPos.z = 0.0f;
                                     player1 = new Actor::Player(startPos, JOYPAD_PORT_1); 
+                                    newPlayer = player1;
                                     break;
                                 case 1: 
                                     startPos.x = (float)(ARENA_RIGHT/2.0f);
                                     startPos.y = (float)(ARENA_BOTTOM/2.0f);
                                     startPos.z = 0.0f;
                                     player2 = new Actor::Player(startPos, JOYPAD_PORT_2); 
+                                    newPlayer = player2;
                                     break;
                                 case 2: 
                                     startPos.x = (float)(ARENA_RIGHT/2.0f + 20.0f);
                                     startPos.y = (float)(ARENA_BOTTOM/2.0f);
                                     startPos.z = 0.0f;
                                     player3 = new Actor::Player(startPos, JOYPAD_PORT_3); 
+                                    newPlayer = player3;
                                     break;
                                 case 3: 
                                     startPos.x = (float)(ARENA_RIGHT/2.0f + 40.0f);
                                     startPos.y = (float)(ARENA_BOTTOM/2.0f);
                                     startPos.z = 0.0f;
                                     player4 = new Actor::Player(startPos, JOYPAD_PORT_4); 
+                                    newPlayer = player4;
                                     break;
                             }
                             activePlayerCount++;
+                        }
+                        
+                        // If this is the first player to join, initialize the round systems
+                        if (!isRoundCurrentlyActive) {
+                            isRoundCurrentlyActive = true;
+                            // Re-initialize Enemy and Projectile systems for a new round
+                            Actor::Enemy::initialize();
+                            Actor::Projectile::initialize();
+                            Actor::Shape::initialize();
+                            Actor::XPShard::initialize();
+                            Actor::EnemyDeathVFX::initialize();
+                            // Re-initialize SpawnManager for a new round
+                            SpawnManager::deinitialize();
+                            SpawnManager::initialize();
+                            // Initialize Experience system
+                            Experience::initialize();
+                            // Restart background music when round starts
+                            gSFXManager.setVolume_Music(1.0f, 0.34f); // Set Volume to normal
                             gSFXManager.play(SFXManager::SFX_START);
+                        } else {
+                            // Late join sound
+                            gSFXManager.play(SFXManager::SFX_JOIN);
                         }
-                    }
-                }
-            }
-            
-            // If this is the first player to join, initialize the round systems
-            if (shouldInitializeRound && !isRoundCurrentlyActive) {
-                isRoundCurrentlyActive = true;
-                // Re-initialize Enemy and Projectile systems for a new round
-                Actor::Enemy::initialize();
-                Actor::Projectile::initialize();
-                Actor::Shape::initialize();
-                Actor::XPShard::initialize();
-                Actor::EnemyDeathVFX::initialize();
-                // Re-initialize SpawnManager for a new round
-                SpawnManager::deinitialize();
-                SpawnManager::initialize();
-                // Initialize Experience system
-                Experience::initialize();
-                // Add all currently joined players to the Experience system
-                if (player1) Experience::addPlayer(player1);
-                if (player2) Experience::addPlayer(player2);
-                if (player3) Experience::addPlayer(player3);
-                if (player4) Experience::addPlayer(player4);
-                // Restart background music when round starts
-                gSFXManager.setVolume_Music(1.0f, 0.34f); // Set Volume to normal
-            }
-            
-            // Handle round active gameplay
-            // Check for player input to join (even during active round)
-            for (int i = 0; i < 4; ++i) {
-                if (!playerJoined[i]) {
-                    joypad_inputs_t inputs = joypad_get_inputs((joypad_port_t)(JOYPAD_PORT_1 + i));
-                    if (inputs.btn.a || inputs.btn.z) {
-                        playerJoined[i] = true;
-                        // Create player instance
-                        T3DVec3 startPos;
-                        Actor::Player* newPlayer = nullptr;
-                        switch (i) {
-                            case 0: 
-                                startPos.x = (float)(ARENA_RIGHT/2.0f - 20.0f);
-                                startPos.y = (float)(ARENA_BOTTOM/2.0f);
-                                startPos.z = 0.0f;
-                                player1 = new Actor::Player(startPos, JOYPAD_PORT_1); 
-                                newPlayer = player1; 
-                                break;
-                            case 1: 
-                                startPos.x = (float)(ARENA_RIGHT/2.0f);
-                                startPos.y = (float)(ARENA_BOTTOM/2.0f);
-                                startPos.z = 0.0f;
-                                player2 = new Actor::Player(startPos, JOYPAD_PORT_2); 
-                                newPlayer = player2; 
-                                break;
-                            case 2: 
-                                startPos.x = (float)(ARENA_RIGHT/2.0f + 20.0f);
-                                startPos.y = (float)(ARENA_BOTTOM/2.0f);
-                                startPos.z = 0.0f;
-                                player3 = new Actor::Player(startPos, JOYPAD_PORT_3); 
-                                newPlayer = player3; 
-                                break;
-                            case 3: 
-                                startPos.x = (float)(ARENA_RIGHT/2.0f + 40.0f);
-                                startPos.y = (float)(ARENA_BOTTOM/2.0f);
-                                startPos.z = 0.0f;
-                                player4 = new Actor::Player(startPos, JOYPAD_PORT_4); 
-                                newPlayer = player4; 
-                                break;
-                        }
-                        activePlayerCount++;
-                        gSFXManager.play(SFXManager::SFX_JOIN);
+                        
+                        // Add player to Experience system (works for both first join and late joins)
                         if (newPlayer) {
                             Experience::addPlayer(newPlayer);
+                        } else if (isForceAllPlayers) {
+                            // Debug mode: add all players
+                            if (player1) Experience::addPlayer(player1);
+                            if (player2) Experience::addPlayer(player2);
+                            if (player3) Experience::addPlayer(player3);
+                            if (player4) Experience::addPlayer(player4);
                         }
                     }
                 }

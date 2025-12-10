@@ -213,28 +213,37 @@ namespace Actor {
                 }
             }
 
-            // After movement, check collision with player (reuse calculated distance)
-            float n_dx = tp.x - position.x;
-            float n_dy = tp.y - position.y;
-            float n_distSq = n_dx*n_dx + n_dy*n_dy;
-            float collisionRadius = targetPlayer->getRadius() * 2.0f; // Slightly larger than visual for easier pickup
-            if (n_distSq <= collisionRadius * collisionRadius) {
-                Experience::addXP(xpValue);
+            // After movement, check collision with ALL players (not just the target)
+            // This ensures any player can pick up XP, even if they joined after the shard spawned
+            int active = Experience::getActivePlayerCount();
+            for (int i = 0; i < active; ++i) {
+                Actor::Player* p = Experience::getPlayer(i);
+                if (!p || p->getIsDead()) continue;
                 
-                // Select sound based on proximity to level up (0-100% maps to xp1-xp8)
-                float xpPercentage = Experience::getXPPercentage();  // 0.0 to 1.0
-                int soundIndex = (int)(xpPercentage * 7.999f);  // Maps 0.0-1.0 to 0-7
-                if (soundIndex < 0) soundIndex = 0;
-                if (soundIndex > 7) soundIndex = 7;
+                T3DVec3 pp = p->getPosition();
+                float n_dx = pp.x - position.x;
+                float n_dy = pp.y - position.y;
+                float n_distSq = n_dx*n_dx + n_dy*n_dy;
+                float collisionRadius = p->getRadius() * 2.0f; // Slightly larger than visual for easier pickup
                 
-                SFXManager::SfxId sfxId = (SFXManager::SfxId)((int)SFXManager::SFX_XP1 + soundIndex);
-                gSFXManager.play(sfxId);
-                
-                // Trigger a small HDR boost to add a juicy glow on pickup
-                // peakValue short, duration ~ 0.45s, peakDuration short
-                HDRBoost::triggerBoost(1.6f, 0.2f, 0.06f);
-                deactivate();
-                return;
+                if (n_distSq <= collisionRadius * collisionRadius) {
+                    Experience::addXP(xpValue);
+                    
+                    // Select sound based on proximity to level up (0-100% maps to xp1-xp8)
+                    float xpPercentage = Experience::getXPPercentage();  // 0.0 to 1.0
+                    int soundIndex = (int)(xpPercentage * 7.999f);  // Maps 0.0-1.0 to 0-7
+                    if (soundIndex < 0) soundIndex = 0;
+                    if (soundIndex > 7) soundIndex = 7;
+                    
+                    SFXManager::SfxId sfxId = (SFXManager::SfxId)((int)SFXManager::SFX_XP1 + soundIndex);
+                    gSFXManager.play(sfxId);
+                    
+                    // Trigger a small HDR boost to add a juicy glow on pickup
+                    // peakValue short, duration ~ 0.45s, peakDuration short
+                    HDRBoost::triggerBoost(1.6f, 0.2f, 0.06f);
+                    deactivate();
+                    return;
+                }
             }
         }
 
