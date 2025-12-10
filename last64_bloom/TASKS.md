@@ -24,7 +24,7 @@
 - different color for marble in main screen (gold)
 - In the stat screen show the credits earned this run (from level ups *10)
 - hide xp bar in death screen and level complete screen
-- Stick input does not work well in main menu
+- Stick input does not work well in main menu (c buttons instead)
 - Fix title image behind debug start menu
 - Option to disable color test strips and set to true by default. Save in savegame
 - Our different levels should feature custom enemy wave setups (Level 0: Crimson - classic mixed waves, Level 1: Verdant - aggressive swarms, Level 2: Rose - tactical alternating patterns)

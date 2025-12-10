@@ -682,8 +682,8 @@ void SceneLast64::updateScene(float deltaTime)
                     break;
                 }
 
-                if (pressed.d_up) pauseMenuSelection = (pauseMenuSelection > 0) ? pauseMenuSelection - 1 : 1;
-                if (pressed.d_down) pauseMenuSelection = (pauseMenuSelection < 1) ? pauseMenuSelection + 1 : 0;
+                if (pressed.d_up || pressed.c_up) pauseMenuSelection = (pauseMenuSelection > 0) ? pauseMenuSelection - 1 : 1;
+                if (pressed.d_down || pressed.c_down) pauseMenuSelection = (pauseMenuSelection < 1) ? pauseMenuSelection + 1 : 0;
 
                 if ((pressed.a || pressed.z) && !debugVisible) {
                     if (pauseMenuSelection == 0) resumeRequested = true;
@@ -716,12 +716,12 @@ void SceneLast64::updateScene(float deltaTime)
         }
 
         case GAME_OVER: {
-            // Check for A to restart or B to return to main menu
+            // Check for A to restart or B to return to main menu (Z disabled to prevent accidental press)
             bool restartPressed = false;
             bool menuPressed = false;
             for (int i = 0; i < 4; ++i) {
                 joypad_buttons_t pressed = joypad_get_buttons_pressed((joypad_port_t)(JOYPAD_PORT_1 + i));
-                if (pressed.a || pressed.z) {
+                if (pressed.a) {
                     restartPressed = true;
                     break;
                 }
