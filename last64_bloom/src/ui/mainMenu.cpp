@@ -163,17 +163,18 @@ namespace MainMenu {
                 int maxUnlocked = highestUnlockedLevel();
                 if (selectedLevel > maxUnlocked) selectedLevel = maxUnlocked;
 
-                if (pressed.d_up || stickUp) {
+                // Main menu uses D-pad only (stick disabled here)
+                if (pressed.d_up) {
                     currentSelection = (currentSelection - 1 + 4) % 4;
                 }
-                if (pressed.d_down || stickDown) {
+                if (pressed.d_down) {
                     currentSelection = (currentSelection + 1) % 4;
                 }
                 if (currentSelection == 0) {
-                    if (pressed.d_left || stickLeft) {
+                    if (pressed.d_left) {
                         selectedLevel = (selectedLevel - 1 + (maxUnlocked + 1)) % (maxUnlocked + 1);
                     }
-                    if (pressed.d_right || stickRight) {
+                    if (pressed.d_right) {
                         selectedLevel = (selectedLevel + 1) % (maxUnlocked + 1);
                     }
                 }
