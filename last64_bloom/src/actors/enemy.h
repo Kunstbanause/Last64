@@ -59,6 +59,7 @@ namespace Actor {
         static void resetDeathCount() { totalDeathCount = 0; }
         static Enemy* getEnemy(uint32_t index) { return &enemyPool[index]; }
         static bool isActive(uint32_t index) { return activeFlags[index]; }
+        static float getLastSeparationMS();
 
         void update(float deltaTime) override;
         void draw3D(float deltaTime) override;
@@ -71,6 +72,7 @@ namespace Actor {
         bool collidesWith(Base* other) override;
 
         T3DVec3 getPosition() const override { return position; }
+        void setPosition(const T3DVec3 &p) { position = p; }
         float getRadius() const override;
         void getAABBSize(float& width, float& height) const override;
         EnemySize getSize() const { return size; }

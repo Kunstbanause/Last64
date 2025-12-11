@@ -8,6 +8,7 @@
 #include "xpShard.h"
 #include "../render/hdrBoost.h"
 #include "../main.h"
+#include "../utils/profiler.h"
 #include <t3d/t3d.h>
 #include <t3d/tpx.h>
 #include <libdragon.h>
@@ -16,6 +17,7 @@
 
 
 namespace Actor {
+    static float g_lastSeparationMS = 0.0f;
     // Static member definitions
     T3DVertPacked* Enemy::sharedVertices = nullptr;
     T3DMat4FP** Enemy::sharedMatrices = nullptr;
@@ -180,7 +182,111 @@ namespace Actor {
                 enemy->update(deltaTime);
             }
         }
+
+        // Profiling start
+        int profId = Profiler::begin("EnemySep");
+        uint64_t ticksStart = get_ticks();
+
+        // Lightweight enemy-enemy separation using a uniform grid
+        // Tunables
+        const float CELL_SIZE = 40.0f;          // pixels
+        const float MIN_DIST = 9.0f;            // desired minimum spacing (larger for clearer separation)
+        const float MAX_DISP = 1.5f;            // clamp per-frame displacement
+        const int   MAX_NEIGHBORS = 6;          // limit neighbor checks per enemy
+
+        // Arena extents (2D only)
+        const float AX = ARENA_LEFT;
+        const float AY = ARENA_TOP;
+        const float BX = ARENA_RIGHT;
+        const float BY = ARENA_BOTTOM;
+
+        const int GRID_W = (int)((BX - AX) / CELL_SIZE) + 2;
+        const int GRID_H = (int)((BY - AY) / CELL_SIZE) + 2;
+        const int GRID_SIZE = GRID_W * GRID_H;
+
+        // Fixed-size buckets: store indices of enemies per cell
+        static int cellCounts[256] = {0};
+        static uint16_t cellIndices[256][16]; // up to 16 enemies per cell
+
+        // Resize guards for extreme arena sizes
+        int capCells = GRID_SIZE;
+        if (capCells > 256) capCells = 256;
+        for (int c = 0; c < capCells; ++c) cellCounts[c] = 0;
+
+        auto cellIndexOf = [&](float x, float y) -> int {
+            int cx = (int)((x - AX) / CELL_SIZE) + 1;
+            int cy = (int)((y - AY) / CELL_SIZE) + 1;
+            if (cx < 0) cx = 0;
+            if (cx >= GRID_W) cx = GRID_W-1;
+            if (cy < 0) cy = 0;
+            if (cy >= GRID_H) cy = GRID_H-1;
+            int idx = cy * GRID_W + cx;
+            if (idx < 0) idx = 0;
+            if (idx >= GRID_SIZE) idx = GRID_SIZE-1;
+            if (idx >= 256) idx = 255;
+            return idx;
+        };
+
+        // Build grid
+        for (uint32_t i = 0; i < MAX_ENEMIES; i++) {
+            if (!activeFlags[i]) continue;
+            Enemy* e = &enemyPool[i];
+            T3DVec3 p = e->getPosition();
+            int ci = cellIndexOf(p.x, p.y);
+            int cnt = cellCounts[ci];
+            if (cnt < 16) {
+                cellIndices[ci][cnt] = (uint16_t)i;
+                cellCounts[ci] = cnt + 1;
+            }
+        }
+
+        // Separation pass
+        const float MIN_DIST_SQ = MIN_DIST * MIN_DIST;
+        for (uint32_t i = 0; i < MAX_ENEMIES; i++) {
+            if (!activeFlags[i]) continue;
+            Enemy* ei = &enemyPool[i];
+            T3DVec3 pi = ei->getPosition();
+            int ci = cellIndexOf(pi.x, pi.y);
+
+            // Neighbors: current cell only (cheap) — can expand to 8-neighborhood if needed
+            int checks = 0;
+            int cnt = cellCounts[ci];
+            for (int k = 0; k < cnt && checks < MAX_NEIGHBORS; ++k) {
+                uint16_t idxj = cellIndices[ci][k];
+                if (idxj == i) continue;
+                if (!activeFlags[idxj]) continue;
+                Enemy* ej = &enemyPool[idxj];
+                T3DVec3 pj = ej->getPosition();
+
+                float dx = pi.x - pj.x;
+                float dy = pi.y - pj.y;
+                float d2 = dx*dx + dy*dy;
+                if (d2 > 0.0001f && d2 < MIN_DIST_SQ) {
+                    float inv = 1.0f / sqrtf(d2);
+                    float nx = dx * inv;
+                    float ny = dy * inv;
+                    float overlap = MIN_DIST - sqrtf(d2);
+                    float push = overlap * 0.5f; // split the correction roughly
+                    if (push > MAX_DISP) push = MAX_DISP;
+                    // Apply to both (half-half). Keep z unchanged.
+                    pi.x += nx * push;
+                    pi.y += ny * push;
+                    pj.x -= nx * push;
+                    pj.y -= ny * push;
+                    // Write back
+                    ei->setPosition(pi);
+                    ej->setPosition(pj);
+                }
+                checks++;
+            }
+        }
+        uint64_t ticksEnd = get_ticks();
+        Profiler::end(profId);
+        uint64_t delta = ticksEnd - ticksStart;
+        g_lastSeparationMS = (float)((double)delta * 1000.0 / (double)RCP_FREQUENCY);
     }
+
+    float Enemy::getLastSeparationMS() { return g_lastSeparationMS; }
 
     void Enemy::drawAll(float deltaTime) {
         if (!initialized) return;

@@ -5,6 +5,7 @@
 #include "debugMenu.h"
 #include <libdragon.h>
 #include "render/debugDraw.h"
+#include "actors/enemy.h"
 #include "scene/sceneManager.h"
 #include <vector>
 #include "memory/savegame.h"
@@ -256,6 +257,10 @@ void DebugMenu::draw()
   float posX = 20;
   float posY = 30;
   Debug::print(posX+30, posY, "START Menu");
+  if (profilingEnabledVar) {
+    float ms = Actor::Enemy::getLastSeparationMS();
+    Debug::printf(posX + 150, posY, "Sep: %.2f ms", ms);
+  }
   // {
   //   // Print savegame info block
   //   int type = SaveGame::get_type();
