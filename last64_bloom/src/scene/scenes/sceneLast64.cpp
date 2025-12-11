@@ -1129,8 +1129,8 @@ void SceneLast64::draw2D(float deltaTime)
             Debug::printf(200, 40, "Credits: %d", Experience::getCreditsEarnedThisRun());
             
             // DPS table with weapon icons for active players only
-            float rowHeight = 40.0f;
-            float firstRowY = 80.0f;
+            float rowHeight = 38.0f;
+            float firstRowY = 75.0f;
             float roundDuration = roundTimer > 0.0f ? roundTimer : 1.0f;
             
             int rowIdx = 0;
@@ -1186,8 +1186,8 @@ void SceneLast64::draw2D(float deltaTime)
             Debug::printf(200, 40, "Credits: %d", Experience::getCreditsEarnedThisRun());
             
             // DPS table with weapon icons for active players only
-            float rowHeight = 40.0f;
-            float firstRowY = 60.0f;
+            float rowHeight = 38.0f;
+            float firstRowY = 75.0f;
             float roundDuration = roundTimer > 0.0f ? roundTimer : 1.0f;
             
             int rowIdx = 0;
@@ -1210,7 +1210,7 @@ void SceneLast64::draw2D(float deltaTime)
                 }
                 
                 // Draw weapon damage and DPS for each weapon type
-                float colX = 40.0f;
+                float colX = 50.0f;
                 for (int wt = 0; wt < static_cast<int>(Actor::WeaponType::COUNT); ++wt) {
                     int dmg = RoundStats::getDamage(playerIdx, static_cast<Actor::WeaponType>(wt));
                     if (dmg > 0) {
@@ -1218,9 +1218,9 @@ void SceneLast64::draw2D(float deltaTime)
                         WeaponIcons::drawIcon(colX, rowY - 5.0f, static_cast<Actor::WeaponType>(wt), 0);
                         // Draw damage value below icon
                         int dps = (int)(dmg / roundDuration);
-                        Debug::printf(colX, rowY + 12.0f, "%d", dmg);
-                        Debug::printf(colX, rowY + 22.0f, "(%d dps)", dps);
-                        colX += 70.0f;
+                        Debug::printf(colX+22, rowY -6.0f, "%d dmg", dmg);
+                        Debug::printf(colX+22, rowY +4.0f, "(%d dps)", dps);
+                        colX += 80.0f;
                     }
                 }
                 
