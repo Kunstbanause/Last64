@@ -1,7 +1,6 @@
 - Shield with alpha / transparency / Dithering
 - Rework shield to hit multiple targets, no downtime just cooldown
 - bosses are very similar, fast boss?
-- Some waves with different enemy spawning: Similar to vampire with fill screen instead of basic frequency
 - Different enemy types
     - Shooter
     - etc...
@@ -18,6 +17,7 @@
 
 
 # DONE
+- Some waves with different enemy spawning: Similar to vampire with fill screen instead of basic frequency
 - Tweak stats screen layout: weapons can start further to the left, show stats next to the weapon icon instead  of below
 - More marble colors / themes
 - game over and level complete stats screen
