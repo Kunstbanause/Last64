@@ -59,12 +59,12 @@ namespace Waves {
         int minimumEnemies;
     } level1_waves[] = {
     //Interval, max, speed, hp, enemySize,               enemyColor, xpMod, allowedSpawnEdges,          boss?, bossCount LinearMovement, spawnMethod, minEnemies
-        {0.6f,  -1,  1.2f, 1,    Actor::EnemySize::SMALL,  0x00FF00FF, 1, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Green swarm - faster start
+        {0.6f,  -1,  1.2f, 1,    Actor::EnemySize::SMALL,  0x00FF00FF, 1, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_FILL_SCREEN, 20}, // Green swarm - faster start
         {0.3f,  -1,  2.0f, 2,    Actor::EnemySize::SMALL,  0x80FF80FF, 2, SpawnManager::SPAWN_EDGE_LEFT | SpawnManager::SPAWN_EDGE_RIGHT, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Side swarms
         {0.8f,   1,  1.5f, 120,  Actor::EnemySize::LARGE,  0x00FF00FF, 12,SpawnManager::SPAWN_EDGE_ALL, true, 1, false, SpawnManager::SPAWN_RATE_BASED, 0},  // Early boss
         {0.2f,  -1,  2.5f, 3,    Actor::EnemySize::SMALL,  0x40FF40FF, 2, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Fast green chaos
         {0.15f, -1,  3.5f, 2,    Actor::EnemySize::SMALL,  0x00FF80FF, 1, SpawnManager::SPAWN_EDGE_TOP, false, 0, true, SpawnManager::SPAWN_RATE_BASED, 0}, // Comet wave from top
-        {0.4f,  -1,  3.0f, 4,    Actor::EnemySize::MEDIUM, 0x008040FF, 3, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Medium green
+        {0.4f,  -1,  3.0f, 4,    Actor::EnemySize::MEDIUM, 0x008040FF, 3, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_FILL_SCREEN, 25}, // Medium green
         {0.7f,   2,  2.0f, 180,  Actor::EnemySize::LARGE,  0x00C000FF, 18,SpawnManager::SPAWN_EDGE_LEFT | SpawnManager::SPAWN_EDGE_RIGHT, true, 2, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Twin bosses
         {0.1f,  -1,  4.5f, 1,    Actor::EnemySize::SMALL,  0x60FF60FF, 1, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Ultra swarm
         {0.15f, -1,  5.5f, 2,    Actor::EnemySize::SMALL,  0x00FF00FF, 2, SpawnManager::SPAWN_EDGE_LEFT | SpawnManager::SPAWN_EDGE_RIGHT, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Speed walls
@@ -73,7 +73,7 @@ namespace Waves {
         {0.08f, -1,  6.5f, 1,    Actor::EnemySize::SMALL,  0x20FF20FF, 1, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}  // Endless green chaos
     };
     
-    // Level 2: Rose Bloom - Mixed colors, alternating patterns, tactical challenge
+    // Level 2: Rose Bloom - Mixed colors, fill-screen emphasis (non-boss, non-linear)
     static const struct {
         float spawnInterval;
         int spawnMaximum;
@@ -90,21 +90,20 @@ namespace Waves {
         int minimumEnemies;
     } level2_waves[] = {
     //Interval, max, speed, hp, enemySize,               enemyColor, xpMod, allowedSpawnEdges,          boss?, bossCount LinearMovement, spawnMethod, minEnemies
-        {0.5f,  -1,  1.5f, 2,    Actor::EnemySize::SMALL,  0xFF00FFFF, 2, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Pink swarm
-        // TEST WAVE: VS-style fill-screen spawning - maintain 30 enemies minimum, check every 0.5s
+        {0.5f,  -1,  1.5f, 2,    Actor::EnemySize::SMALL,  0xFF00FFFF, 2, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_FILL_SCREEN, 20}, // Pink swarm (fill)
         {0.5f,  -1,  1.2f, 1,    Actor::EnemySize::SMALL,  0xFFFF00FF, 2, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_FILL_SCREEN, 30}, // VS-style fill screen wave
-        {0.4f,  -1,  2.0f, 3,    Actor::EnemySize::SMALL,  0xFF00AAFF, 2, SpawnManager::SPAWN_EDGE_LEFT | SpawnManager::SPAWN_EDGE_RIGHT, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Horizontal waves
-        {0.8f,   2,  1.8f, 150,  Actor::EnemySize::LARGE,  0xFF0080FF, 15,SpawnManager::SPAWN_EDGE_ALL, true, 2, false, SpawnManager::SPAWN_RATE_BASED, 0},  // Early double boss
-        {0.2f,  -1,  3.5f, 2,    Actor::EnemySize::SMALL,  0xFF60FFFF, 2, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Fast pink chaos
-        {0.15f, 15,  4.0f, 1,    Actor::EnemySize::SMALL,  0xFFAAFFFF, 1, SpawnManager::SPAWN_EDGE_LEFT, false, 0, true, SpawnManager::SPAWN_RATE_BASED, 0}, // Left comet burst
-        {0.35f, -1,  3.0f, 5,    Actor::EnemySize::MEDIUM, 0xC000C0FF, 3, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Purple medium
-        {0.15f, 15,  4.0f, 1,    Actor::EnemySize::SMALL,  0xFFAAFFFF, 1, SpawnManager::SPAWN_EDGE_RIGHT, false, 0, true, SpawnManager::SPAWN_RATE_BASED, 0}, // Right comet burst
-        {0.2f,  -1,  4.5f, 3,    Actor::EnemySize::SMALL,  0xFF40FFFF, 2, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Ultra pink swarm
-        {0.6f,   3,  2.2f, 200,  Actor::EnemySize::LARGE,  0xFF00C0FF, 20,SpawnManager::SPAWN_EDGE_TOP | SpawnManager::SPAWN_EDGE_BOTTOM, true, 3, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Triple vertical bosses
-        {0.12f, -1,  5.5f, 2,    Actor::EnemySize::SMALL,  0xFF80C0FF, 2, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Speed chaos
-        {0.3f,  -1,  4.0f, 6,    Actor::EnemySize::MEDIUM, 0xA000A0FF, 4, SpawnManager::SPAWN_EDGE_LEFT | SpawnManager::SPAWN_EDGE_RIGHT, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Tough horizontal
-        {0.5f,   4,  2.8f, 250,  Actor::EnemySize::LARGE,  0xFF0090FF, 30,SpawnManager::SPAWN_EDGE_ALL, true, 4, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Quad boss finale
-        {0.07f, -1,  7.0f, 1,    Actor::EnemySize::SMALL,  0xFF60C0FF, 1, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}  // Ultimate pink chaos
+        {0.4f,  -1,  2.0f, 3,    Actor::EnemySize::SMALL,  0xFF00AAFF, 2, SpawnManager::SPAWN_EDGE_LEFT | SpawnManager::SPAWN_EDGE_RIGHT, false, 0, false, SpawnManager::SPAWN_FILL_SCREEN, 35}, // Horizontal waves (fill)
+        {0.8f,   2,  1.8f, 150,  Actor::EnemySize::LARGE,  0xFF0080FF, 15,SpawnManager::SPAWN_EDGE_ALL, true, 2, false, SpawnManager::SPAWN_RATE_BASED, 0},  // Early double boss (rate)
+        {0.2f,  -1,  3.5f, 2,    Actor::EnemySize::SMALL,  0xFF60FFFF, 2, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_FILL_SCREEN, 30}, // Fast pink chaos (fill)
+        {0.15f, 15,  4.0f, 1,    Actor::EnemySize::SMALL,  0xFFAAFFFF, 1, SpawnManager::SPAWN_EDGE_LEFT, false, 0, true, SpawnManager::SPAWN_RATE_BASED, 0}, // Left comet burst (linear, rate)
+        {0.35f, -1,  3.0f, 5,    Actor::EnemySize::MEDIUM, 0xC000C0FF, 3, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_FILL_SCREEN, 35}, // Purple medium (fill)
+        {0.15f, 15,  4.0f, 1,    Actor::EnemySize::SMALL,  0xFFAAFFFF, 1, SpawnManager::SPAWN_EDGE_RIGHT, false, 0, true, SpawnManager::SPAWN_RATE_BASED, 0}, // Right comet burst (linear, rate)
+        {0.2f,  -1,  4.5f, 3,    Actor::EnemySize::SMALL,  0xFF40FFFF, 2, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_FILL_SCREEN, 35}, // Ultra pink swarm (fill)
+        {0.6f,   3,  2.2f, 200,  Actor::EnemySize::LARGE,  0xFF00C0FF, 20,SpawnManager::SPAWN_EDGE_TOP | SpawnManager::SPAWN_EDGE_BOTTOM, true, 3, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Triple vertical bosses (rate)
+        {0.12f, -1,  5.5f, 2,    Actor::EnemySize::SMALL,  0xFF80C0FF, 2, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_FILL_SCREEN, 35}, // Speed chaos (fill)
+        {0.3f,  -1,  4.0f, 6,    Actor::EnemySize::MEDIUM, 0xA000A0FF, 4, SpawnManager::SPAWN_EDGE_LEFT | SpawnManager::SPAWN_EDGE_RIGHT, false, 0, false, SpawnManager::SPAWN_FILL_SCREEN, 35}, // Tough horizontal (fill)
+        {0.5f,   4,  2.8f, 250,  Actor::EnemySize::LARGE,  0xFF0090FF, 30,SpawnManager::SPAWN_EDGE_ALL, true, 4, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Quad boss finale (rate)
+        {0.07f, -1,  7.0f, 1,    Actor::EnemySize::SMALL,  0xFF60C0FF, 1, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_FILL_SCREEN, 40}  // Ultimate pink chaos (fill)
     };
     
     // Get the number of waves for a specific level
