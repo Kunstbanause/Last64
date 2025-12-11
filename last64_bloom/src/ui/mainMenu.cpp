@@ -106,7 +106,7 @@ namespace MainMenu {
     void update(float deltaTime) {
         // Merge input from all controllers (same pattern as main.cpp)
         joypad_buttons_t pressed = {0};
-        joypad_inputs_t stick = {0};
+        // joypad_inputs_t stick = {0};
         
         for (int i = JOYPAD_PORT_1; i <= JOYPAD_PORT_4; i++) {
             joypad_buttons_t b = joypad_get_buttons_pressed((joypad_port_t)i);
@@ -123,44 +123,44 @@ namespace MainMenu {
             pressed.c_left |= b.c_left;
             pressed.c_right|= b.c_right;
             
-            // Get analog stick input from any controller
-            joypad_inputs_t inputs = joypad_get_inputs((joypad_port_t)i);
-            if (fabsf(inputs.stick_y) > fabsf(stick.stick_y)) {
-                stick.stick_y = inputs.stick_y;
-            }
-            if (fabsf(inputs.stick_x) > fabsf(stick.stick_x)) {
-                stick.stick_x = inputs.stick_x;
-            }
+            // // Get analog stick input from any controller
+            // joypad_inputs_t inputs = joypad_get_inputs((joypad_port_t)i);
+            // if (fabsf(inputs.stick_y) > fabsf(stick.stick_y)) {
+            //     stick.stick_y = inputs.stick_y;
+            // }
+            // if (fabsf(inputs.stick_x) > fabsf(stick.stick_x)) {
+            //     stick.stick_x = inputs.stick_x;
+            // }
         }
         
-        // Debounce analog stick navigation
-        static float stickDebounce = 0.0f;
-        if (stickDebounce > 0.0f) {
-            stickDebounce -= deltaTime;
-        }
+        // // Debounce analog stick navigation
+        // static float stickDebounce = 0.0f;
+        // if (stickDebounce > 0.0f) {
+        //     stickDebounce -= deltaTime;
+        // }
         
-        bool stickUp = false;
-        bool stickDown = false;
-        bool stickLeft = false;
-        bool stickRight = false;
+        // bool stickUp = false;
+        // bool stickDown = false;
+        // bool stickLeft = false;
+        // bool stickRight = false;
         
-        if (stickDebounce <= 0.0f) {
-            const float threshold = 0.5f;
-            if (stick.stick_y > threshold) {
-                stickUp = true;
-                stickDebounce = 0.2f; // 200ms debounce
-            } else if (stick.stick_y < -threshold) {
-                stickDown = true;
-                stickDebounce = 0.2f;
-            }
-            if (stick.stick_x < -threshold) {
-                stickLeft = true;
-                stickDebounce = 0.2f;
-            } else if (stick.stick_x > threshold) {
-                stickRight = true;
-                stickDebounce = 0.2f;
-            }
-        }
+        // if (stickDebounce <= 0.0f) {
+        //     const float threshold = 0.5f;
+        //     if (stick.stick_y > threshold) {
+        //         stickUp = true;
+        //         stickDebounce = 0.2f; // 200ms debounce
+        //     } else if (stick.stick_y < -threshold) {
+        //         stickDown = true;
+        //         stickDebounce = 0.2f;
+        //     }
+        //     if (stick.stick_x < -threshold) {
+        //         stickLeft = true;
+        //         stickDebounce = 0.2f;
+        //     } else if (stick.stick_x > threshold) {
+        //         stickRight = true;
+        //         stickDebounce = 0.2f;
+        //     }
+        // }
 
         switch (currentState) {
             case MAIN_MENU: {
@@ -196,10 +196,10 @@ namespace MainMenu {
                 break;
             }
             case UPGRADES_MENU: {
-                if (pressed.d_up || stickUp || pressed.c_up) {
+                if (pressed.d_up || pressed.c_up) {
                     upgradeSelection = (upgradeSelection - 1 + UPGRADE_COUNT) % UPGRADE_COUNT;
                 }
-                if (pressed.d_down || stickDown || pressed.c_down) {
+                if (pressed.d_down || pressed.c_down) {
                     upgradeSelection = (upgradeSelection + 1) % UPGRADE_COUNT;
                 }
                 if (pressed.a || pressed.z) {
@@ -323,24 +323,24 @@ namespace MainMenu {
             }
             case SETTINGS_MENU: {
                 // Settings menu has 3 items: Music Volume, SFX Volume, Marble Background
-                if (pressed.d_up || stickUp || pressed.c_up) {
+                if (pressed.d_up || pressed.c_up) {
                     settingsSelection = (settingsSelection - 1 + 3) % 3;
                 }
-                if (pressed.d_down || stickDown || pressed.c_down) {
+                if (pressed.d_down || pressed.c_down) {
                     settingsSelection = (settingsSelection + 1) % 3;
                 }
                 
                 // Adjust values with left/right
                 if (settingsSelection == 0) { // Music Volume
                     uint8_t vol = SaveGame::get_music_volume();
-                    if (pressed.d_left || stickLeft || pressed.c_left) {
+                    if (pressed.d_left || pressed.c_left) {
                         if (vol > 0) {
                             SaveGame::set_music_volume(vol - 1);
                             // Apply immediately
                             gSFXManager.setVolume_Music((vol - 1) / 10.0f, 0.0f);
                         }
                     }
-                    if (pressed.d_right || stickRight || pressed.c_right) {
+                    if (pressed.d_right || pressed.c_right) {
                         if (vol < 10) {
                             SaveGame::set_music_volume(vol + 1);
                             // Apply immediately
@@ -349,14 +349,14 @@ namespace MainMenu {
                     }
                 } else if (settingsSelection == 1) { // SFX Volume
                     uint8_t vol = SaveGame::get_sfx_volume();
-                    if (pressed.d_left || stickLeft || pressed.c_left) {
+                    if (pressed.d_left || pressed.c_left) {
                         if (vol > 0) {
                             SaveGame::set_sfx_volume(vol - 1);
                             // Play test sound
                             gSFXManager.play(SFXManager::SFX_HIT);
                         }
                     }
-                    if (pressed.d_right || stickRight || pressed.c_right) {
+                    if (pressed.d_right || pressed.c_right) {
                         if (vol < 10) {
                             SaveGame::set_sfx_volume(vol + 1);
                             // Play test sound
@@ -364,7 +364,7 @@ namespace MainMenu {
                         }
                     }
                 } else if (settingsSelection == 2) { // Marble Background
-                    if (pressed.d_left || stickLeft || pressed.c_left || pressed.d_right || stickRight || pressed.c_right || pressed.a || pressed.z) {
+                    if (pressed.d_left || pressed.c_left || pressed.d_right || pressed.c_right || pressed.a || pressed.z) {
                         bool current = SaveGame::is_marble_enabled();
                         SaveGame::set_marble_enabled(!current);
                         showMarbleBackground = !current;
@@ -378,11 +378,11 @@ namespace MainMenu {
                 break;
             }
             case STATS_MENU: {
-                if ((pressed.d_down || stickDown || pressed.c_down) && !showPurgeConfirm) {
+                if ((pressed.d_down || pressed.c_down) && !showPurgeConfirm) {
                     // Move to purge option
                     showPurgeConfirm = true;
                 }
-                if ((pressed.d_up || stickUp || pressed.c_up) && showPurgeConfirm) {
+                if ((pressed.d_up || pressed.c_up) && showPurgeConfirm) {
                     showPurgeConfirm = false;
                 }
                 if ((pressed.a || pressed.z) && showPurgeConfirm) {
