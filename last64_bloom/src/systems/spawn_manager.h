@@ -18,10 +18,16 @@ namespace SpawnManager {
         SPAWN_EDGE_ALL    = SPAWN_EDGE_TOP | SPAWN_EDGE_RIGHT | SPAWN_EDGE_BOTTOM | SPAWN_EDGE_LEFT  // 15
     };
 
+    // Enum for spawn method types
+    enum SpawnMethod {
+        SPAWN_RATE_BASED,    // Original: spawn one enemy every spawnInterval seconds
+        SPAWN_FILL_SCREEN    // VS-style: maintain minimum enemy count, cap at MAX_ENEMIES
+    };
+
     // Wave configuration structure
     struct WaveConfig {
         int waveNumber;
-        float spawnInterval;        // Time between enemy spawns
+        float spawnInterval;        // Time between enemy spawns (RATE_BASED) or spawn attempt checks (FILL_SCREEN)
         int spawnMaximum;           // Maximum number of enemies to spawn (-1 for unlimited/infinite)
         float speedMultiplier;      // Multiplier for enemy speed
         int healthMultiplier;       // Multiplier for enemy health
@@ -32,6 +38,8 @@ namespace SpawnManager {
         bool isBossWave;           // Whether this is a boss wave
         int bossCount;             // Number of bosses to spawn (for boss waves)
         bool linearMovement;       // If true, enemies from this wave will move in a fixed direction instead of chasing players
+        SpawnMethod spawnMethod;   // Spawn method: SPAWN_RATE_BASED or SPAWN_FILL_SCREEN
+        int minimumEnemies;        // For FILL_SCREEN: minimum enemy count to maintain on screen
     };
 
     // Initialize the spawn manager with level-specific waves

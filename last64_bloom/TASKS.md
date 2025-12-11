@@ -1,7 +1,7 @@
 - Shield with alpha / transparency / Dithering
 - Rework shield to hit multiple targets, no downtime just cooldown
 - bosses are very similar, fast boss?
-- Improved Spawning: Similar to vampire with fill screen instead of basic frequency
+- Some waves with different enemy spawning: Similar to vampire with fill screen instead of basic frequency
 - Different enemy types
     - Shooter
     - etc...
@@ -15,10 +15,10 @@
 - Split up code more. main and scene are pretty big
 - Main menu in main.cpp instead of sceneLast64.cpp
 - Enemy to enemy collision?
-- Tweak stats screen layout: weapons can start further to the left, show stats next to the weapon icon instead  of below
 
 
 # DONE
+- Tweak stats screen layout: weapons can start further to the left, show stats next to the weapon icon instead  of below
 - More marble colors / themes
 - game over and level complete stats screen
 - different color for marble in main screen (gold)

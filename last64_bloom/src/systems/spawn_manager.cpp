@@ -210,37 +210,100 @@ namespace SpawnManager {
             }
             
             spawnTimer += deltaTime;
-            if (spawnTimer > config.spawnInterval / SaveGame::get_enemy_spawn_rate_multiplier()) {
-                spawnTimer = 0.0f;
-                enemiesSpawned++; // Increment the enemy counter
+            
+            // Choose spawn method based on wave config
+            if (config.spawnMethod == SPAWN_FILL_SCREEN) {
+                // VS-style "fill screen" spawning
+                // Hard cap: if at MAX_ENEMIES, don't spawn any more regular enemies
+                uint32_t currentEnemyCount = Actor::Enemy::getActiveCount();
+                if (currentEnemyCount >= MAX_ENEMIES) {
+                    return; // Pool is full, only bosses can spawn
+                }
                 
-                // Randomly select a target player from alive players
-                Actor::Player* targetPlayer = getRandomAlivePlayer();
-                
-                if (targetPlayer) {
-                    // Spawn a new enemy at a random edge of the screen
-                    float spawnX, spawnY;
-                    int edge = -1;
-                    getRandomEdgeSpawnPosition(spawnX, spawnY, config.allowedSpawnEdges, &edge);
+                if (spawnTimer > config.spawnInterval / SaveGame::get_enemy_spawn_rate_multiplier()) {
+                    spawnTimer = 0.0f;
                     
-                    T3DVec3 pos = {{spawnX, spawnY, 0.0f}};
-                    float speed = 20.0f * config.speedMultiplier;
-
-                    // Compute fixed-direction movement if configured for this wave
-                    bool useFixed = config.linearMovement;
-                    T3DVec3 fixedDir = {{0.0f, 0.0f, 0.0f}};
-                    if (useFixed) {
-                        switch (edge) {
-                            case 0: fixedDir = {{0.0f, 1.0f, 0.0f}}; break; // top -> move down
-                            case 1: fixedDir = {{-1.0f, 0.0f, 0.0f}}; break; // right -> move left
-                            case 2: fixedDir = {{0.0f, -1.0f, 0.0f}}; break; // bottom -> move up
-                            case 3: fixedDir = {{1.0f, 0.0f, 0.0f}}; break; // left -> move right
-                            default: fixedDir = {{0.0f, 0.0f, 0.0f}}; break;
+                    // Determine how many to spawn this tick
+                    int enemiesToSpawn = 0;
+                    
+                    if ((int)currentEnemyCount < config.minimumEnemies) {
+                        // Below minimum: spawn until quota is filled (or hit max)
+                        enemiesToSpawn = config.minimumEnemies - (int)currentEnemyCount;
+                        // Limit by remaining spawn capacity
+                        if (config.spawnMaximum >= 0) {
+                            int remaining = config.spawnMaximum - enemiesSpawned;
+                            if (enemiesToSpawn > remaining) enemiesToSpawn = remaining;
                         }
+                        // Limit by pool capacity
+                        int poolRemaining = MAX_ENEMIES - (int)currentEnemyCount;
+                        if (enemiesToSpawn > poolRemaining) enemiesToSpawn = poolRemaining;
+                    } else {
+                        // At or above minimum: spawn just one enemy per tick
+                        enemiesToSpawn = 1;
                     }
+                    
+                    // Spawn the enemies
+                    for (int i = 0; i < enemiesToSpawn; i++) {
+                        Actor::Player* targetPlayer = getRandomAlivePlayer();
+                        if (!targetPlayer) break;
+                        
+                        float spawnX, spawnY;
+                        int edge = -1;
+                        getRandomEdgeSpawnPosition(spawnX, spawnY, config.allowedSpawnEdges, &edge);
+                        
+                        T3DVec3 pos = {{spawnX, spawnY, 0.0f}};
+                        float speed = 20.0f * config.speedMultiplier;
+                        
+                        bool useFixed = config.linearMovement;
+                        T3DVec3 fixedDir = {{0.0f, 0.0f, 0.0f}};
+                        if (useFixed) {
+                            switch (edge) {
+                                case 0: fixedDir = {{0.0f, 1.0f, 0.0f}}; break;
+                                case 1: fixedDir = {{-1.0f, 0.0f, 0.0f}}; break;
+                                case 2: fixedDir = {{0.0f, -1.0f, 0.0f}}; break;
+                                case 3: fixedDir = {{1.0f, 0.0f, 0.0f}}; break;
+                                default: fixedDir = {{0.0f, 0.0f, 0.0f}}; break;
+                            }
+                        }
+                        
+                        Actor::Enemy::spawn(pos, speed, targetPlayer, config.enemySize, config.enemyColor, config.xpReward, 8 * config.healthMultiplier, useFixed, fixedDir);
+                        enemiesSpawned++;
+                    }
+                }
+            } else {
+                // Original rate-based spawning
+                if (spawnTimer > config.spawnInterval / SaveGame::get_enemy_spawn_rate_multiplier()) {
+                    spawnTimer = 0.0f;
+                    enemiesSpawned++; // Increment the enemy counter
+                    
+                    // Randomly select a target player from alive players
+                    Actor::Player* targetPlayer = getRandomAlivePlayer();
+                    
+                    if (targetPlayer) {
+                        // Spawn a new enemy at a random edge of the screen
+                        float spawnX, spawnY;
+                        int edge = -1;
+                        getRandomEdgeSpawnPosition(spawnX, spawnY, config.allowedSpawnEdges, &edge);
+                        
+                        T3DVec3 pos = {{spawnX, spawnY, 0.0f}};
+                        float speed = 20.0f * config.speedMultiplier;
 
-                    // Spawn enemy with the selected target player and parameters
-                    Actor::Enemy::spawn(pos, speed, targetPlayer, config.enemySize, config.enemyColor, config.xpReward, 8 * config.healthMultiplier, useFixed, fixedDir);
+                        // Compute fixed-direction movement if configured for this wave
+                        bool useFixed = config.linearMovement;
+                        T3DVec3 fixedDir = {{0.0f, 0.0f, 0.0f}};
+                        if (useFixed) {
+                            switch (edge) {
+                                case 0: fixedDir = {{0.0f, 1.0f, 0.0f}}; break; // top -> move down
+                                case 1: fixedDir = {{-1.0f, 0.0f, 0.0f}}; break; // right -> move left
+                                case 2: fixedDir = {{0.0f, -1.0f, 0.0f}}; break; // bottom -> move up
+                                case 3: fixedDir = {{1.0f, 0.0f, 0.0f}}; break; // left -> move right
+                                default: fixedDir = {{0.0f, 0.0f, 0.0f}}; break;
+                            }
+                        }
+
+                        // Spawn enemy with the selected target player and parameters
+                        Actor::Enemy::spawn(pos, speed, targetPlayer, config.enemySize, config.enemyColor, config.xpReward, 8 * config.healthMultiplier, useFixed, fixedDir);
+                    }
                 }
             }
         }

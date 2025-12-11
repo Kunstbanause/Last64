@@ -20,24 +20,26 @@ namespace Waves {
         bool isBossWave;
         int bossCount;
         bool linearMovement;
+        SpawnManager::SpawnMethod spawnMethod;
+        int minimumEnemies;
     } level0_waves[] = {
-    //Interval, max, speed, hp, enemySize,               enemyColor, xpMod, allowedSpawnEdges,          boss?, bossCount LinearMovement
-        {1.0f,  -1,  0.8f, 1,    Actor::EnemySize::SMALL,  0xFF0000FF, 2, SpawnManager::SPAWN_EDGE_ALL, false, 0}, // Small, weak enemies - infinite
-        {0.4f,  -1,  1.4f, 1,    Actor::EnemySize::SMALL,  0xFFFF00FF, 1, SpawnManager::SPAWN_EDGE_LEFT | SpawnManager::SPAWN_EDGE_RIGHT, false, 0},// Swarm - Only spawn from left and right edges - infinite
-        {1.2f,  -1,  1.8f, 4,    Actor::EnemySize::MEDIUM, 0xFF00FFFF, 2, SpawnManager::SPAWN_EDGE_ALL, false, 0}, // More intense version of wave 1 - infinite
-        {1.0f,   1,  1.0f, 100,  Actor::EnemySize::LARGE,  0xFF0000FF, 10,SpawnManager::SPAWN_EDGE_ALL, true, 1},  // Single large boss enemy
-        {0.1f,  -1,  4.0f, 2,    Actor::EnemySize::SMALL,  0x00FF00FF, 1, SpawnManager::SPAWN_EDGE_TOP, false, 0, true}, // More intense version of wave 2 - infinite (linear movement - comet style)
-        {1.0f,   2,  1.2f, 150,  Actor::EnemySize::LARGE,  0x800080FF, 15,SpawnManager::SPAWN_EDGE_TOP | SpawnManager::SPAWN_EDGE_BOTTOM, true, 2}, // Two large boss enemies - spawn from top and bottom
-        {0.12f, -1,  2.2f, 3,    Actor::EnemySize::SMALL,  0x00FF00FF, 1, SpawnManager::SPAWN_EDGE_ALL, false, 0}, // Ender
-        {0.8f,  -1,  2.5f, 2,    Actor::EnemySize::SMALL,  0x0000FFFF, 2, SpawnManager::SPAWN_EDGE_LEFT, false, 0}, // Meter wave - enemies come from left side only
-        {0.6f,  -1,  3.0f, 1,    Actor::EnemySize::SMALL,  0x0080FFFF, 1, SpawnManager::SPAWN_EDGE_RIGHT, false, 0}, // Fast meter wave - right side
-        {0.2f,  -1,  4.0f, 1,    Actor::EnemySize::SMALL,  0x800000FF, 1, SpawnManager::SPAWN_EDGE_ALL, false, 0}, // Ultra fast swarm
-        {0.5f,   1,  1.5f, 200,  Actor::EnemySize::LARGE,  0x004080FF, 20,SpawnManager::SPAWN_EDGE_ALL, true, 1},  // Fast boss
-        {0.25f, 10,  3.5f, 3,    Actor::EnemySize::SMALL,  0x002040FF, 2, SpawnManager::SPAWN_EDGE_TOP | SpawnManager::SPAWN_EDGE_BOTTOM, false, 0}, // Intense swarm - top and bottom
-        {0.25f, 10,  3.5f, 3,    Actor::EnemySize::SMALL,  0x002040FF, 2, SpawnManager::SPAWN_EDGE_BOTTOM, false, 0, true}, // Intense swarm - top and bottom (linear movement)
-        {0.15f, -1,  5.0f, 1,    Actor::EnemySize::SMALL,  0x200040FF, 1, SpawnManager::SPAWN_EDGE_LEFT, false, 0}, // Ultra meter - left only
-        {0.7f,   3,  1.8f, 180,  Actor::EnemySize::LARGE,  0x400080FF, 25,SpawnManager::SPAWN_EDGE_LEFT | SpawnManager::SPAWN_EDGE_RIGHT, true, 3}, // Triple fast boss
-        {0.1f,  20,  6.0f, 1,    Actor::EnemySize::SMALL,  0x100020FF, 1, SpawnManager::SPAWN_EDGE_ALL, false, 0}  // Chaos wave - ultra fast with many enemies
+    //Interval, max, speed, hp, enemySize,               enemyColor, xpMod, allowedSpawnEdges,          boss?, bossCount LinearMovement, spawnMethod, minEnemies
+        {1.0f,  -1,  0.8f, 1,    Actor::EnemySize::SMALL,  0xFF0000FF, 2, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Small, weak enemies - infinite
+        {0.4f,  -1,  1.4f, 1,    Actor::EnemySize::SMALL,  0xFFFF00FF, 1, SpawnManager::SPAWN_EDGE_LEFT | SpawnManager::SPAWN_EDGE_RIGHT, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0},// Swarm - Only spawn from left and right edges - infinite
+        {1.2f,  -1,  1.8f, 4,    Actor::EnemySize::MEDIUM, 0xFF00FFFF, 2, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // More intense version of wave 1 - infinite
+        {1.0f,   1,  1.0f, 100,  Actor::EnemySize::LARGE,  0xFF0000FF, 10,SpawnManager::SPAWN_EDGE_ALL, true, 1, false, SpawnManager::SPAWN_RATE_BASED, 0},  // Single large boss enemy
+        {0.1f,  -1,  4.0f, 2,    Actor::EnemySize::SMALL,  0x00FF00FF, 1, SpawnManager::SPAWN_EDGE_TOP, false, 0, true, SpawnManager::SPAWN_RATE_BASED, 0}, // More intense version of wave 2 - infinite (linear movement - comet style)
+        {1.0f,   2,  1.2f, 150,  Actor::EnemySize::LARGE,  0x800080FF, 15,SpawnManager::SPAWN_EDGE_TOP | SpawnManager::SPAWN_EDGE_BOTTOM, true, 2, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Two large boss enemies - spawn from top and bottom
+        {0.12f, -1,  2.2f, 3,    Actor::EnemySize::SMALL,  0x00FF00FF, 1, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Ender
+        {0.8f,  -1,  2.5f, 2,    Actor::EnemySize::SMALL,  0x0000FFFF, 2, SpawnManager::SPAWN_EDGE_LEFT, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Meter wave - enemies come from left side only
+        {0.6f,  -1,  3.0f, 1,    Actor::EnemySize::SMALL,  0x0080FFFF, 1, SpawnManager::SPAWN_EDGE_RIGHT, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Fast meter wave - right side
+        {0.2f,  -1,  4.0f, 1,    Actor::EnemySize::SMALL,  0x800000FF, 1, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Ultra fast swarm
+        {0.5f,   1,  1.5f, 200,  Actor::EnemySize::LARGE,  0x004080FF, 20,SpawnManager::SPAWN_EDGE_ALL, true, 1, false, SpawnManager::SPAWN_RATE_BASED, 0},  // Fast boss
+        {0.25f, 10,  3.5f, 3,    Actor::EnemySize::SMALL,  0x002040FF, 2, SpawnManager::SPAWN_EDGE_TOP | SpawnManager::SPAWN_EDGE_BOTTOM, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Intense swarm - top and bottom
+        {0.25f, 10,  3.5f, 3,    Actor::EnemySize::SMALL,  0x002040FF, 2, SpawnManager::SPAWN_EDGE_BOTTOM, false, 0, true, SpawnManager::SPAWN_RATE_BASED, 0}, // Intense swarm - top and bottom (linear movement)
+        {0.15f, -1,  5.0f, 1,    Actor::EnemySize::SMALL,  0x200040FF, 1, SpawnManager::SPAWN_EDGE_LEFT, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Ultra meter - left only
+        {0.7f,   3,  1.8f, 180,  Actor::EnemySize::LARGE,  0x400080FF, 25,SpawnManager::SPAWN_EDGE_LEFT | SpawnManager::SPAWN_EDGE_RIGHT, true, 3, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Triple fast boss
+        {0.1f,  20,  6.0f, 1,    Actor::EnemySize::SMALL,  0x100020FF, 1, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}  // Chaos wave - ultra fast with many enemies
     };
     
     // Level 1: Verdant Bloom - Focus on swarms and speed, more aggressive
@@ -53,20 +55,22 @@ namespace Waves {
         bool isBossWave;
         int bossCount;
         bool linearMovement;
+        SpawnManager::SpawnMethod spawnMethod;
+        int minimumEnemies;
     } level1_waves[] = {
-    //Interval, max, speed, hp, enemySize,               enemyColor, xpMod, allowedSpawnEdges,          boss?, bossCount LinearMovement
-        {0.6f,  -1,  1.2f, 1,    Actor::EnemySize::SMALL,  0x00FF00FF, 1, SpawnManager::SPAWN_EDGE_ALL, false, 0}, // Green swarm - faster start
-        {0.3f,  -1,  2.0f, 2,    Actor::EnemySize::SMALL,  0x80FF80FF, 2, SpawnManager::SPAWN_EDGE_LEFT | SpawnManager::SPAWN_EDGE_RIGHT, false, 0}, // Side swarms
-        {0.8f,   1,  1.5f, 120,  Actor::EnemySize::LARGE,  0x00FF00FF, 12,SpawnManager::SPAWN_EDGE_ALL, true, 1},  // Early boss
-        {0.2f,  -1,  2.5f, 3,    Actor::EnemySize::SMALL,  0x40FF40FF, 2, SpawnManager::SPAWN_EDGE_ALL, false, 0}, // Fast green chaos
-        {0.15f, -1,  3.5f, 2,    Actor::EnemySize::SMALL,  0x00FF80FF, 1, SpawnManager::SPAWN_EDGE_TOP, false, 0, true}, // Comet wave from top
-        {0.4f,  -1,  3.0f, 4,    Actor::EnemySize::MEDIUM, 0x008040FF, 3, SpawnManager::SPAWN_EDGE_ALL, false, 0}, // Medium green
-        {0.7f,   2,  2.0f, 180,  Actor::EnemySize::LARGE,  0x00C000FF, 18,SpawnManager::SPAWN_EDGE_LEFT | SpawnManager::SPAWN_EDGE_RIGHT, true, 2}, // Twin bosses
-        {0.1f,  -1,  4.5f, 1,    Actor::EnemySize::SMALL,  0x60FF60FF, 1, SpawnManager::SPAWN_EDGE_ALL, false, 0}, // Ultra swarm
-        {0.15f, -1,  5.5f, 2,    Actor::EnemySize::SMALL,  0x00FF00FF, 2, SpawnManager::SPAWN_EDGE_LEFT | SpawnManager::SPAWN_EDGE_RIGHT, false, 0}, // Speed walls
-        {0.3f,  -1,  4.0f, 5,    Actor::EnemySize::MEDIUM, 0x40C040FF, 3, SpawnManager::SPAWN_EDGE_ALL, false, 0}, // Tough medium
-        {0.6f,   3,  2.5f, 220,  Actor::EnemySize::LARGE,  0x00A000FF, 25,SpawnManager::SPAWN_EDGE_ALL, true, 3}, // Triple boss finale
-        {0.08f, -1,  6.5f, 1,    Actor::EnemySize::SMALL,  0x20FF20FF, 1, SpawnManager::SPAWN_EDGE_ALL, false, 0}  // Endless green chaos
+    //Interval, max, speed, hp, enemySize,               enemyColor, xpMod, allowedSpawnEdges,          boss?, bossCount LinearMovement, spawnMethod, minEnemies
+        {0.6f,  -1,  1.2f, 1,    Actor::EnemySize::SMALL,  0x00FF00FF, 1, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Green swarm - faster start
+        {0.3f,  -1,  2.0f, 2,    Actor::EnemySize::SMALL,  0x80FF80FF, 2, SpawnManager::SPAWN_EDGE_LEFT | SpawnManager::SPAWN_EDGE_RIGHT, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Side swarms
+        {0.8f,   1,  1.5f, 120,  Actor::EnemySize::LARGE,  0x00FF00FF, 12,SpawnManager::SPAWN_EDGE_ALL, true, 1, false, SpawnManager::SPAWN_RATE_BASED, 0},  // Early boss
+        {0.2f,  -1,  2.5f, 3,    Actor::EnemySize::SMALL,  0x40FF40FF, 2, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Fast green chaos
+        {0.15f, -1,  3.5f, 2,    Actor::EnemySize::SMALL,  0x00FF80FF, 1, SpawnManager::SPAWN_EDGE_TOP, false, 0, true, SpawnManager::SPAWN_RATE_BASED, 0}, // Comet wave from top
+        {0.4f,  -1,  3.0f, 4,    Actor::EnemySize::MEDIUM, 0x008040FF, 3, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Medium green
+        {0.7f,   2,  2.0f, 180,  Actor::EnemySize::LARGE,  0x00C000FF, 18,SpawnManager::SPAWN_EDGE_LEFT | SpawnManager::SPAWN_EDGE_RIGHT, true, 2, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Twin bosses
+        {0.1f,  -1,  4.5f, 1,    Actor::EnemySize::SMALL,  0x60FF60FF, 1, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Ultra swarm
+        {0.15f, -1,  5.5f, 2,    Actor::EnemySize::SMALL,  0x00FF00FF, 2, SpawnManager::SPAWN_EDGE_LEFT | SpawnManager::SPAWN_EDGE_RIGHT, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Speed walls
+        {0.3f,  -1,  4.0f, 5,    Actor::EnemySize::MEDIUM, 0x40C040FF, 3, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Tough medium
+        {0.6f,   3,  2.5f, 220,  Actor::EnemySize::LARGE,  0x00A000FF, 25,SpawnManager::SPAWN_EDGE_ALL, true, 3, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Triple boss finale
+        {0.08f, -1,  6.5f, 1,    Actor::EnemySize::SMALL,  0x20FF20FF, 1, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}  // Endless green chaos
     };
     
     // Level 2: Rose Bloom - Mixed colors, alternating patterns, tactical challenge
@@ -82,22 +86,25 @@ namespace Waves {
         bool isBossWave;
         int bossCount;
         bool linearMovement;
+        SpawnManager::SpawnMethod spawnMethod;
+        int minimumEnemies;
     } level2_waves[] = {
-    //Interval, max, speed, hp, enemySize,               enemyColor, xpMod, allowedSpawnEdges,          boss?, bossCount LinearMovement
-        {0.5f,  -1,  1.5f, 2,    Actor::EnemySize::SMALL,  0xFF00FFFF, 2, SpawnManager::SPAWN_EDGE_ALL, false, 0}, // Pink swarm
-        {0.25f, -1,  2.5f, 1,    Actor::EnemySize::SMALL,  0xFF80FFFF, 1, SpawnManager::SPAWN_EDGE_TOP | SpawnManager::SPAWN_EDGE_BOTTOM, false, 0, true}, // Vertical comets
-        {0.4f,  -1,  2.0f, 3,    Actor::EnemySize::SMALL,  0xFF00AAFF, 2, SpawnManager::SPAWN_EDGE_LEFT | SpawnManager::SPAWN_EDGE_RIGHT, false, 0}, // Horizontal waves
-        {0.8f,   2,  1.8f, 150,  Actor::EnemySize::LARGE,  0xFF0080FF, 15,SpawnManager::SPAWN_EDGE_ALL, true, 2},  // Early double boss
-        {0.2f,  -1,  3.5f, 2,    Actor::EnemySize::SMALL,  0xFF60FFFF, 2, SpawnManager::SPAWN_EDGE_ALL, false, 0}, // Fast pink chaos
-        {0.15f, 15,  4.0f, 1,    Actor::EnemySize::SMALL,  0xFFAAFFFF, 1, SpawnManager::SPAWN_EDGE_LEFT, false, 0, true}, // Left comet burst
-        {0.35f, -1,  3.0f, 5,    Actor::EnemySize::MEDIUM, 0xC000C0FF, 3, SpawnManager::SPAWN_EDGE_ALL, false, 0}, // Purple medium
-        {0.15f, 15,  4.0f, 1,    Actor::EnemySize::SMALL,  0xFFAAFFFF, 1, SpawnManager::SPAWN_EDGE_RIGHT, false, 0, true}, // Right comet burst
-        {0.2f,  -1,  4.5f, 3,    Actor::EnemySize::SMALL,  0xFF40FFFF, 2, SpawnManager::SPAWN_EDGE_ALL, false, 0}, // Ultra pink swarm
-        {0.6f,   3,  2.2f, 200,  Actor::EnemySize::LARGE,  0xFF00C0FF, 20,SpawnManager::SPAWN_EDGE_TOP | SpawnManager::SPAWN_EDGE_BOTTOM, true, 3}, // Triple vertical bosses
-        {0.12f, -1,  5.5f, 2,    Actor::EnemySize::SMALL,  0xFF80C0FF, 2, SpawnManager::SPAWN_EDGE_ALL, false, 0}, // Speed chaos
-        {0.3f,  -1,  4.0f, 6,    Actor::EnemySize::MEDIUM, 0xA000A0FF, 4, SpawnManager::SPAWN_EDGE_LEFT | SpawnManager::SPAWN_EDGE_RIGHT, false, 0}, // Tough horizontal
-        {0.5f,   4,  2.8f, 250,  Actor::EnemySize::LARGE,  0xFF0090FF, 30,SpawnManager::SPAWN_EDGE_ALL, true, 4}, // Quad boss finale
-        {0.07f, -1,  7.0f, 1,    Actor::EnemySize::SMALL,  0xFF60C0FF, 1, SpawnManager::SPAWN_EDGE_ALL, false, 0}  // Ultimate pink chaos
+    //Interval, max, speed, hp, enemySize,               enemyColor, xpMod, allowedSpawnEdges,          boss?, bossCount LinearMovement, spawnMethod, minEnemies
+        {0.5f,  -1,  1.5f, 2,    Actor::EnemySize::SMALL,  0xFF00FFFF, 2, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Pink swarm
+        // TEST WAVE: VS-style fill-screen spawning - maintain 30 enemies minimum, check every 0.5s
+        {0.5f,  -1,  1.2f, 1,    Actor::EnemySize::SMALL,  0xFFFF00FF, 2, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_FILL_SCREEN, 30}, // VS-style fill screen wave
+        {0.4f,  -1,  2.0f, 3,    Actor::EnemySize::SMALL,  0xFF00AAFF, 2, SpawnManager::SPAWN_EDGE_LEFT | SpawnManager::SPAWN_EDGE_RIGHT, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Horizontal waves
+        {0.8f,   2,  1.8f, 150,  Actor::EnemySize::LARGE,  0xFF0080FF, 15,SpawnManager::SPAWN_EDGE_ALL, true, 2, false, SpawnManager::SPAWN_RATE_BASED, 0},  // Early double boss
+        {0.2f,  -1,  3.5f, 2,    Actor::EnemySize::SMALL,  0xFF60FFFF, 2, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Fast pink chaos
+        {0.15f, 15,  4.0f, 1,    Actor::EnemySize::SMALL,  0xFFAAFFFF, 1, SpawnManager::SPAWN_EDGE_LEFT, false, 0, true, SpawnManager::SPAWN_RATE_BASED, 0}, // Left comet burst
+        {0.35f, -1,  3.0f, 5,    Actor::EnemySize::MEDIUM, 0xC000C0FF, 3, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Purple medium
+        {0.15f, 15,  4.0f, 1,    Actor::EnemySize::SMALL,  0xFFAAFFFF, 1, SpawnManager::SPAWN_EDGE_RIGHT, false, 0, true, SpawnManager::SPAWN_RATE_BASED, 0}, // Right comet burst
+        {0.2f,  -1,  4.5f, 3,    Actor::EnemySize::SMALL,  0xFF40FFFF, 2, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Ultra pink swarm
+        {0.6f,   3,  2.2f, 200,  Actor::EnemySize::LARGE,  0xFF00C0FF, 20,SpawnManager::SPAWN_EDGE_TOP | SpawnManager::SPAWN_EDGE_BOTTOM, true, 3, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Triple vertical bosses
+        {0.12f, -1,  5.5f, 2,    Actor::EnemySize::SMALL,  0xFF80C0FF, 2, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Speed chaos
+        {0.3f,  -1,  4.0f, 6,    Actor::EnemySize::MEDIUM, 0xA000A0FF, 4, SpawnManager::SPAWN_EDGE_LEFT | SpawnManager::SPAWN_EDGE_RIGHT, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Tough horizontal
+        {0.5f,   4,  2.8f, 250,  Actor::EnemySize::LARGE,  0xFF0090FF, 30,SpawnManager::SPAWN_EDGE_ALL, true, 4, false, SpawnManager::SPAWN_RATE_BASED, 0}, // Quad boss finale
+        {0.07f, -1,  7.0f, 1,    Actor::EnemySize::SMALL,  0xFF60C0FF, 1, SpawnManager::SPAWN_EDGE_ALL, false, 0, false, SpawnManager::SPAWN_RATE_BASED, 0}  // Ultimate pink chaos
     };
     
     // Get the number of waves for a specific level
@@ -128,6 +135,8 @@ namespace Waves {
                 waveConfigs[i].isBossWave = level1_waves[i].isBossWave;
                 waveConfigs[i].bossCount = level1_waves[i].bossCount;
                 waveConfigs[i].linearMovement = level1_waves[i].linearMovement;
+                waveConfigs[i].spawnMethod = level1_waves[i].spawnMethod;
+                waveConfigs[i].minimumEnemies = level1_waves[i].minimumEnemies;
             }
         } else if (levelIndex == 2) {
             for (int i = 0; i < waveCount; i++) {
@@ -142,6 +151,8 @@ namespace Waves {
                 waveConfigs[i].isBossWave = level2_waves[i].isBossWave;
                 waveConfigs[i].bossCount = level2_waves[i].bossCount;
                 waveConfigs[i].linearMovement = level2_waves[i].linearMovement;
+                waveConfigs[i].spawnMethod = level2_waves[i].spawnMethod;
+                waveConfigs[i].minimumEnemies = level2_waves[i].minimumEnemies;
             }
         } else {
             // Default to level 0
@@ -157,6 +168,8 @@ namespace Waves {
                 waveConfigs[i].isBossWave = level0_waves[i].isBossWave;
                 waveConfigs[i].bossCount = level0_waves[i].bossCount;
                 waveConfigs[i].linearMovement = level0_waves[i].linearMovement;
+                waveConfigs[i].spawnMethod = level0_waves[i].spawnMethod;
+                waveConfigs[i].minimumEnemies = level0_waves[i].minimumEnemies;
             }
         }
     }
