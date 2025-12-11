@@ -59,6 +59,7 @@ static bool s_music_enabled = true;
 static bool s_marble_enabled = true;
 static bool s_profiling_enabled = false;
 static bool s_color_test_strips_disabled = true;
+static bool s_enemy_separation_enabled = true;
 static uint32_t s_credits_spent = 0;
 static uint8_t s_pickup_range_level = 0;
 static uint8_t s_damage_level = 0;
@@ -111,6 +112,8 @@ static void load_structured_state() {
   s_sfx_volume = buf4[2];
   // Byte 3 stores color test strip visibility: 0 = disabled (default), 1 = enabled
   s_color_test_strips_disabled = (buf4[3] == 1) ? false : true;
+  // Byte 4 stores enemy separation enabled flag: 1 = enabled (default), 0 = disabled
+  s_enemy_separation_enabled = (buf4[4] == 0) ? false : true;
   // Clamp volume values to 0-10 range
   if (s_music_volume > 10) s_music_volume = 10;
   if (s_sfx_volume > 10) s_sfx_volume = 10;
@@ -158,7 +161,8 @@ static void save_structured_state() {
     s_music_volume,
     s_sfx_volume,
     (uint8_t)(s_color_test_strips_disabled ? 0 : 1),
-    0, 0, 0, 0 
+    (uint8_t)(s_enemy_separation_enabled ? 1 : 0),
+    0, 0, 0 
   };
   uint8_t res4 = eeprom_write(4, buf4);
   if (res1 == 0 && res2 == 0 && res3 == 0 && res4 == 0) {
@@ -272,6 +276,9 @@ bool is_profiling_enabled() { return s_profiling_enabled; }
 
 void set_color_test_strips_disabled(bool disabled) { s_color_test_strips_disabled = disabled; save_structured_state(); }
 bool are_color_test_strips_disabled() { return s_color_test_strips_disabled; }
+
+void set_enemy_separation_enabled(bool enabled) { s_enemy_separation_enabled = enabled; save_structured_state(); }
+bool is_enemy_separation_enabled() { return s_enemy_separation_enabled; }
 
 // Credits system implementation
 uint32_t get_total_credits() {

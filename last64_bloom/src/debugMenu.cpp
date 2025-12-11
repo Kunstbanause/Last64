@@ -119,6 +119,7 @@ void DebugMenu::reset()
   entries.push_back({"RDP-S   ", EntryType::BOOL, &state.ppConf.scalingUseRDP});
   entries.push_back({"Auto    ", EntryType::BOOL, &state.autoExposure});
   entries.push_back({"        ", EntryType::NONE, nullptr}); // Separator
+  entries.push_back({"SepEn   ", EntryType::BOOL, Actor::Enemy::getSeparationEnabledPtr()});
   entries.push_back({"Profile ", EntryType::BOOL, &profilingEnabledVar});
   entries.push_back({"ClrStrip", EntryType::BOOL, &colorStripsDisabledVar});
   entries.push_back({"EndRound", EntryType::BOOL, &endRoundVar});
@@ -145,6 +146,15 @@ void DebugMenu::reset()
       break;
     }
   }
+  // Wire separation toggle persistence
+  for (size_t i = 0; i < entries.size(); ++i) {
+    if (entries[i].value == Actor::Enemy::getSeparationEnabledPtr()) {
+      // Reuse profilingChangedFlag slot style: dedicated flag
+      static bool sepChanged = false;
+      changedFlags[i] = &sepChanged;
+      break;
+    }
+  }
   // Wire end round flag
   for (size_t i = 0; i < entries.size(); ++i) {
     if (entries[i].value == &endRoundVar) {
@@ -160,6 +170,8 @@ void DebugMenu::reset()
   profilingEnabledVar = SaveGame::is_profiling_enabled();
   // Initialize color strip visibility state from savegame (true = hidden)
   colorStripsDisabledVar = SaveGame::are_color_test_strips_disabled();
+  // Initialize separation toggle from savegame
+  Actor::Enemy::setSeparationEnabled(SaveGame::is_enemy_separation_enabled());
 }
 
 void DebugMenu::addEntry(const Entry& entry, bool *changedFlag) {
@@ -245,6 +257,15 @@ void DebugMenu::draw()
   if (profilingChangedFlag) {
     SaveGame::set_profiling_enabled(profilingEnabledVar);
     profilingChangedFlag = false;
+  }
+
+  // If separation toggle was changed, persist immediately
+  // We detect by comparing current enemy flag to SaveGame stored value.
+  bool currentSep = *Actor::Enemy::getSeparationEnabledPtr();
+  static bool sepPersistedState = SaveGame::is_enemy_separation_enabled();
+  if (currentSep != sepPersistedState) {
+    SaveGame::set_enemy_separation_enabled(currentSep);
+    sepPersistedState = currentSep;
   }
 
   // If color test strip visibility was changed, persist immediately

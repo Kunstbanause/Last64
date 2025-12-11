@@ -13,10 +13,10 @@
 - Spiral Weapon upgrades break old projectiles, stay in place detached from player
 - Split up code more. main and scene are pretty big
 - Main menu in main.cpp instead of sceneLast64.cpp
-- Enemy to enemy collision?
 
 
 # DONE
+- Enemy to enemy collision?
 - Some waves with different enemy spawning: Similar to vampire with fill screen instead of basic frequency
 - Tweak stats screen layout: weapons can start further to the left, show stats next to the weapon icon instead  of below
 - More marble colors / themes

@@ -48,6 +48,10 @@ bool is_profiling_enabled();
 void set_color_test_strips_disabled(bool disabled);
 bool are_color_test_strips_disabled();
 
+// Enemy separation toggle (debug/perf)
+void set_enemy_separation_enabled(bool enabled);
+bool is_enemy_separation_enabled();
+
 // Purge all save data (for testing)
 void purge_save();
 

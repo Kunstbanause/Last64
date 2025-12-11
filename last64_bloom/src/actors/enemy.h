@@ -60,6 +60,9 @@ namespace Actor {
         static Enemy* getEnemy(uint32_t index) { return &enemyPool[index]; }
         static bool isActive(uint32_t index) { return activeFlags[index]; }
         static float getLastSeparationMS();
+        static bool* getSeparationEnabledPtr();
+        static void setSeparationEnabled(bool enabled);
+        static bool isSeparationEnabled();
 
         void update(float deltaTime) override;
         void draw3D(float deltaTime) override;

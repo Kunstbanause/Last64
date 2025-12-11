@@ -18,6 +18,7 @@
 
 namespace Actor {
     static float g_lastSeparationMS = 0.0f;
+    static bool g_separationEnabled = true;
     // Static member definitions
     T3DVertPacked* Enemy::sharedVertices = nullptr;
     T3DMat4FP** Enemy::sharedMatrices = nullptr;
@@ -183,6 +184,11 @@ namespace Actor {
             }
         }
 
+        if (!g_separationEnabled) {
+            g_lastSeparationMS = 0.0f;
+            return;
+        }
+
         // Profiling start
         int profId = Profiler::begin("EnemySep");
         uint64_t ticksStart = get_ticks();
@@ -191,7 +197,7 @@ namespace Actor {
         // Tunables
         const float CELL_SIZE = 40.0f;          // pixels
         const float MIN_DIST = 9.0f;            // desired minimum spacing (larger for clearer separation)
-        const float MAX_DISP = 1.5f;            // clamp per-frame displacement
+        const float MAX_DISP = 1.5f;            // clamp per-frame displacement (more visible push)
         const int   MAX_NEIGHBORS = 6;          // limit neighbor checks per enemy
 
         // Arena extents (2D only)
@@ -287,6 +293,10 @@ namespace Actor {
     }
 
     float Enemy::getLastSeparationMS() { return g_lastSeparationMS; }
+
+    bool* Enemy::getSeparationEnabledPtr() { return &g_separationEnabled; }
+    void Enemy::setSeparationEnabled(bool enabled) { g_separationEnabled = enabled; }
+    bool Enemy::isSeparationEnabled() { return g_separationEnabled; }
 
     void Enemy::drawAll(float deltaTime) {
         if (!initialized) return;
