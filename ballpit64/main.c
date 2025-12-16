@@ -10,6 +10,75 @@ float get_time_s() {
   return (float)((double)get_ticks_us() / 1000000.0);
 }
 
+// Combined input functions - allow any controller port to control the game
+static inline joypad_buttons_t joypad_get_all_pressed() {
+    joypad_buttons_t combined = {0};
+    for (int i = JOYPAD_PORT_1; i <= JOYPAD_PORT_4; i++) {
+        joypad_buttons_t b = joypad_get_buttons_pressed((joypad_port_t)i);
+        
+        combined.a      |= b.a;
+        combined.b      |= b.b;
+        combined.z      |= b.z;
+        combined.start  |= b.start;
+        combined.l      |= b.l;
+        combined.r      |= b.r;
+        combined.d_up   |= b.d_up;
+        combined.d_down |= b.d_down;
+        combined.d_left |= b.d_left;
+        combined.d_right|= b.d_right;
+        combined.c_up   |= b.c_up;
+        combined.c_down |= b.c_down;
+        combined.c_left |= b.c_left;
+        combined.c_right|= b.c_right;
+    }
+    return combined;
+}
+
+static inline joypad_buttons_t joypad_get_all_held() {
+    joypad_buttons_t combined = {0};
+    for (int i = JOYPAD_PORT_1; i <= JOYPAD_PORT_4; i++) {
+        joypad_buttons_t b = joypad_get_buttons_held((joypad_port_t)i);
+        
+        combined.a      |= b.a;
+        combined.b      |= b.b;
+        combined.z      |= b.z;
+        combined.start  |= b.start;
+        combined.l      |= b.l;
+        combined.r      |= b.r;
+        combined.d_up   |= b.d_up;
+        combined.d_down |= b.d_down;
+        combined.d_left |= b.d_left;
+        combined.d_right|= b.d_right;
+        combined.c_up   |= b.c_up;
+        combined.c_down |= b.c_down;
+        combined.c_left |= b.c_left;
+        combined.c_right|= b.c_right;
+    }
+    return combined;
+}
+
+// Get combined stick input - use first active controller's stick input
+static inline joypad_inputs_t joypad_get_all_inputs() {
+    // Check each port in order, return first active controller found
+    for (int i = JOYPAD_PORT_1; i <= JOYPAD_PORT_4; i++) {
+        joypad_inputs_t inputs = joypad_get_inputs((joypad_port_t)i);
+        
+        // Check if this controller has any significant stick input
+        if (abs(inputs.stick_x) > 10 || abs(inputs.stick_y) > 10) {
+            return inputs; // Return first active controller's inputs
+        }
+        
+        // Also check if any buttons are pressed (in case stick is centered but buttons are used)
+        joypad_buttons_t btn = joypad_get_buttons_held((joypad_port_t)i);
+        if (btn.a || btn.b || btn.start || btn.d_up || btn.d_down || btn.d_left || btn.d_right) {
+            return inputs; // Return first active controller's inputs
+        }
+    }
+    
+    // If no active controllers found, return empty inputs
+    return (joypad_inputs_t){0};
+}
+
 #define FONT_MAIN 2
 
 // Create a reusable textbox popup. Returns an rspq block that can be run
@@ -227,8 +296,9 @@ int main()
     float deltaTime = newTime - lastTime;
     lastTime = newTime;
 
-    joypad_inputs_t joypad = joypad_get_inputs(JOYPAD_PORT_1);
-    joypad_buttons_t btn = joypad_get_buttons_pressed(JOYPAD_PORT_1);
+    joypad_inputs_t joypad = joypad_get_all_inputs(); // Get combined inputs from all ports
+    joypad_buttons_t btn = joypad_get_all_pressed();
+    joypad_buttons_t btnHeld = joypad_get_all_held();
 
     // If a popup is showing and the A button is pressed, close the popup
     if(dplTextbox && btn.a) {
@@ -260,8 +330,8 @@ int main()
       // continuous adjustment while C-buttons are held; scale by deltaTime for smoothness
       float camAdjustSpeed = 40.0f; // units per second
       float adjust = 0.0f;
-      if(joypad.btn.c_up) adjust += camAdjustSpeed * deltaTime;
-      if(joypad.btn.c_down) adjust -= camAdjustSpeed * deltaTime;
+      if(btnHeld.c_up) adjust += camAdjustSpeed * deltaTime;
+      if(btnHeld.c_down) adjust -= camAdjustSpeed * deltaTime;
 
       if(adjust != 0.0f) {
         if(camEditMode == 0) camY += adjust;
@@ -276,10 +346,10 @@ int main()
     camTarget.v[2] = targetZ;
 
     // Reticle movement with C-buttons (independent of player movement)
-    if(joypad.btn.c_left) reticlePos.v[0] -= reticleSpeed * deltaTime;
-    if(joypad.btn.c_right) reticlePos.v[0] += reticleSpeed * deltaTime;
-    if(joypad.btn.c_up) reticlePos.v[2] -= reticleSpeed * deltaTime;
-    if(joypad.btn.c_down) reticlePos.v[2] += reticleSpeed * deltaTime;
+    if(btnHeld.c_left) reticlePos.v[0] -= reticleSpeed * deltaTime;
+    if(btnHeld.c_right) reticlePos.v[0] += reticleSpeed * deltaTime;
+    if(btnHeld.c_up) reticlePos.v[2] -= reticleSpeed * deltaTime;
+    if(btnHeld.c_down) reticlePos.v[2] += reticleSpeed * deltaTime;
 
     // Clamp reticle to arena bounds
     if(reticlePos.v[0] < -BOX_SIZE) reticlePos.v[0] = -BOX_SIZE;
