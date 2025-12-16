@@ -5,6 +5,8 @@
 #include <t3d/t3dskeleton.h>
 #include <t3d/t3danim.h>
 #include <t3d/t3ddebug.h>
+// Uncached matrices for enemies to avoid RSP cache coherence issues
+static T3DMat4FP *gEnemyMats = NULL;
 
 float get_time_s() {
   return (float)((double)get_ticks_us() / 1000000.0);
@@ -273,6 +275,13 @@ int main()
   } Enemy;
   
   Enemy enemies[MAX_ENEMIES];
+  // Allocate uncached matrices for enemies (Tiny3D expects DMA-friendly buffers)
+  if (!gEnemyMats) {
+    gEnemyMats = (T3DMat4FP*)malloc_uncached(sizeof(T3DMat4FP) * MAX_ENEMIES);
+    for (int i = 0; i < MAX_ENEMIES; i++) {
+      t3d_mat4fp_identity(&gEnemyMats[i]);
+    }
+  }
   for(int i = 0; i < MAX_ENEMIES; i++) {
     enemies[i].active = false;
     enemies[i].health = 2;
@@ -589,6 +598,11 @@ int main()
     t3d_screen_clear_color(RGBA32(224, 180, 96, 0xFF));
     t3d_screen_clear_depth();
 
+    // Ensure neutral global state to avoid unintended tinting
+    rdpq_set_mode_standard();
+    rdpq_mode_combiner(RDPQ_COMBINER_TEX_SHADE);
+    rdpq_set_prim_color(RGBA32(255, 255, 255, 255));
+
     t3d_light_set_ambient(colorAmbient);
     t3d_light_set_directional(0, colorDir, &lightDirVec);
     t3d_light_set_count(1);
@@ -613,18 +627,15 @@ int main()
     t3d_matrix_pop(1);
 
     // Draw enemies
-    T3DMat4FP enemyMatFP;
     for(int i = 0; i < MAX_ENEMIES; i++) {
       if(!enemies[i].active) continue;
       
-      t3d_mat4fp_from_srt_euler(&enemyMatFP, (float[3]){0.1f, 0.1f, 0.1f}, (float[3]){0,0,0}, enemies[i].pos.v);
-      t3d_matrix_push(&enemyMatFP);
-      // Force neutral tint and texture-focused combiner to avoid blue tint
+      t3d_mat4fp_from_srt_euler(&gEnemyMats[i], (float[3]){0.1f, 0.1f, 0.1f}, (float[3]){0,0,0}, enemies[i].pos.v);
+      t3d_matrix_push(&gEnemyMats[i]);
+      // Use texture+shade so untextured parts can still be lit
       rdpq_set_mode_standard();
       rdpq_mode_combiner(RDPQ_COMBINER_TEX_SHADE);
       rdpq_set_prim_color(RGBA32(255, 255, 255, 255));
-      // Optionally disable T3D lighting to test unlit rendering
-      // t3d_light_set_count(0);
       t3d_model_draw(modelEnemy);
       t3d_matrix_pop(1);
     }
