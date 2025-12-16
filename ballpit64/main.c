@@ -619,7 +619,12 @@ int main()
       
       t3d_mat4fp_from_srt_euler(&enemyMatFP, (float[3]){0.1f, 0.1f, 0.1f}, (float[3]){0,0,0}, enemies[i].pos.v);
       t3d_matrix_push(&enemyMatFP);
-      // rdpq_set_prim_color(RGBA32(255, 255, 255, 255));
+      // Force neutral tint and texture-focused combiner to avoid blue tint
+      rdpq_set_mode_standard();
+      rdpq_mode_combiner(RDPQ_COMBINER_TEX_SHADE);
+      rdpq_set_prim_color(RGBA32(255, 255, 255, 255));
+      // Optionally disable T3D lighting to test unlit rendering
+      // t3d_light_set_count(0);
       t3d_model_draw(modelEnemy);
       t3d_matrix_pop(1);
     }
