@@ -120,7 +120,9 @@ int main()
     rdpq_set_prim_color(RGBA32(255, 255, 255, 255));
     t3d_model_draw_skinned(resources.model_snake, &player.skel);
 
+    // Shadow uses texture - ensure wrap mode is set
     rdpq_set_prim_color(RGBA32(0, 0, 0, 120));
+    rdpq_mode_filter(FILTER_BILINEAR);
     t3d_model_draw(resources.model_shadow);
     t3d_matrix_pop(1);
   rspq_block_t *dplSnake = rspq_block_end();
@@ -241,11 +243,6 @@ int main()
     t3d_screen_clear_color(RGBA32(224, 180, 96, 0xFF));
     t3d_screen_clear_depth();
 
-    // Ensure neutral global state to avoid unintended tinting
-    rdpq_set_mode_standard();
-    rdpq_mode_combiner(RDPQ_COMBINER_TEX_SHADE);
-    rdpq_set_prim_color(RGBA32(255, 255, 255, 255));
-
     t3d_light_set_ambient(colorAmbient);
     t3d_light_set_directional(0, colorDir, &lightDirVec);
     t3d_light_set_count(1);
@@ -256,7 +253,7 @@ int main()
     // Render game entities
     ball_render(&ball, resources.model_snake);
     enemy_system_render(&enemy_system, resources.model_enemy);
-    reticle_render(&reticle, resources.model_shadow); // use box model for visibility
+    reticle_render(&reticle, resources.model_shadow);
 
     syncPoint = rspq_syncpoint_new();
 

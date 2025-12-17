@@ -24,16 +24,16 @@ void reticle_update(Reticle* reticle, joypad_buttons_t btn_held, float deltaTime
   if(reticle->pos.v[2] > box_size) reticle->pos.v[2] = box_size;
 }
 
-void reticle_render(Reticle* reticle, T3DModel* model) {
-  // EXACT copy of ball_render pattern (which works)
+void reticle_render(Reticle* reticle, T3DModel* shadow_model) {
+  // Render shadow underneath (same pattern as example 08_animation)
   t3d_mat4fp_from_srt_euler(reticle->matrix, 
     (float[3]){0.12f, 0.12f, 0.12f}, 
     (float[3]){0, 0, 0}, 
     reticle->pos.v
   );
   t3d_matrix_push(reticle->matrix);
-  rdpq_set_prim_color(RGBA32(255, 255, 0, 255));
-  t3d_model_draw(model);
+  rdpq_set_prim_color(RGBA32(255, 255, 0, 120)); // Semi-transparent yellow for reticle
+  t3d_model_draw(shadow_model);
   t3d_matrix_pop(1);
 }
 
