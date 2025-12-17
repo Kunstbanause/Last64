@@ -8,7 +8,16 @@ N64_CFLAGS += -std=gnu2x -O2
 
 PROJECT_NAME=ballpit64
 
-src = main.c
+src = main.c \
+	  src/core/game_state.c \
+	  src/input/input_manager.c \
+	  src/systems/collision.c \
+	  src/resources/resource_manager.c \
+	  src/entities/ball.c \
+	  src/entities/player.c \
+	  src/entities/enemy.c \
+	  src/entities/reticle.c
+
 assets_png = $(wildcard assets/*.png)
 assets_gltf = $(wildcard assets/*.glb)
 assets_ttf = $(wildcard assets/*.ttf)
